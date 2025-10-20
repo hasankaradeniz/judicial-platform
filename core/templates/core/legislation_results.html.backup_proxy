@@ -1,0 +1,742 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Mevzuat Sonuçları - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* CONSISTENT COLOR SCHEME */
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --gold-light: #fbd38d;
+    --emerald: #047857;
+    --emerald-light: #10b981;
+    --crimson: #c53030;
+    --crimson-light: #fc8181;
+    --marble-white: #fdfdfe;
+    --silk-gray: #f7fafc;
+    --ash-gray: #edf2f7;
+    --charcoal: #2d3748;
+    --slate: #4a5568;
+    --obsidian: #1a202c;
+    
+    /* Enhanced Shadows */
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --shadow-premium: 0 8px 32px rgba(26, 54, 93, 0.16);
+    --shadow-royal: 0 12px 48px rgba(26, 54, 93, 0.24);
+    --shadow-inset: inset 0 2px 4px rgba(26, 54, 93, 0.06);
+    
+    /* Premium Gradients */
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, var(--gold-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+    --gradient-paper: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .search-header {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+  }
+  
+  .search-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  
+  .search-stats {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-form-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .result-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 25px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-premium);
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  .result-card .card-header {
+    background: rgba(248, 249, 250, 0.8);
+    border-bottom: 1px solid var(--ash-gray);
+    padding: 20px 25px;
+    backdrop-filter: blur(5px);
+  }
+  
+  .result-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .result-badges {
+    margin-top: 10px;
+  }
+  
+  .live-badge {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+  }
+  
+  .live-badge i {
+    margin-right: 5px;
+  }
+  
+  .type-badge {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  
+  .result-meta {
+    color: var(--slate);
+    font-size: 0.9rem;
+    margin-top: 15px;
+  }
+  
+  .result-meta .meta-item {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 5px;
+  }
+  
+  .result-meta .meta-item i {
+    margin-right: 5px;
+    color: var(--royal-blue);
+  }
+  
+  .result-preview {
+    color: var(--slate);
+    line-height: 1.6;
+    margin-top: 15px;
+  }
+  
+  .action-buttons {
+    padding: 20px 25px;
+    background: rgba(248, 249, 250, 0.8);
+    border-top: 1px solid var(--ash-gray);
+    backdrop-filter: blur(5px);
+  }
+  
+  .btn-view-detail {
+    background: var(--gradient-royal);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .btn-view-detail:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  
+  .btn-view-detail i {
+    margin-right: 8px;
+  }
+  
+  .btn-external-link {
+    background: var(--gradient-gold);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    margin-left: 10px;
+  }
+  
+  .btn-external-link:hover {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .loading-indicator {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--ash-gray);
+    border-top: 4px solid var(--royal-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+  }
+  
+  .no-results i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #dee2e6;
+  }
+  
+  .pagination-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    margin-top: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .pagination .page-link {
+    border: none;
+    color: var(--royal-blue);
+    font-weight: 600;
+    padding: 10px 15px;
+    margin: 0 2px;
+    border-radius: 8px;
+  }
+  
+  /* Filtreleme stil */
+  .filter-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .filter-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--royal-blue);
+    margin-bottom: 15px;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .filter-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--royal-blue);
+    background: transparent;
+    color: var(--royal-blue);
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--royal-blue);
+    color: white;
+  }
+  
+  .result-count {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-left: 10px;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background: var(--gradient-royal);
+    border: none;
+  }
+  
+  .error-message {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-light) 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .system-info {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="search-header">
+  <div class="container">
+    <h1><i class="fas fa-search"></i> Mevzuat Sonuçları</h1>
+    
+    {% if query %}
+    <div class="search-stats">
+      <div class="row">
+        <div class="col-md-8">
+          <h5><i class="fas fa-quote-left"></i> "{{ query }}"</h5>
+          {% if search_stats.total_results %}
+            <p class="mb-0">
+              <strong>{{ search_stats.total_results }}</strong> sonuç bulundu
+            </p>
+          {% endif %}
+        </div>
+        <div class="col-md-4 text-right">
+          {% if search_stats.search_time %}
+            <small>Arama süresi: ~3-5 saniye</small>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  <!-- System Info -->
+  <div class="system-info">
+    <i class="fas fa-info-circle"></i>
+    <strong>PDF Mevzuat:</strong> Bu sonuçlar <strong>mevzuat.gov.tr</strong>'den alınmıştır. 
+    Mevzuat metinlerini PDF formatında görüntüleyebilirsiniz.
+  </div>
+
+  <!-- Error Message -->
+  {% if error_message %}
+  <div class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>Arama Hatası:</strong> {{ error_message }}
+    <div class="mt-2">
+      <small>Lütfen tekrar deneyin veya farklı arama terimleri kullanın.</small>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Search Form -->
+  <div class="search-form-container">
+    <h5><i class="fas fa-search"></i> Yeni Arama Yap</h5>
+    <form method="get" action="{% url 'legislation_results' %}">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="search-input">Arama Terimi</label>
+          <input type="text" 
+                 id="search-input"
+                 name="q" 
+                 class="form-control" 
+                 placeholder="Kanun, yönetmelik veya mevzuat adı..." 
+                 value="{{ query }}"
+                 required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="type-select">Mevzuat Türü</label>
+          <select name="mevzuat_turu" id="type-select" class="form-control">
+            <option value="">Tüm Türler</option>
+            {% for turu in mevzuat_turleri %}
+              <option value="{{ turu.id }}" {% if mevzuat_turu_id == turu.id %}selected{% endif %}>
+                {{ turu.ad }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 mb-3">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-search"></i> ARA
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+            
+  <!-- Filtreleme -->
+  {% if legislations %}
+  <div class="filter-container">
+    <div class="filter-title">
+      <i class="fas fa-filter"></i> Türe Göre Filtrele
+      <span class="result-count" id="result-count">{{ total_results }} sonuç</span>
+    </div>
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">
+        Tümü <span class="badge badge-light" id="count-all">{{ total_results }}</span>
+      </button>
+      <button class="filter-btn" data-filter="Kanun">
+        Kanun <span class="badge badge-light" id="count-kanun">0</span>
+      </button>
+      <button class="filter-btn" data-filter="Yönetmelik">
+        Yönetmelik <span class="badge badge-light" id="count-yonetmelik">0</span>
+      </button>
+      <button class="filter-btn" data-filter="Cumhurbaşkanlığı Kararnamesi">
+        Kararname <span class="badge badge-light" id="count-kararname">0</span>
+      </button>
+      <button class="filter-btn" data-filter="Tüzük">
+        Tüzük <span class="badge badge-light" id="count-tuzuk">0</span>
+      </button>
+      <button class="filter-btn" data-filter="Tebliğ">
+        Tebliğ <span class="badge badge-light" id="count-teblig">0</span>
+      </button>
+      <button class="filter-btn" data-filter="Genelge">
+        Genelge <span class="badge badge-light" id="count-genelge">0</span>
+      </button>
+    </div>
+  </div>
+  {% endif %}
+  </div>
+
+  <!-- No Search Term -->
+  {% if no_search_term %}
+  <div class="no-results">
+    <i class="fas fa-search"></i>
+    <h4>Arama Terimi Gerekli</h4>
+    <p>{{ message }}</p>
+    <a href="{% url 'legislation_home' %}" class="btn btn-primary">
+      <i class="fas fa-home"></i> Ana Sayfaya Dön
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Results -->
+  {% if legislations and legislations.object_list %}
+    <div class="row">
+      {% for legislation in legislations %}
+        <div class="col-12">
+          <div class="result-card legislation-card" data-type="{{ legislation.type|default:'Mevzuat' }}">
+            <div class="card-header">
+              <h3 class="result-title">{{ legislation.title }}</h3>
+              <div class="result-badges">
+                <span class="live-badge">
+                  <i class="fas fa-file-pdf"></i>
+                  PDF
+                </span>
+                {% if legislation.type %}
+                  <span class="type-badge">{{ legislation.type }}</span>
+                {% endif %}
+              </div>
+              
+              {% if legislation.mevzuat_no or legislation.date or legislation.rg_date or legislation.rg_number %}
+              <div class="result-meta">
+                {% if legislation.mevzuat_no %}
+                  <div class="meta-item">
+                    <i class="fas fa-hashtag"></i>
+                    <strong>No:</strong> {{ legislation.mevzuat_no }}
+                  </div>
+                {% endif %}
+                {% if legislation.date %}
+                  <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <strong>Tarih:</strong> {{ legislation.date }}
+                  </div>
+                {% endif %}
+                {% if legislation.rg_date %}
+                  <div class="meta-item">
+                    <i class="fas fa-newspaper"></i>
+                    <strong>RG Tarihi:</strong> {{ legislation.rg_date }}
+                  </div>
+                {% endif %}
+                {% if legislation.rg_number %}
+                  <div class="meta-item">
+                    <i class="fas fa-list-ol"></i>
+                    <strong>RG Sayısı:</strong> {{ legislation.rg_number }}
+                  </div>
+                {% endif %}
+              </div>
+              {% endif %}
+              
+              {% if legislation.preview_text %}
+              <div class="result-preview">
+                {{ legislation.preview_text|truncatechars:200 }}
+              </div>
+              {% endif %}
+            </div>
+            
+            <div class="action-buttons">
+              <a href="{{ legislation.url }}" class="btn-view-detail" onclick="showPdfLoadingMessage()">
+                <i class="fas fa-file-pdf"></i>
+                PDF Görüntüle
+              </a>
+              {% if legislation.external_url %}
+                <a href="{{ legislation.external_url }}" target="_blank" class="btn-external-link">
+                  <i class="fas fa-external-link-alt"></i>
+                  Kaynak
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if legislations.has_other_pages %}
+    <div class="pagination-container">
+      <nav aria-label="Sonuç sayfaları">
+        <ul class="pagination justify-content-center">
+          {% if legislations.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ legislations.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if mevzuat_turu_id %}&mevzuat_turu={{ mevzuat_turu_id }}{% endif %}">
+                <i class="fas fa-chevron-left"></i> Önceki
+              </a>
+            </li>
+          {% endif %}
+          
+          {% for num in legislations.paginator.page_range %}
+            <li class="page-item {% if legislations.number == num %}active{% endif %}">
+              <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if mevzuat_turu_id %}&mevzuat_turu={{ mevzuat_turu_id }}{% endif %}">
+                {{ num }}
+              </a>
+            </li>
+          {% endfor %}
+          
+          {% if legislations.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ legislations.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if mevzuat_turu_id %}&mevzuat_turu={{ mevzuat_turu_id }}{% endif %}">
+                Sonraki <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+
+  {% elif query and not no_search_term %}
+    <!-- No Results -->
+    <div class="no-results">
+      <i class="fas fa-search-minus"></i>
+      <h4>Sonuç Bulunamadı</h4>
+      <p>"{{ query }}" için mevzuat bulunamadı.</p>
+      <div class="mt-3">
+        <p class="text-muted">Öneriler:</p>
+        <ul class="text-left" style="display: inline-block;">
+          <li>Farklı anahtar kelimeler deneyin</li>
+          <li>Daha kısa ve genel terimler kullanın</li>
+          <li>Yazım hatalarını kontrol edin</li>
+          <li>Mevzuat türü filtresi değiştirin</li>
+        </ul>
+      </div>
+      <a href="{% url 'legislation_home' %}" class="btn btn-primary mt-3">
+        <i class="fas fa-home"></i> Ana Sayfaya Dön
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Back to Home -->
+  <div class="text-center mt-4 mb-5">
+    <a href="{% url 'legislation_home' %}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Yeni Arama Yap
+    </a>
+  </div>
+</div>
+
+<!-- Loading Overlay (JavaScript ile kontrol edilecek) -->
+<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999;">
+  <div class="loading-indicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 15px;">
+    <div class="loading-spinner"></div>
+    <h5>En güncel mevzuat bilgileri getirilmektedir, lütfen bekleyiniz</h5>
+    <p class="text-muted">Mevzuat veritabanında arama yapılıyor</p>
+  </div>
+</div>
+
+<!-- PDF Loading Overlay -->
+<div id="pdfLoadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999;">
+  <div class="loading-indicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 15px;">
+    <div class="loading-spinner"></div>
+    <h5>Mevzuatın en güncel hali PDF olarak getirilmektedir</h5>
+    <p class="text-muted">Mevzuat metninde yapılan değişiklikler her sayfada dipnot olarak eklenmiştir.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sayfa yüklendiğinde PDF loading overlay'i gizle
+    const pdfLoadingOverlay = document.getElementById('pdfLoadingOverlay');
+    if (pdfLoadingOverlay) {
+        pdfLoadingOverlay.style.display = 'none';
+    }
+    
+    // Sayfa görünürlüğü değiştiğinde de kontrol et (geri dönüş durumu)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            // Sayfa görünür hale geldiğinde PDF loading mesajını gizle
+            const pdfOverlay = document.getElementById('pdfLoadingOverlay');
+            if (pdfOverlay) {
+                pdfOverlay.style.display = 'none';
+            }
+        }
+    });
+    
+    // Window focus eventi için de kontrol
+    window.addEventListener('focus', function() {
+        const pdfOverlay = document.getElementById('pdfLoadingOverlay');
+        if (pdfOverlay) {
+            pdfOverlay.style.display = 'none';
+        }
+    });
+    
+    // Form gönderiminde loading göster
+    const searchForm = document.querySelector('form');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const query = document.getElementById('search-input').value.trim();
+            if (query.length < 2) {
+                e.preventDefault();
+                alert('Lütfen en az 2 karakter girin.');
+                return false;
+            }
+            
+            // Loading göster
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
+        });
+    }
+    
+    // Sayfa değişimlerinde de loading göster
+    const paginationLinks = document.querySelectorAll('.pagination a');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'block';
+            }
+        });
+    });
+    
+    console.log('PDF mevzuat sonuçları sayfası hazır');
+    
+    // Filtreleme JavaScript'i
+    initializeFilters();
+});
+
+function initializeFilters() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const legislationCards = document.querySelectorAll('.legislation-card');
+    
+    // Her türün sayısını hesapla
+    const typeCounts = {};
+    legislationCards.forEach(card => {
+        const type = card.dataset.type || 'Mevzuat';
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+    });
+    
+    // Badge'leri güncelle
+    updateFilterBadges(typeCounts);
+    
+    // Filter butonlarına event listener ekle
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Aktif butonu güncelle
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Sonuçları filtrele
+            let visibleCount = 0;
+            legislationCards.forEach(card => {
+                const type = card.dataset.type || 'Mevzuat';
+                if (filter === 'all' || type === filter) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Sonuç sayısını güncelle
+            document.getElementById('result-count').textContent = visibleCount + ' sonuç';
+        });
+    });
+}
+
+function updateFilterBadges(typeCounts) {
+    // Türlerin sayılarını güncelle
+    document.getElementById('count-kanun').textContent = typeCounts['Kanun'] || 0;
+    document.getElementById('count-yonetmelik').textContent = typeCounts['Yönetmelik'] || 0;
+    document.getElementById('count-kararname').textContent = typeCounts['Cumhurbaşkanlığı Kararnamesi'] || 0;
+    document.getElementById('count-tuzuk').textContent = typeCounts['Tüzük'] || 0;
+    document.getElementById('count-teblig').textContent = typeCounts['Tebliğ'] || 0;
+    document.getElementById('count-genelge').textContent = typeCounts['Genelge'] || 0;
+}
+
+function showPdfLoadingMessage() {
+    const pdfLoadingOverlay = document.getElementById('pdfLoadingOverlay');
+    if (pdfLoadingOverlay) {
+        pdfLoadingOverlay.style.display = 'block';
+    }
+}
+
+// Sayfa yüklendiğinde hemen PDF loading mesajını gizle
+window.addEventListener('load', function() {
+    const pdfOverlay = document.getElementById('pdfLoadingOverlay');
+    if (pdfOverlay) {
+        pdfOverlay.style.display = 'none';
+    }
+});
+
+// Sayfa gösterildiğinde PDF loading mesajını gizle (pageshow eventi)
+window.addEventListener('pageshow', function(event) {
+    const pdfOverlay = document.getElementById('pdfLoadingOverlay');
+    if (pdfOverlay) {
+        pdfOverlay.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

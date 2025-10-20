@@ -1,0 +1,903 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}AI Hukuki Asistan - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --emerald: #047857;
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .chat-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    overflow: hidden;
+  }
+
+  .chat-header {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .chat-messages {
+    height: 500px;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+  }
+
+  .message {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .message.user {
+    justify-content: flex-end;
+  }
+
+  .message.ai {
+    justify-content: flex-start;
+  }
+
+  .message-bubble {
+    max-width: 70%;
+    padding: 20px 25px;
+    border-radius: 20px;
+    word-wrap: break-word;
+  }
+
+  .message.user .message-bubble {
+    background: var(--royal-blue);
+    color: white;
+    border-bottom-right-radius: 5px;
+  }
+
+  .message.ai .message-bubble {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e3f2fd;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0 2px 8px rgba(26, 54, 93, 0.08);
+    position: relative;
+  }
+
+  .message.ai .message-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-emerald);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .user-avatar {
+    background: var(--royal-blue);
+    color: white;
+  }
+
+  .ai-avatar {
+    background: white;
+    border: 2px solid var(--emerald);
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  .ai-avatar img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .chat-input-container {
+    padding: 20px;
+    border-top: 1px solid #e9ecef;
+    background: white;
+  }
+
+  .chat-input {
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 15px 20px;
+    font-size: 1rem;
+    width: 100%;
+    resize: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .chat-input:focus {
+    outline: none;
+    border-color: var(--royal-blue);
+  }
+
+  .send-button {
+    background: var(--gradient-royal);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-left: 10px;
+  }
+
+  .send-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .send-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .suggestions-container {
+    margin-bottom: 30px;
+  }
+
+  .suggestion-chip {
+    display: inline-block;
+    background: white;
+    border: 2px solid var(--royal-blue);
+    color: var(--royal-blue);
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .suggestion-chip:hover {
+    background: var(--royal-blue);
+    color: white;
+  }
+
+  .typing-indicator {
+    display: none;
+    align-items: center;
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  .typing-dots {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .typing-dots span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6c757d;
+    margin: 0 2px;
+    animation: typing 1.4s infinite ease-in-out;
+  }
+
+  .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes typing {
+    0%, 80%, 100% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .legal-reference {
+    background: #e3f2fd;
+    border-left: 4px solid var(--royal-blue);
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+  }
+
+  .legal-reference h6 {
+    color: var(--royal-blue);
+    margin-bottom: 5px;
+  }
+
+  .error-message {
+    background: #ffebee;
+    border-left: 4px solid #f44336;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: #c62828;
+  }
+
+  /* AI yanıt formatlama stilleri */
+  .message-bubble h6 {
+    color: var(--royal-blue);
+    font-weight: 600;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 5px;
+  }
+
+  .message-bubble p {
+    line-height: 1.7;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #2c3e50;
+    text-align: justify;
+  }
+
+  .message-bubble .bg-light {
+    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border-left: 4px solid var(--emerald);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin: 10px 0;
+    padding: 12px 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .message-bubble .text-primary {
+    color: var(--royal-blue) !important;
+    font-weight: 700;
+    background: rgba(26, 54, 93, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .message-bubble .text-success {
+    color: var(--emerald) !important;
+    font-weight: 700;
+    background: rgba(4, 120, 87, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .message-bubble .text-warning {
+    color: var(--gold-accent) !important;
+    font-weight: 700;
+    background: rgba(214, 158, 46, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .message-bubble .text-muted {
+    font-style: italic;
+    font-size: 0.9rem;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #6c757d;
+    margin: 10px 0;
+  }
+
+  /* Listeleme stilleri */
+  .message-bubble ul, .message-bubble ol {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+
+  .message-bubble li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  /* Blockquote stili */
+  .message-bubble blockquote {
+    border-left: 4px solid var(--royal-blue);
+    padding-left: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    color: #5a6c7d;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* Kod blokları */
+  .message-bubble code {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #d63384;
+  }
+
+  /* AI mesaj animasyonu */
+  .message.ai {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Gelişmiş AI mesaj stilleri */
+  .ai-section-title {
+    color: var(--royal-blue) !important;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 20px 0 12px 0;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--emerald);
+    position: relative;
+  }
+
+  .ai-section-title::before {
+    content: '📋';
+    margin-right: 8px;
+  }
+
+  .ai-paragraph {
+    line-height: 1.8;
+    margin-bottom: 25px;
+    margin-top: 15px;
+    font-size: 1.05rem;
+    color: #2c3e50;
+    text-align: justify;
+    padding: 0 5px;
+  }
+
+  .ai-numbered-list {
+    margin: 15px 0;
+  }
+
+  .numbered-item {
+    display: flex;
+    align-items: flex-start;
+    margin: 8px 0;
+    padding: 12px 15px;
+    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    border-left: 4px solid var(--emerald);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .numbered-item .number {
+    color: var(--emerald);
+    font-weight: bold;
+    margin-right: 12px;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 50%;
+    min-width: 28px;
+    text-align: center;
+    font-size: 0.85rem;
+    border: 2px solid var(--emerald);
+  }
+
+  .ai-legal-reference {
+    background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 1px solid #90caf9;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    position: relative;
+    box-shadow: 0 3px 6px rgba(26, 54, 93, 0.1);
+  }
+
+  .ai-legal-reference::before {
+    content: '⚖️';
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    font-size: 1.2rem;
+  }
+
+  .ai-custom-list {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-left: 4px solid var(--emerald);
+  }
+
+  .ai-list-item {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 10px;
+  }
+
+  .ai-list-item::before {
+    content: '✓';
+    color: var(--emerald);
+    font-weight: bold;
+    margin-right: 8px;
+    position: absolute;
+    left: -15px;
+  }
+
+  .ai-disclaimer {
+    background: linear-gradient(145deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 15px 0;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+  }
+
+  .ai-disclaimer i {
+    margin-right: 8px;
+    color: #f57c00;
+  }
+
+  /* ### ile başlayan başlıklar için özel stil */
+  .ai-main-heading {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-main-heading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .ai-main-heading .heading-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+  }
+
+  /* Yeni eklenen stiller */
+  .ai-example-block {
+    background: linear-gradient(145deg, #fff8e1 0%, #ffecb3 100%);
+    border: 1px solid #ffb74d;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid #ff9800;
+    position: relative;
+  }
+
+  .ai-example-block::before {
+    content: '📊';
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    font-size: 1.2rem;
+  }
+
+  .calculation {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    border: 1px solid #ce93d8;
+  }
+
+  .money-amount {
+    color: #2e7d32;
+    background: #e8f5e8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .fraction {
+    color: #1565c0;
+    background: #e3f2fd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: 'Times New Roman', serif;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1>🤖 AI HUKUKİ ASİSTAN</h1>
+    <p class="lead">Doğal dille hukuki sorularınızı sorun, anında yanıt alın</p>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Hızlı Öneriler -->
+  <div class="suggestions-container">
+    <h5 class="text-center mb-3">💡 Örnek Sorular</h5>
+    <div class="text-center">
+      {% for suggestion in suggestions %}
+        <span class="suggestion-chip" onclick="askQuestion('{{ suggestion }}')">{{ suggestion }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <div class="chat-header">
+      <h4><i class="fas fa-robot"></i> AI Hukuki Asistan</h4>
+      <p class="mb-0">Size hukuki konularda yardımcı olmak için buradayım</p>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+      <div class="message ai">
+        <div class="ai-avatar"><img src="{% static 'core/images/logo.jpeg' %}" alt="Lexatech AI"></div>
+        <div class="message-bubble">
+          <div class="ai-section-title">Hoş Geldiniz!</div>
+          <p class="ai-paragraph">
+            Ben Lexatech AI Hukuki Asistanınızım. Size Türk hukuku konularında yardımcı olabilirim. 
+            Doğal dille sorularınızı sorabilir, mevzuat hakkında bilgi alabilir, hukuki kavramları öğrenebilirsiniz.
+          </p>
+          <div class="ai-disclaimer">
+            <i class="fas fa-info-circle"></i>
+            Kesin hukuki görüş için mutlaka bir avukata danışmanızı öneririm.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="ai-avatar"><img src="{% static 'core/images/logo.jpeg' %}" alt="Lexatech AI"></div>
+      <div class="message-bubble">
+        Düşünüyorum
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-container">
+      <div class="d-flex">
+        <textarea 
+          class="chat-input" 
+          id="questionInput" 
+          placeholder="Hukuki sorunuzu buraya yazın... (örn: TMK'da miras payları nasıl hesaplanır?)"
+          rows="2"></textarea>
+        <button class="send-button" id="sendButton" onclick="sendQuestion()">
+          <i class="fas fa-paper-plane"></i> Gönder
+        </button>
+      </div>
+      <small class="text-muted mt-2 d-block">
+        <i class="fas fa-info-circle"></i> 
+        Bu sistem genel bilgi amaçlıdır. Kesin hukuki görüş için avukata danışın.
+      </small>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const questionInput = document.getElementById('questionInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    // Enter tuşu ile gönderme
+    questionInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuestion();
+        }
+    });
+});
+
+function askQuestion(question) {
+    document.getElementById('questionInput').value = question;
+    sendQuestion();
+}
+
+function sendQuestion() {
+    const questionInput = document.getElementById('questionInput');
+    const sendButton = document.getElementById('sendButton');
+    const question = questionInput.value.trim();
+
+    if (!question) {
+        alert('Lütfen bir soru yazın.');
+        return;
+    }
+
+    // Kullanıcı mesajını ekle
+    addMessage('user', question);
+    
+    // Input'u temizle ve devre dışı bırak
+    questionInput.value = '';
+    sendButton.disabled = true;
+    
+    // Typing indicator göster
+    showTypingIndicator();
+
+    // API'ye gönder
+    fetch('/ai/assistant/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            question: question
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideTypingIndicator();
+        
+        if (data.success) {
+            addAIResponse(data);
+        } else {
+            addErrorMessage(data.error || 'Bir hata oluştu.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideTypingIndicator();
+        addErrorMessage('Bağlantı hatası. Lütfen tekrar deneyin.');
+    })
+    .finally(() => {
+        sendButton.disabled = false;
+        questionInput.focus();
+    });
+}
+
+function addMessage(type, content) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+
+    const avatar = type === 'user' ? 
+        '<div class="user-avatar">👤</div>' : 
+        '<div class="ai-avatar"><img src="{% static "core/images/logo.jpeg" %}" alt="Lexatech AI"></div>';
+
+    messageDiv.innerHTML = `
+        ${type === 'ai' ? avatar : ''}
+        <div class="message-bubble">${content}</div>
+        ${type === 'user' ? avatar : ''}
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addAIResponse(data) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message ai';
+
+    let content = `<div class="ai-avatar"><img src="{% static "core/images/logo.jpeg" %}" alt="Lexatech AI"></div><div class="message-bubble">`;
+    
+    // Ana cevabı formatla (paragrafları böl ve daha okunaklı hale getir)
+    const formattedAnswer = formatAIAnswer(data.answer);
+    content += formattedAnswer;
+
+    // Hukuki referansları ekle
+    if (data.law_references && data.law_references.law_codes.length > 0) {
+        content += '<div class="legal-reference">';
+        content += '<h6><i class="fas fa-balance-scale"></i> İlgili Kanunlar</h6>';
+        data.law_references.law_codes.forEach(law => {
+            content += `<small>• ${law.name} (${law.code})</small><br>`;
+        });
+        content += '</div>';
+    }
+
+    // İlgili mevzuatı ekle
+    if (data.relevant_laws && data.relevant_laws.length > 0) {
+        content += '<div class="legal-reference">';
+        content += '<h6><i class="fas fa-book"></i> İlgili Mevzuat</h6>';
+        data.relevant_laws.forEach(law => {
+            content += `<small>• <a href="${law.url}" target="_blank">${law.title}</a></small><br>`;
+        });
+        content += '</div>';
+    }
+
+    content += '</div>';
+    messageDiv.innerHTML = content;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function formatAIAnswer(answer) {
+    // Cevabı daha okunaklı hale getir
+    let formatted = answer;
+    
+    // ### ile başlayan başlıkları özel formatla
+    formatted = formatted.replace(/^###\s*(.+)$/gm, '<div class="ai-main-heading"><span class="heading-icon">💡</span>$1</div>');
+    
+    // Madde referanslarını vurgula
+    formatted = formatted.replace(/(\d+\.\s*madde)/gi, '<strong class="text-primary">$1</strong>');
+    formatted = formatted.replace(/(TMK|TCK|TBK|TTK|İİK|İK|VUK|HUMK|CMK)\s*(\d+)/gi, '<strong class="text-success">$1 $2</strong>');
+    
+    // Matematik işlemleri ve hesaplamaları özel formatla
+    formatted = formatted.replace(/(\d+\.?\d*\s*[-+*/]\s*\d+\.?\d*\s*=\s*\d+\.?\d*)/g, '<code class="calculation">$1</code>');
+    
+    // Paragrafları böl ve özel formatlamalar uygula
+    const paragraphs = formatted.split(/\n\n+/);
+    let formattedContent = '';
+    
+    paragraphs.forEach((paragraph, index) => {
+        const trimmed = paragraph.trim();
+        if (trimmed) {
+            // ### başlıklı bloklar zaten formatlanmış
+            if (trimmed.includes('ai-main-heading')) {
+                formattedContent += trimmed;
+            }
+            // Örnekleme blokları için özel format
+            else if (trimmed.toLowerCase().includes('örnek') && trimmed.includes(':')) {
+                formattedContent += `<div class="ai-example-block">${trimmed}</div>`;
+            }
+            // Numaralı liste formatlaması - sadece liste başında bulunanlar
+            else if (/^\d+\.\s/.test(trimmed)) {
+                const items = trimmed.split(/(?=\d+\.\s)/);
+                let listContent = '';
+                items.forEach(item => {
+                    if (item.trim()) {
+                        const match = item.match(/^(\d+\.)\s*(.+)$/s);
+                        if (match) {
+                            listContent += `<div class="numbered-item"><span class="number">${match[1]}</span>${match[2]}</div>`;
+                        }
+                    }
+                });
+                if (listContent) {
+                    formattedContent += `<div class="ai-numbered-list">${listContent}</div>`;
+                }
+            }
+            // Bullet point listeleri
+            else if (trimmed.includes('*') && trimmed.split('*').length > 2) {
+                const bulletPoints = trimmed.split('*').filter(item => item.trim());
+                let listContent = '<ul class="ai-custom-list">';
+                bulletPoints.forEach(point => {
+                    if (point.trim()) {
+                        listContent += `<li class="ai-list-item">${point.trim()}</li>`;
+                    }
+                });
+                listContent += '</ul>';
+                formattedContent += listContent;
+            }
+            // Madde açıklamaları için özel format
+            else if (trimmed.match(/madde/gi) && trimmed.includes('<strong')) {
+                formattedContent += `<div class="ai-legal-reference">${trimmed}</div>`;
+            }
+            // Başlık benzeri kısa paragrafları başlık olarak formatla
+            else if (trimmed.length < 100 && !trimmed.includes('.') && index === 0 && !trimmed.includes('<div')) {
+                formattedContent += `<h6 class="ai-section-title">${trimmed}</h6>`;
+            }
+            // Normal paragraflar
+            else {
+                formattedContent += `<p class="ai-paragraph">${trimmed}</p>`;
+            }
+        }
+    });
+    
+    // Önemli uyarıları vurgula
+    formattedContent = formattedContent.replace(/(Önemli:|Dikkat:|Uyarı:|Not:|Sonuç:|Özet:)/gi, '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> $1</span>');
+    formattedContent = formattedContent.replace(/(avukata danışmanızı öneririm|avukat görüşü alınmalıdır|kesin hukuki görüş için)/gi, '<div class="text-muted ai-disclaimer"><i class="fas fa-info-circle"></i> $1</div>');
+    
+    // Para birimi ve sayıları vurgula
+    formattedContent = formattedContent.replace(/(\d{1,3}(?:\.\d{3})*)\s*(TL|₺)/gi, '<strong class="money-amount">$1 $2</strong>');
+    formattedContent = formattedContent.replace(/(\d+\/\d+)/g, '<strong class="fraction">$1</strong>');
+    
+    return formattedContent;
+}
+
+function addErrorMessage(errorText) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message ai';
+
+    messageDiv.innerHTML = `
+        <div class="ai-avatar"><img src="{% static 'core/images/logo.jpeg' %}" alt="Lexatech AI"></div>
+        <div class="message-bubble">
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> ${errorText}
+            </div>
+        </div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    typingIndicator.style.display = 'flex';
+    
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    typingIndicator.style.display = 'none';
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

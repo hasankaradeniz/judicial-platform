@@ -1,0 +1,503 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ title }} - Mevzuat PDF - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2c5aa0;
+    --secondary: #d69e2e;
+    --white: #ffffff;
+    --light-gray: #f7fafc;
+    --gray: #e2e8f0;
+    --dark-gray: #4a5568;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    background-color: var(--dark-gray);
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .pdf-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .document-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .document-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 5px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .document-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .document-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .action-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--gray);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--white);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .action-button:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+  }
+
+  .action-button.primary {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+  }
+
+  .action-button.primary:hover {
+    background: var(--primary-light);
+    color: var(--white);
+  }
+
+  .action-button.danger {
+    color: #dc2626;
+    border-color: #fca5a5;
+  }
+
+  .action-button.danger:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+  }
+
+  .pdf-container {
+    height: calc(100vh - 80px);
+    background: var(--white);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  .pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-primary);
+  }
+
+  .error-icon {
+    font-size: 4rem;
+    color: #dc2626;
+    margin-bottom: 20px;
+  }
+
+  .error-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .error-message {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--gray);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .loading-subtext {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .fullscreen-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .fullscreen-toggle:hover {
+    background: var(--primary-light);
+    transform: scale(1.1);
+  }
+
+  .fullscreen .pdf-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    border-radius: 0;
+  }
+
+  .fullscreen .pdf-header {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .header-content {
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .document-actions {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-button {
+      flex: 1;
+      min-width: 120px;
+      justify-content: center;
+    }
+
+    .document-meta {
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+    }
+
+    .document-title {
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    .pdf-container {
+      height: calc(100vh - 140px);
+    }
+
+    .fullscreen-toggle {
+      bottom: 80px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- PDF Header -->
+<div class="pdf-header">
+  <div class="container">
+    <div class="header-content">
+      
+      <div class="document-info">
+        <h1 class="document-title">{{ title }}</h1>
+        <div class="document-meta">
+          {% if mevzuat_no %}
+          <div class="meta-item">
+            <i class="fas fa-hashtag"></i>
+            <span>Mevzuat No: {{ mevzuat_no }}</span>
+          </div>
+          {% endif %}
+          
+          {% if resmi_gazete_info %}
+          <div class="meta-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>{{ resmi_gazete_info }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="document-actions">
+        <!-- PDF'yi yeni sekmede aç -->
+        <a href="{{ pdf_url }}" target="_blank" class="action-button primary">
+          <i class="fas fa-external-link-alt"></i>
+          <span>Yeni Sekmede Aç</span>
+        </a>
+        
+        <!-- PDF'yi indir -->
+        <a href="{{ pdf_url }}" download class="action-button">
+          <i class="fas fa-download"></i>
+          <span>İndir</span>
+        </a>
+        
+        <!-- Word dosyası varsa -->
+        {% if word_url %}
+        <a href="{{ word_url }}" target="_blank" class="action-button">
+          <i class="fas fa-file-word"></i>
+          <span>Word</span>
+        </a>
+        {% endif %}
+        
+        <!-- Geri dön -->
+        <a href="{{ back_url }}" class="action-button">
+          <i class="fas fa-arrow-left"></i>
+          <span>Geri</span>
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- PDF Container -->
+<div class="container">
+  <div class="pdf-container" id="pdfContainer">
+    
+    <!-- Loading State -->
+    <div class="loading-container" id="loadingContainer">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">PDF yükleniyor...</div>
+      <div class="loading-subtext">Bu işlem birkaç saniye sürebilir</div>
+    </div>
+    
+    <!-- PDF Iframe -->
+    <iframe 
+      src="{{ pdf_url }}#toolbar=1&navpanes=1&scrollbar=1"
+      class="pdf-iframe"
+      id="pdfIframe"
+      title="{{ title }}"
+      style="display: block;"
+      onload="handleIframeLoad()"
+      onerror="handleIframeError()">
+    </iframe>
+    
+    <!-- Error State -->
+    <div class="error-container" id="errorContainer" style="display: block;">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="error-title">PDF yüklenemedi</h3>
+      <p class="error-message">
+        PDF dosyası şu anda yüklenemiyor. Bu durum geçici bir bağlantı sorunundan kaynaklanabilir.
+        Lütfen sayfayı yenileyin veya PDF'yi doğrudan indirin.
+      </p>
+      <div class="document-actions">
+        <a href="{{ pdf_url }}" target="_blank" class="action-button primary">
+          <i class="fas fa-external-link-alt"></i>
+          <span>Doğrudan Aç</span>
+        </a>
+        <a href="{{ pdf_url }}" download class="action-button">
+          <i class="fas fa-download"></i>
+          <span>İndir</span>
+        </a>
+        <button onclick="location.reload()" class="action-button">
+          <i class="fas fa-redo"></i>
+          <span>Yenile</span>
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Fullscreen Toggle -->
+<button class="fullscreen-toggle" id="fullscreenToggle" onclick="toggleFullscreen()">
+  <i class="fas fa-expand" id="fullscreenIcon"></i>
+</button>
+
+<script>
+let isFullscreen = false;
+let loadTimeout;
+
+function handleIframeLoad() {
+    clearTimeout(loadTimeout);
+    document.getElementById('loadingContainer').style.display = 'none';
+    document.getElementById('pdfIframe').style.display = 'block';
+    document.getElementById('errorContainer').style.display = 'none';
+}
+
+function handleIframeError() {
+    clearTimeout(loadTimeout);
+    document.getElementById('loadingContainer').style.display = 'none';
+    document.getElementById('pdfIframe').style.display = 'none';
+    document.getElementById('errorContainer').style.display = 'flex';
+}
+
+function toggleFullscreen() {
+    const container = document.getElementById('pdfContainer');
+    const icon = document.getElementById('fullscreenIcon');
+    
+    isFullscreen = !isFullscreen;
+    
+    if (isFullscreen) {
+        document.body.classList.add('fullscreen');
+        icon.className = 'fas fa-compress';
+    } else {
+        document.body.classList.remove('fullscreen');
+        icon.className = 'fas fa-expand';
+    }
+}
+
+// Timeout için 10 saniye bekle
+loadTimeout = setTimeout(function() {
+    handleIframeError();
+}, 10000);
+
+// ESC tuşu ile fullscreen'den çık
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isFullscreen) {
+        toggleFullscreen();
+    }
+});
+
+// Page visibility API ile sayfa gizlendiğinde/gösterildiğinde kontrol et
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        // Sayfa tekrar görünür olduğunda iframe'i yenile
+        const iframe = document.getElementById('pdfIframe');
+        if (iframe.style.display === 'none') {
+            // Sadece hata durumunda yenile
+            return;
+        }
+    }
+});
+
+// Sayfa yüklendiğinde focus'u iframe'e ver
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const iframe = document.getElementById('pdfIframe');
+        if (iframe && iframe.style.display !== 'none') {
+            iframe.focus();
+        }
+    }, 1000);
+});
+
+// Print functionality
+function printPDF() {
+    const iframe = document.getElementById('pdfIframe');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.print();
+    } else {
+        // Fallback: yeni pencerede aç ve yazdır
+        const printWindow = window.open('{{ pdf_url }}', '_blank');
+        if (printWindow) {
+            printWindow.addEventListener('load', function() {
+                printWindow.print();
+            });
+        }
+    }
+}
+
+// Klavye kısayolları
+document.addEventListener('keydown', function(e) {
+    // Ctrl+P ile yazdır
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        printPDF();
+    }
+    
+    // F11 ile fullscreen
+    if (e.key === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+    }
+});
+</script>
+{% endblock %}

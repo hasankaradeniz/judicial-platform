@@ -1,0 +1,19 @@
+<\!DOCTYPE html>
+<html>
+<head>
+    <title>3D Secure Ödeme</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div style="text-align: center; padding: 20px;">
+        <h2>3D Secure sayfasına yönlendiriliyorsunuz...</h2>
+        <p>Lütfen bekleyin...</p>
+    </div>
+    
+    <\!-- UCD_HTML'i direkt render et -->
+    {% autoescape off %}
+    {{ html_content }}
+    {% endautoescape %}
+</body>
+</html>

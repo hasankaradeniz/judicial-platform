@@ -1,0 +1,49 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Diğer Ürünlerimiz - Lexatech{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Diğer Ürünlerimiz</h1>
+  <p class="text-center">Lexatech ekibi tarafından geliştirilmiş diğer yapay zeka destekli hukuk çözümlerimizi keşfedin.</p>
+
+  <!-- Sozlesme.online Ürünü -->
+  <div class="row align-items-center my-5">
+    <div class="col-md-6">
+      <img src="{% static 'core/images/sozlesme_online_mockup.jpg' %}" class="img-fluid rounded shadow-sm" alt="Sozlesme.online">
+    </div>
+    <div class="col-md-6">
+      <h2>📜 Sözleşme.online</h2>
+      <p><strong>İhtiyacınıza uygun sözleşmeyi kolayca oluşturun!</strong></p>
+      <ul>
+        <li>Özel veya ticari sözleşmeleri online oluşturun.</li>
+        <li>Önceden hazırlanmış şablonları kullanarak hızlıca düzenleme yapın.</li>
+        <li>Hukukçular tarafından hazırlanmış güvenilir sözleşme taslakları.</li>
+        <li>Otomatik PDF oluşturma ve indirme.</li>
+      </ul>
+      <a href="https://www.sozlesme.online" target="_blank" class="btn btn-primary">Ziyaret Et</a>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Dilekce.online Ürünü -->
+  <div class="row align-items-center my-5">
+    <div class="col-md-6 order-md-2">
+      <img src="{% static 'core/images/dilekce_online_mockup.jpg' %}" class="img-fluid rounded shadow-sm" alt="Dilekce.online">
+    </div>
+    <div class="col-md-6 order-md-1">
+      <h2>✍️ Dilekçe.online</h2>
+      <p><strong>Yapay zeka destekli dilekçe oluşturma asistanı!</strong></p>
+      <ul>
+        <li>📄 <strong>Belge Yükle, Dilekçe Oluştur:</strong> Elinizdeki evrakları yükleyerek otomatik olarak dilekçenizi oluşturun.</li>
+        <li>🗣️ <strong>Olayını Anlat, Yapay Zeka Dilekçeni Yazsın:</strong> Basitçe derdinizi anlatın, sistem sizin için dilekçenizi hazırlasın.</li>
+        <li>🤖 <strong>Yapay Zeka Hukuk Asistanı:</strong> Hukuki konularda danışmanlık alın, en uygun dilekçe türünü belirleyin.</li>
+        <li>⚖️ <strong>Robot Avukata Danış:</strong> Size en uygun hukuki çözüm önerilerini alın.</li>
+      </ul>
+      <a href="https://www.dilekce.online" target="_blank" class="btn btn-primary">Yakında Hizmetinizde</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

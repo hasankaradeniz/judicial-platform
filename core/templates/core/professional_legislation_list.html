@@ -1,0 +1,180 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mevzuat Listesi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <!-- Başlık ve Filtreler -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Mevzuat Listesi</h2>
+            
+            <!-- Arama ve Filtreler -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <form method="get" class="row">
+                        <div class="col-md-4">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="q" 
+                                   placeholder="Mevzuat ara..." 
+                                   value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="type" class="form-control">
+                                <option value="">Tüm Türler</option>
+                                {% for type in types %}
+                                    <option value="{{ type.code }}" 
+                                            {% if type.code == current_type %}selected{% endif %}>
+                                        {{ type.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="category" class="form-control">
+                                <option value="">Tüm Kategoriler</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.code }}" 
+                                            {% if category.code == current_category %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Ara
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sonuçlar -->
+    <div class="row">
+        <div class="col-md-12">
+            
+            {% if search_query %}
+                <div class="alert alert-info">
+                    "<strong>{{ search_query }}</strong>" için {{ legislation_list.paginator.count }} sonuç bulundu.
+                </div>
+            {% endif %}
+            
+            {% for legislation in legislation_list %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <h4 class="text-primary">{{ legislation.number|default:"—" }}</h4>
+                                <span class="badge badge-primary">{{ legislation.legislation_type.name }}</span>
+                            </div>
+                            <div class="col-md-8">
+                                <h5>
+                                    <a href="{% url 'professional_legislation_detail' legislation.slug %}" 
+                                       class="text-decoration-none">
+                                        {{ legislation.title }}
+                                    </a>
+                                </h5>
+                                
+                                <div class="mb-2">
+                                    {% if legislation.category %}
+                                        <span class="badge badge-secondary">{{ legislation.category.name }}</span>
+                                    {% endif %}
+                                    {% if legislation.effective_date %}
+                                        <small class="text-muted">Yürürlük: {{ legislation.effective_date|date:"d.m.Y" }}</small>
+                                    {% endif %}
+                                    {% if legislation.official_gazette_date %}
+                                        <small class="text-muted">| RG: {{ legislation.official_gazette_date|date:"d.m.Y" }}</small>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if legislation.summary %}
+                                    <p class="text-muted">{{ legislation.summary|truncatewords:30 }}</p>
+                                {% endif %}
+                                
+                                {% if legislation.keywords %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-tags"></i> {{ legislation.keywords|truncatewords:8 }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="{% url 'professional_legislation_detail' legislation.slug %}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Görüntüle
+                                </a>
+                                
+                                {% if legislation.pdf_url %}
+                                    <a href="{{ legislation.pdf_url }}" target="_blank" 
+                                       class="btn btn-outline-danger btn-sm mt-1">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                {% endif %}
+                                
+                                <small class="d-block mt-2 text-muted">
+                                    {{ legislation.articles.count }} madde
+                                </small>
+                                
+                                {% if legislation.view_count > 0 %}
+                                    <small class="d-block text-muted">
+                                        {{ legislation.view_count }} görüntüleme
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    Arama kriterlerinize uygun mevzuat bulunamadı.
+                </div>
+            {% endfor %}
+            
+            <!-- Sayfalama -->
+            {% if legislation_list.has_other_pages %}
+                <nav aria-label="Sayfalama">
+                    <ul class="pagination justify-content-center">
+                        {% if legislation_list.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ legislation_list.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                    Önceki
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in legislation_list.paginator.page_range %}
+                            {% if num == legislation_list.number %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if legislation_list.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ legislation_list.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                    Sonraki
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

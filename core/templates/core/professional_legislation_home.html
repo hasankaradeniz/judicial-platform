@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Profesyonel Mevzuat Sistemi{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <!-- Başlık -->
+    <div class="text-center mb-5">
+        <h1 class="display-4">Profesyonel Mevzuat Sistemi</h1>
+        <p class="lead">T.C. Mevzuat Bilgi Sistemi - Güncel ve Kapsamlı</p>
+    </div>
+    
+    <!-- İstatistikler -->
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">{{ total_legislation }}</h3>
+                    <p class="card-text">Toplam Mevzuat</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="card-title text-success">{{ total_articles }}</h3>
+                    <p class="card-text">Toplam Madde</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="card-title text-info">{{ legislation_types.count }}</h3>
+                    <p class="card-text">Mevzuat Türü</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="card-title text-warning">{{ popular_categories.count }}</h3>
+                    <p class="card-text">Hukuk Alanı</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Arama Kutusu -->
+    <div class="row mb-5">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{% url 'professional_legislation_list' %}" method="get">
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="q"
+                                   placeholder="Mevzuat adı, numarası veya anahtar kelime girin..."
+                                   value="{{ request.GET.q }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i> Ara
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mevzuat Türleri -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3>Mevzuat Türleri</h3>
+            <div class="row">
+                {% for type in legislation_types %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if type.icon_class %}
+                                    <i class="{{ type.icon_class }}"></i>
+                                {% endif %}
+                                {{ type.name }}
+                            </h5>
+                            <p class="card-text">{{ type.legislation_count }} mevzuat</p>
+                            <a href="{% url 'professional_legislation_list' %}?type={{ type.code }}" 
+                               class="btn btn-outline-primary">
+                                Görüntüle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popüler Kategoriler -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3>Hukuk Alanları</h3>
+            <div class="row">
+                {% for category in popular_categories %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if category.icon_class %}
+                                    <i class="{{ category.icon_class }}"></i>
+                                {% endif %}
+                                {{ category.name }}
+                            </h5>
+                            <p class="card-text">{{ category.description|default:"Bu alanda mevzuat bulunmaktadır." }}</p>
+                            <p class="text-muted">{{ category.legislation_count }} mevzuat</p>
+                            <a href="{% url 'professional_legislation_list' %}?category={{ category.code }}" 
+                               class="btn btn-outline-success">
+                                Görüntüle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Son Eklenen Mevzuatlar -->
+    <div class="row">
+        <div class="col-12">
+            <h3>Son Eklenen Mevzuatlar</h3>
+            {% for legislation in recent_legislation %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <h4 class="text-primary">{{ legislation.number|default:"—" }}</h4>
+                            </div>
+                            <div class="col-md-8">
+                                <h5>
+                                    <a href="{% url 'professional_legislation_detail' legislation.slug %}" 
+                                       class="text-decoration-none">
+                                        {{ legislation.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted">
+                                    <span class="badge badge-primary">{{ legislation.legislation_type.name }}</span>
+                                    {% if legislation.category %}
+                                        <span class="badge badge-secondary">{{ legislation.category.name }}</span>
+                                    {% endif %}
+                                    {% if legislation.effective_date %}
+                                        <small>Yürürlük: {{ legislation.effective_date|date:"d.m.Y" }}</small>
+                                    {% endif %}
+                                </p>
+                                {% if legislation.summary %}
+                                    <p>{{ legislation.summary|truncatewords:25 }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="{% url 'professional_legislation_detail' legislation.slug %}" 
+                                   class="btn btn-primary btn-sm">
+                                    Görüntüle
+                                </a>
+                                {% if legislation.pdf_url %}
+                                    <a href="{{ legislation.pdf_url }}" target="_blank" 
+                                       class="btn btn-outline-danger btn-sm mt-1">
+                                        PDF
+                                    </a>
+                                {% endif %}
+                                <small class="d-block mt-2 text-muted">
+                                    {{ legislation.articles.count }} madde
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'professional_legislation_list' %}" class="btn btn-primary">
+                    Tüm Mevzuatları Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

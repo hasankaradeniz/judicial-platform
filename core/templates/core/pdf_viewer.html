@@ -1,0 +1,314 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}PDF Görüntüleyici - {{ article.title|default:"Makale" }}{% endblock %}
+
+{% block extra_styles %}
+<style>
+.pdf-viewer-container {
+  max-width: 100%;
+  margin: 20px auto;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.pdf-header {
+  background: #1a365d;
+  color: white;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+}
+
+.pdf-title {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.pdf-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  flex-wrap: wrap;
+}
+
+.pdf-content {
+  position: relative;
+  background: white;
+  min-height: 800px;
+}
+
+.pdf-embed {
+  width: 100%;
+  height: 800px;
+  border: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.pdf-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #666;
+}
+
+.pdf-loading .spinner {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+  color: #1a365d;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pdf-error {
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+}
+
+.pdf-actions {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pdf-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.pdf-btn.primary {
+  background: #1a365d;
+  color: white;
+}
+
+.pdf-btn.primary:hover {
+  background: #2c5282;
+  color: white;
+  text-decoration: none;
+}
+
+.pdf-btn.secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.pdf-btn.secondary:hover {
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+}
+
+.back-to-search {
+  margin-bottom: 20px;
+}
+
+.back-to-search a {
+  color: #1a365d;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.back-to-search a:hover {
+  color: #2c5282;
+}
+
+@media (max-width: 768px) {
+  .pdf-header {
+    padding: 15px;
+  }
+  
+  .pdf-title {
+    font-size: 1.2rem;
+  }
+  
+  .pdf-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pdf-embed {
+    height: 600px;
+  }
+  
+  .pdf-actions {
+    padding: 10px;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="back-to-search">
+    <a href="{% url 'article_search_results' %}?q={{ query|urlencode }}">
+      <i class="fas fa-arrow-left"></i>
+      Arama Sonuçlarına Dön
+    </a>
+  </div>
+
+  <div class="pdf-viewer-container">
+    <div class="pdf-header">
+      <h1 class="pdf-title">{{ article.title|default:"Makale Başlığı" }}</h1>
+      <div class="pdf-meta">
+        {% if article.authors %}
+        <span><i class="fas fa-user"></i> {{ article.authors }}</span>
+        {% endif %}
+        {% if article.journal %}
+        <span><i class="fas fa-book"></i> {{ article.journal }}</span>
+        {% endif %}
+        {% if article.year %}
+        <span><i class="fas fa-calendar"></i> {{ article.year }}</span>
+        {% endif %}
+        {% if article.source %}
+        <span><i class="fas fa-database"></i> {{ article.source }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="pdf-content">
+      <div class="pdf-loading" id="pdfLoading">
+        <div class="spinner">
+          <i class="fas fa-spinner"></i>
+        </div>
+        <p>PDF yükleniyor...</p>
+      </div>
+
+      <div class="pdf-error" id="pdfError" style="display: none;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+        <h3>PDF yüklenemedi</h3>
+        <p id="errorMessage">Bu makale için PDF görüntüleme kullanılamıyor.</p>
+      </div>
+
+      <embed id="pdfEmbed" class="pdf-embed" type="application/pdf" style="display: none;">
+    </div>
+
+    <div class="pdf-actions">
+      {% if doi_url %}
+      <a href="{{ doi_url }}" target="_blank" class="pdf-btn primary">
+        <i class="fas fa-external-link-alt"></i>
+        Orijinal Sayfayı Aç
+      </a>
+      {% endif %}
+      
+      {% if pdf_url %}
+      <a href="{{ pdf_url }}" target="_blank" class="pdf-btn secondary">
+        <i class="fas fa-download"></i>
+        PDF İndir
+      </a>
+      {% endif %}
+      
+      <button onclick="printPDF()" class="pdf-btn secondary">
+        <i class="fas fa-print"></i>
+        Yazdır
+      </button>
+      
+      <button onclick="fullscreen()" class="pdf-btn secondary">
+        <i class="fas fa-expand"></i>
+        Tam Ekran
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const pdfUrl = "{{ pdf_url|escapejs }}";
+  const doiUrl = "{{ doi_url|escapejs }}";
+  
+  if (!pdfUrl && !doiUrl) {
+    showError('Bu makale için PDF linki bulunamadı.');
+    return;
+  }
+  
+  // PDF yüklemeyi dene
+  loadPDF(pdfUrl || doiUrl);
+});
+
+function loadPDF(url) {
+  const loading = document.getElementById('pdfLoading');
+  const error = document.getElementById('pdfError');
+  const embed = document.getElementById('pdfEmbed');
+  
+  if (!url) {
+    showError('PDF URL bulunamadı.');
+    return;
+  }
+  
+  // Proxy URL oluştur
+  const proxyUrl = `/article/proxy-pdf/?url=${encodeURIComponent(url)}`;
+  
+  // PDF yükleme test et
+  fetch(proxyUrl, {
+    method: 'HEAD'  // Sadece header kontrolü
+  }).then(response => {
+    if (response.ok) {
+      // PDF başarıyla yüklenebilir
+      embed.src = proxyUrl;
+      embed.onload = function() {
+        loading.style.display = 'none';
+        embed.style.display = 'block';
+      };
+      embed.onerror = function() {
+        showError('PDF görüntülenemiyor. Lütfen "Orijinal Sayfayı Aç" butonunu kullanın.');
+      };
+    } else {
+      // PDF yüklenemez, alternatif göster
+      showError('Bu makale için PDF önizleme mevcut değil. Orijinal sayfayı ziyaret edin.');
+    }
+  }).catch(error => {
+    console.error('PDF load error:', error);
+    showError('PDF yüklenirken hata oluştu. Lütfen orijinal sayfayı ziyaret edin.');
+  });
+}
+
+function showError(message) {
+  document.getElementById('pdfLoading').style.display = 'none';
+  document.getElementById('errorMessage').textContent = message;
+  document.getElementById('pdfError').style.display = 'block';
+}
+
+function printPDF() {
+  const embed = document.getElementById('pdfEmbed');
+  if (embed.style.display !== 'none') {
+    embed.contentWindow.print();
+  } else {
+    window.print();
+  }
+}
+
+function fullscreen() {
+  const embed = document.getElementById('pdfEmbed');
+  if (embed.requestFullscreen) {
+    embed.requestFullscreen();
+  } else if (embed.webkitRequestFullscreen) {
+    embed.webkitRequestFullscreen();
+  } else if (embed.msRequestFullscreen) {
+    embed.msRequestFullscreen();
+  }
+}
+</script>
+{% endblock %}

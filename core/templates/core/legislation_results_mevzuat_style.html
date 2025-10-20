@@ -1,0 +1,517 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ query }} İçin Arama Sonuçları - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  body {
+    background-color: #f5f5f5;
+  }
+  
+  .ortaalan {
+    background: linear-gradient(135deg, #1e5b8e 0%, #2c7dbe 100%);
+    padding: 40px 0;
+    color: white;
+  }
+  
+  .content-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: -20px;
+  }
+  
+  .card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+  
+  .hrCustom {
+    border-top: 2px solid #1e5b8e;
+    margin: 20px 0;
+  }
+  
+  /* Navigation Tabs */
+  .nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .nav-tabs .nav-item {
+    margin-bottom: -2px;
+  }
+  
+  .nav-tabs .nav-link {
+    color: #495057;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 20px;
+    font-weight: 500;
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: #1e5b8e;
+    background-color: transparent;
+    border-color: #1e5b8e;
+  }
+  
+  .nav-tabs .nav-link:hover {
+    border-color: #dee2e6;
+  }
+  
+  /* DataTable Styles */
+  .dataTable {
+    width: 100% !important;
+  }
+  
+  .dataTable thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px;
+  }
+  
+  .dataTable tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  
+  .dataTable tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .dataTable tbody td {
+    padding: 12px;
+    vertical-align: middle;
+  }
+  
+  .dataTable tbody td a {
+    color: #1e5b8e;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .dataTable tbody td a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Highlight search terms */
+  span[style*="background-color:yellow"] {
+    background-color: #ffd700 !important;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  
+  /* Meta information */
+  .small.mt-1 {
+    color: #6c757d;
+    line-height: 1.6;
+  }
+  
+  .small.mt-1 i {
+    font-style: normal;
+    color: #868e96;
+  }
+  
+  .small.mt-1 b {
+    color: #495057;
+    font-weight: 600;
+  }
+  
+  /* Buttons */
+  .btn-outline-dark {
+    color: #17a2b8;
+    border-color: #17a2b8;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-dark:hover {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+  }
+  
+  .btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+  
+  .closeSearchForm {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .closeSearchForm:hover {
+    background-color: #138496;
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Form Controls */
+  .form-control-sm, .custom-select-sm {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-control-sm:focus, .custom-select-sm:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Pagination */
+  .dataTables_paginate {
+    margin-top: 20px;
+  }
+  
+  .page-link {
+    color: #1e5b8e;
+    border-color: #dee2e6;
+  }
+  
+  .page-item.active .page-link {
+    background-color: #1e5b8e;
+    border-color: #1e5b8e;
+  }
+  
+  .page-link:hover {
+    color: #1e5b8e;
+    background-color: #e9ecef;
+  }
+  
+  /* Mobile Responsive */
+  @media screen and (max-width: 768px) {
+    .mevzuatNoStyle {
+      display: none;
+    }
+    
+    .nav-tabs .nav-link {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    
+    #formTur {
+      margin-top: 15px;
+    }
+    
+    .dataTable tbody td {
+      padding: 8px;
+    }
+  }
+  
+  @media screen and (max-width: 425px) {
+    #nav-tabContent thead tr th:last-child,
+    #nav-tabContent tbody tr td:last-child {
+      display: none;
+    }
+    
+    #nav-tabContent tbody tr td:first-child {
+      display: table-cell;
+    }
+  }
+  
+  /* Loading states */
+  .d-none {
+    display: none !important;
+  }
+  
+  .loading-message {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+  }
+  
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid ortaalan">
+  <div class="container h-100">
+    <div class="row align-items-center h-100">
+      <div class="col-12">
+        <div class="text-center text-white">
+          <h1 class="pb-2">MEVZUAT ARAMA SONUÇLARI</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid icerik content-wrapper" id="genelAramaFormu">
+  <div class="container">
+    <div class="row">
+      <div class="col mt-4 mb-4">
+        <div class="card" id="icerikPoint">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-10">
+                <h6 class="mt-2 mb-2" tabindex="0" style="outline:0px" id="aramaSonuclariText">
+                  {% if query %}'{{ query }}' İçin Arama Sonuçları{% else %}Arama Sonuçları{% endif %}
+                </h6>
+              </div>
+              <div class="col-2 d-flex justify-content-end align-items-center">
+                <a href="{% url 'legislation_home' %}" class="closeSearchForm btn btn-info" aria-label="kapat">Geri</a>
+              </div>
+            </div>
+            <hr class="hrCustom">
+            
+            {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-triangle"></i> {{ error_message }}
+            </div>
+            {% endif %}
+            
+            <div class="row">
+              <div class="col-12">
+                <nav class="mt-4">
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-Baslik-tab" data-toggle="tab" href="#nav-Baslik" role="tab" aria-controls="nav-Baslik" aria-selected="true">Başlık</a>
+                    <a class="nav-item nav-link" id="nav-Icerik-tab" data-toggle="tab" href="#nav-Icerik" role="tab" aria-controls="nav-Icerik" aria-selected="true">İçerik</a>
+                    <a class="nav-item nav-link" id="nav-Tumu-tab" data-toggle="tab" href="#nav-Tumu" role="tab" aria-controls="nav-Tumu" aria-selected="true">Tümü</a>
+                    <form class="form-inline ml-auto" id="formTur">
+                      <div class="form-group" id="scText">
+                        <label class="mr-1" style="font-size:14.5px">Türü : </label>
+                      </div>
+                      <div class="form-group mx-sm-2">
+                        <select id="scBox" onchange="scBoxChange(value)" class="form-control-sm" name="YonetmelikMevzuatTur">
+                          <option value="0">Tümü</option>
+                          <option value="10">Bakanlar Kurulu Yönetmelikleri</option>
+                          <option value="20">Cumhurbaşkanı Kararları</option>
+                          <option value="19">Cumhurbaşkanlığı Kararnameleri</option>
+                          <option value="22">Cumhurbaşkanlığı Genelgeleri</option>
+                          <option value="21">Cumhurbaşkanlığı Yönetmelikleri</option>
+                          <option value="4">Kanun Hükmünde Kararnameler</option>
+                          <option value="1">Kanunlar</option>
+                          <option value="7">Kurum ve Kuruluş Yönetmelikleri</option>
+                          <option value="9">Tebliğler</option>
+                          <option value="2">Tüzükler</option>
+                          <option value="8">Üniversite Yönetmelikleri</option>
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                </nav>
+                <div class="tab-content mt-4" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-Baslik" role="tab" aria-labelledby="nav-Baslik-tab">
+                    <div class="row">
+                      <div class="col-12">
+                        <div id="Baslik_body" class="">
+                          {% if legislations %}
+                          <div id="Baslik_Datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="row">
+                              <div class="col-sm-12 col-md-6">
+                                <div class="dataTables_length" id="Baslik_Datatable_length">
+                                  <label>Sayfada 
+                                    <select name="Baslik_Datatable_length" aria-controls="Baslik_Datatable" class="custom-select custom-select-sm form-control form-control-sm">
+                                      <option value="10">10</option>
+                                      <option value="25">25</option>
+                                      <option value="50">50</option>
+                                      <option value="100">100</option>
+                                    </select> Kayıt Göster
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-12">
+                                <table id="Baslik_Datatable" class="filter-table table table-striped table-hover w-100 dataTable no-footer">
+                                  <thead>
+                                    <tr>
+                                      <th class="small font-weight-bold text-center sorting_disabled align-middle mevzuatNoStyle" style="width: 80px;">Mevzuat No</th>
+                                      <th class="small font-weight-bold text-center align-middle sorting_disabled">Mevzuat Adı</th>
+                                      <th class="small font-weight-bold text-center sorting_disabled align-middle mevzuatNoStyle" style="width: 105px;"> </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for legislation in legislations %}
+                                    <tr class="{% cycle 'odd' 'even' %}">
+                                      <td class="text-center align-middle mevzuatNoStyle">
+                                        <a rel="noopener noreferrer" href="{{ legislation.external_url }}" target="_blank">
+                                          {{ legislation.mevzuat_no|default:"—" }}
+                                        </a>
+                                      </td>
+                                      <td>
+                                        <a rel="noopener noreferrer" href="{{ legislation.external_url }}" target="_blank">
+                                          <div>{{ legislation.title|safe }}</div>
+                                          <div class="mt-1 small">
+                                            <i>{{ legislation.type }}</i>
+                                            {% if legislation.rg_date %}
+                                              <i><b> Resmî Gazete Tarihi: </b></i> {{ legislation.rg_date }}
+                                            {% endif %}
+                                            {% if legislation.rg_number %}
+                                              <i><b> Sayısı: </b></i> {{ legislation.rg_number }}
+                                            {% endif %}
+                                          </div>
+                                        </a>
+                                      </td>
+                                      <td class="text-center align-middle mevzuatNoStyle">
+                                        {% if legislation.has_previous_versions %}
+                                        <button type="button" onclick="goLink({{ legislation.mevzuat_no }},5)" class="btn btn-outline-dark btn-sm" style="border: 2px solid #17a2b8; width: 70px; font-size: 11px;">
+                                          ÖNCEKİ METİNLER
+                                        </button>
+                                        {% endif %}
+                                      </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                      <td colspan="3" class="text-center">Sonuç bulunamadı.</td>
+                                    </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            {% if legislations.has_other_pages %}
+                            <div class="row">
+                              <div class="col-sm-12 col-md-5">
+                                <div class="dataTables_info" id="Baslik_Datatable_info" role="status" aria-live="polite">
+                                  {{ legislations.start_index }} - {{ legislations.end_index }} arası kayıtlar (Toplam {{ legislations.paginator.count }})
+                                </div>
+                              </div>
+                              <div class="col-sm-12 col-md-7">
+                                <div class="dataTables_paginate paging_simple_numbers" id="Baslik_Datatable_paginate">
+                                  <ul class="pagination">
+                                    {% if legislations.has_previous %}
+                                    <li class="paginate_button page-item previous">
+                                      <a href="?page={{ legislations.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="page-link">Önceki</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="paginate_button page-item previous disabled">
+                                      <a href="#" class="page-link">Önceki</a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for num in legislations.paginator.page_range %}
+                                    <li class="paginate_button page-item {% if legislations.number == num %}active{% endif %}">
+                                      <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}" class="page-link">{{ num }}</a>
+                                    </li>
+                                    {% endfor %}
+                                    
+                                    {% if legislations.has_next %}
+                                    <li class="paginate_button page-item next">
+                                      <a href="?page={{ legislations.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="page-link">Sonraki</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="paginate_button page-item next disabled">
+                                      <a href="#" class="page-link">Sonraki</a>
+                                    </li>
+                                    {% endif %}
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                            {% endif %}
+                          </div>
+                          {% else %}
+                          <div class="loading-message">
+                            <div class="spinner-border text-primary" role="status">
+                              <span class="sr-only">Yükleniyor...</span>
+                            </div>
+                            <p class="mt-3">Arama sonuçları yükleniyor...</p>
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tab-pane fade" id="nav-Icerik" role="tab" aria-labelledby="nav-Icerik-tab">
+                    <div class="row">
+                      <div class="col-12">
+                        <div id="Icerik_body" class="d-none">
+                          <div class="loading-message">
+                            <p>İçerik araması için tıklayın.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="tab-pane fade" id="nav-Tumu" role="tab" aria-labelledby="nav-Tumu-tab">
+                    <div class="row">
+                      <div class="col-12">
+                        <div id="Tumu_body" class="d-none">
+                          <div class="loading-message">
+                            <p>Tüm sonuçlar için tıklayın.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // GenelArama fonksiyonu placeholder
+  function GenelArama(tabType, searchTerm, mevzuatType, isBase64) {
+    console.log('GenelArama called:', tabType, searchTerm, mevzuatType, isBase64);
+    // This would normally make an AJAX call to fetch results
+    // For now, we'll just show a loading message
+    var bodyId = tabType + '_body';
+    var bodyElement = document.getElementById(bodyId);
+    if (bodyElement) {
+      bodyElement.classList.remove('d-none');
+      bodyElement.innerHTML = '<div class="loading-message"><div class="spinner-border text-primary" role="status"><span class="sr-only">Yükleniyor...</span></div><p class="mt-3">' + tabType + ' sonuçları yükleniyor...</p></div>';
+    }
+  }
+  
+  // Tab click handlers
+  $(document).ready(function () {
+    {% if query %}
+    var searchQuery = "{{ query|escapejs }}";
+    var encodedQuery = btoa(unescape(encodeURIComponent(searchQuery)));
+    
+    $("#nav-Icerik-tab").on("click", function () {
+      GenelArama('Icerik', encodedQuery, 0, true);
+    });
+    
+    $("#nav-Tumu-tab").on("click", function () {
+      GenelArama('Tumu', encodedQuery, 0, true);
+    });
+    {% endif %}
+    
+    // DataTable initialization (if needed)
+    // $('#Baslik_Datatable').DataTable({
+    //   "language": {
+    //     "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+    //   },
+    //   "pageLength": 10,
+    //   "searching": false,
+    //   "ordering": false
+    // });
+  });
+  
+  function scBoxChange(value) {
+    // Filter results by type
+    var searchQuery = "{{ query|escapejs }}";
+    window.location.href = "{% url 'legislation_results' %}?q=" + encodeURIComponent(searchQuery) + "&mevzuat_turu=" + value;
+  }
+  
+  function goLink(mevzuatNo, tertip) {
+    // Open previous versions
+    window.open("https://www.mevzuat.gov.tr/MevzuatMetin/" + mevzuatNo + ".0.html", "_blank");
+  }
+</script>
+{% endblock %}

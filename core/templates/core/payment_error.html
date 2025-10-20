@@ -1,0 +1,89 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Ödeme Hatası - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .error-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(26, 54, 93, 0.12);
+        text-align: center;
+        max-width: 600px;
+        margin: 50px auto;
+    }
+    .error-icon {
+        font-size: 4em;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+    .error-title {
+        color: #dc3545;
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .error-message {
+        color: #6c757d;
+        font-size: 1.1em;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    .btn-retry {
+        background: #1a365d;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        margin: 0 10px;
+        display: inline-block;
+    }
+    .btn-retry:hover {
+        background: #2c5aa0;
+        color: white;
+        text-decoration: none;
+    }
+    .btn-home {
+        background: #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        margin: 0 10px;
+        display: inline-block;
+    }
+    .btn-home:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        <div class="error-icon">❌</div>
+        <h1 class="error-title">Ödeme Hatası</h1>
+        <div class="error-message">
+            {% if error %}
+                {{ error }}
+            {% else %}
+                Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyiniz.
+            {% endif %}
+        </div>
+        <div class="action-buttons">
+            <a href="{% url 'paketler' %}" class="btn-retry">Tekrar Dene</a>
+            <a href="{% url 'home' %}" class="btn-home">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

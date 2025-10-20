@@ -1,0 +1,373 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Akademik Makale Arama | CrossRef & DOAJ API | Lexatech{% endblock %}
+
+{% block title_content %}Akademik Makale Arama | CrossRef & DOAJ API | Lexatech{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="CrossRef ve DOAJ API'leri kullanarak güncel akademik makaleleri arayın. Türkiye'nin en kapsamlı akademik makale arama platformu. Gerçek zamanlı sonuçlar, özet görüntüleme ve güvenli erişim.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="akademik makale arama, CrossRef API, DOAJ, dergipark, academic articles, academic research, scholarly articles, türk akademik makaleler, bilimsel araştırma">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Akademik Makale Arama",
+  "description": "CrossRef ve DOAJ API'leri kullanarak akademik makaleleri arayın",
+  "url": "https://sozlesme.online/articles/",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Lexatech",
+    "url": "https://sozlesme.online"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://sozlesme.online/article/search_results/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "mainEntity": {
+    "@type": "SearchAction",
+    "name": "Akademik Makale Arama",
+    "description": "En güncel akademik makaleleri CrossRef ve DOAJ veritabanlarından arayın"
+  }
+}
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --success-green: #10b981;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hero-section {
+    background: url('{% static 'core/images/articles_bg.jpg' %}') no-repeat center center;
+    background-size: cover;
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%);
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+  
+  .search-container {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .search-input {
+    border: 2px solid var(--gray-100);
+    border-radius: 12px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .search-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    outline: none;
+  }
+  
+  .search-btn {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.3);
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+  }
+  
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .feature-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+  }
+  
+  .feature-desc {
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+  
+  .stats-section {
+    background: var(--gray-50);
+    padding: 60px 0;
+    margin-top: 80px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    display: block;
+  }
+  
+  .stat-label {
+    font-size: 1.1rem;
+    color: var(--gray-600);
+    margin-top: 10px;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .search-container {
+      margin: 0 20px;
+      padding: 20px;
+    }
+    
+    .feature-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="hero-content text-center text-white">
+      <h1 class="hero-title">📚 Akademik Makale Arama Platformu</h1>
+      <p class="hero-subtitle">DergiPark veritabanından güncel akademik makaleleri arayın</p>
+      
+      <div class="search-container">
+        <!-- Current Search Alert -->
+        <div class="alert alert-info mb-4" style="background: rgba(255,255,255,0.95); border-left: 4px solid #0ea5e9; backdrop-filter: blur(10px);">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-clock text-info me-2"></i>
+            <div>
+              <strong>🔄 En Güncel Makaleler</strong> - Gerçek zamanlı arama yapılmaktadır
+              <br><small class="text-muted">CrossRef ve DOAJ API'lerinden anında sonuçlar alınır</small>
+            </div>
+          </div>
+        </div>
+        
+        <form method="get" action="{% url 'article_search_results' %}" id="search-form">
+          <div class="row align-items-center">
+            <div class="col-md-9 mb-3 mb-md-0">
+              <input type="text" class="form-control search-input" name="q" 
+                     placeholder="📖 En güncel akademik makaleleri ara... (örn: anayasa hukuku, ticaret kanunu)" 
+                     required>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary search-btn w-100" type="submit">
+                <i class="fas fa-search me-2"></i> 
+                <span class="btn-text">Güncel Ara</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Loading indicator -->
+          <div id="search-loading" class="alert alert-warning mt-3" style="display: none; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-spinner fa-spin me-2"></i>
+              <div>
+                <strong>🔍 Aranıyor...</strong> En güncel akademik makaleler taranıyor
+                <br><small class="text-muted">Bu işlem birkaç saniye sürebilir</small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="container">
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🇹🇷</span>
+      <h3 class="feature-title">TRDizin Entegrasyonu</h3>
+      <p class="feature-desc">Türkiye'nin en kapsamlı akademik makale veritabanı TRDizin</p>
+    </div>
+    
+    <div class="feature-card">
+      <span class="feature-icon">📚</span>
+      <h3 class="feature-title">DergiPark Veritabanı</h3>
+      <p class="feature-desc">Türkiye'deki akademik dergilerin merkezi platformu DergiPark</p>
+    </div>
+    
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <h3 class="feature-title">Hızlı Arama</h3>
+      <p class="feature-desc">Gelişmiş algoritma ile saniyeler içerisinde ilgili makaleleri bulun</p>
+    </div>
+    
+    <div class="feature-card">
+      <span class="feature-icon">📄</span>
+      <h3 class="feature-title">PDF Erişimi</h3>
+      <p class="feature-desc">Bulunan makalelerin tam metnine direkt PDF linklerinden ulaşın</p>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">1</span>
+          <div class="stat-label">Akademik Veritabanı</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">∞</span>
+          <div class="stat-label">Güncel Makale</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <div class="stat-label">Erişim</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">100%</span>
+          <div class="stat-label">Ücretsiz</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Instructions Section -->
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="feature-card">
+        <h3 class="feature-title mb-4">
+          <i class="fas fa-info-circle text-primary me-2"></i>
+          Nasıl Kullanılır?
+        </h3>
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="fas fa-search text-primary me-2"></i>Arama Yapın</h5>
+            <p class="feature-desc mb-4">Yukarıdaki arama kutusuna konu, anahtar kelime veya yazar adı yazarak arama yapabilirsiniz.</p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-list text-success me-2"></i>Sonuçları İnceleyin</h5>
+            <p class="feature-desc mb-4">DergiPark'tan gelen sonuçları kaynak belirtileri ile birlikte görüntüleyebilirsiniz.</p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-file-pdf text-danger me-2"></i>PDF'e Erişin</h5>
+            <p class="feature-desc">İlginizi çeken makalelerin tam metnine PDF linklerinden ulaşabilirsiniz.</p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-bookmark text-warning me-2"></i>Kaydet & Paylaş</h5>
+            <p class="feature-desc">Önemli makaleleri kaydetme ve paylaşma imkanı yakında gelecek.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('search-form').addEventListener('submit', function() {
+    // Show loading indicator
+    document.getElementById('search-loading').style.display = 'block';
+    
+    // Update button text
+    const btn = this.querySelector('.search-btn');
+    const btnText = btn.querySelector('.btn-text');
+    const btnIcon = btn.querySelector('i');
+    
+    btnText.textContent = 'Aranıyor...';
+    btnIcon.className = 'fas fa-spinner fa-spin me-2';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}

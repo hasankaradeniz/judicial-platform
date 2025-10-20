@@ -1,0 +1,817 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ article.title }} - Makale Görüntüleyici{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  body {
+    background: var(--gray-50);
+    margin: 0;
+    padding: 0;
+  }
+  
+  .iframe-header {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .article-info-compact {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 0;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .article-title-compact {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .article-meta-compact {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    flex-wrap: wrap;
+  }
+  
+  .meta-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .source-badge-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .source-badge-compact.crossref {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+  }
+  
+  .source-badge-compact.doaj {
+    background: #f3e8ff;
+    color: #7c3aed;
+    border: 1px solid #d8b4fe;
+  }
+  
+  .source-badge-compact.pubmed {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+  }
+  
+  .source-badge-compact.ieee {
+    background: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fde68a;
+  }
+  
+  .toolbar-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+  
+  .btn-compact {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .btn-compact:hover {
+    background: #1e40af;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary-compact {
+    background: var(--gray-600);
+  }
+  
+  .btn-secondary-compact:hover {
+    background: #374151;
+  }
+  
+  .iframe-container {
+    height: calc(100vh - 120px);
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin: 0;
+  }
+  
+  .article-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+  }
+  
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px;
+  }
+  
+  .fallback-content {
+    padding: 30px;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  @media (max-width: 768px) {
+    .article-meta-compact {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .toolbar-compact {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+    
+    .iframe-container {
+      height: calc(100vh - 140px);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Compact Header -->
+<div class="iframe-header">
+  <div class="container-fluid">
+    <div class="article-info-compact">
+      <div class="d-flex align-items-start justify-content-between">
+        <div class="flex-grow-1">
+          <div class="source-badge-compact {{ article.source|lower }}">
+            {{ article.source_icon }} {{ article.source }}
+          </div>
+          <h2 class="article-title-compact">{{ article.title }}</h2>
+          <div class="article-meta-compact">
+            {% if article.authors %}
+              <div class="meta-item-compact">
+                <i class="fas fa-user text-muted"></i>
+                <span>{{ article.authors|truncatechars:40 }}</span>
+              </div>
+            {% endif %}
+            
+            {% if article.journal %}
+              <div class="meta-item-compact">
+                <i class="fas fa-book text-muted"></i>
+                <span>{{ article.journal|truncatechars:30 }}</span>
+              </div>
+            {% endif %}
+            
+            {% if article.year %}
+              <div class="meta-item-compact">
+                <i class="fas fa-calendar text-muted"></i>
+                <span>{{ article.year }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="toolbar-compact">
+          <button class="btn-compact" onclick="refreshIframe()">
+            <i class="fas fa-redo"></i>
+            Yenile
+          </button>
+          <button class="btn-compact btn-secondary-compact" onclick="openInNewTab()">
+            <i class="fas fa-external-link-alt"></i>
+            Yeni Sekme
+          </button>
+          <a href="{% url 'article_search_results' %}?q={{ article.title|slice:':10' }}" class="btn-compact btn-secondary-compact">
+            <i class="fas fa-arrow-left"></i>
+            Geri
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid px-3">
+  <div class="iframe-container position-relative">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <h4>Makale Yükleniyor...</h4>
+      <p class="text-muted">{{ article.source }} sayfası açılıyor</p>
+    </div>
+    
+    <!-- Article Iframe -->
+    <iframe id="articleIframe" 
+            class="article-iframe"
+            data-src="{{ original_url }}"
+            title="{{ article.title }}"
+            onload="iframeLoaded()" 
+            onerror="iframeError()"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+            referrerpolicy="no-referrer-when-downgrade">
+      
+      <!-- Fallback Content -->
+      <div class="fallback-content">
+        <h4>İframe Desteklenmiyor</h4>
+        <p class="mb-3">
+          Tarayıcınız iframe özelliğini desteklemiyor veya site güvenlik nedeniyle yüklenemiyor.
+        </p>
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
+          <a href="{{ original_url }}" target="_blank" class="btn-compact">
+            <i class="fas fa-external-link-alt"></i>
+            Makaleyi Yeni Sekmede Aç
+          </a>
+          <a href="{{ article.pdf_link }}" target="_blank" class="btn-compact btn-secondary-compact" style="background: #dc2626;">
+            <i class="fas fa-file-pdf"></i>
+            PDF'i Görüntüle
+          </a>
+        </div>
+        
+        <!-- Article Preview -->
+        <div class="mt-4 pt-4 border-top">
+          <h5>Makale Bilgileri</h5>
+          <div class="text-start">
+            <p><strong>Başlık:</strong> {{ article.title }}</p>
+            <p><strong>Yazarlar:</strong> {{ article.authors }}</p>
+            <p><strong>Dergi:</strong> {{ article.journal }}</p>
+            <p><strong>Yıl:</strong> {{ article.year }}</p>
+            {% if article.abstract %}
+              <p><strong>Özet:</strong> {{ article.abstract|truncatechars:200 }}</p>
+            {% endif %}
+            {% if article.doi %}
+              <p><strong>DOI:</strong> <a href="https://doi.org/{{ article.doi }}" target="_blank">{{ article.doi }}</a></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </iframe>
+  </div>
+</div>
+
+<script>
+// Global variables
+const originalUrl = "{{ original_url }}";
+const articleTitle = "{{ article.title|escapejs }}";
+let iframeLoadAttempts = 0;
+let fallbackMode = false;
+
+// Alternative URLs for different sources
+const alternativeUrls = {
+  'crossref': [
+    `https://doi.org/{{ article.doi }}`,
+    `{{ article.pdf_link }}`,
+    `{{ article.detail_link }}`
+  ],
+  'doaj': [
+    `{{ article.detail_link }}`,
+    `{{ article.pdf_link }}`
+  ],
+  'pubmed': [
+    `https://pubmed.ncbi.nlm.nih.gov/{{ article.id|slice:"7:" }}/`,
+    `{{ article.pdf_link }}`,
+    `{{ article.detail_link }}`
+  ],
+  'ieee': [
+    `{{ article.detail_link }}`,
+    `{{ article.pdf_link }}`
+  ]
+};
+
+function iframeLoaded() {
+  console.log('Iframe başarıyla yüklendi');
+  hideLoading();
+  
+  // Iframe içeriğini kontrol et
+  try {
+    const iframe = document.getElementById('articleIframe');
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    
+    // Boş sayfa kontrolü
+    if (iframeDoc.body && iframeDoc.body.innerHTML.trim() === '') {
+      console.log('Iframe boş sayfa yükledi');
+      tryAlternativeUrl();
+      return;
+    }
+    
+    // Error page kontrolü
+    const bodyText = iframeDoc.body ? iframeDoc.body.innerText.toLowerCase() : '';
+    if (bodyText.includes('blocked') || bodyText.includes('error') || bodyText.includes('forbidden')) {
+      console.log('Iframe hata sayfası yükledi');
+      tryAlternativeUrl();
+      return;
+    }
+    
+    // Başlık güncelle
+    if (iframeDoc.title && !iframeDoc.title.includes('Error')) {
+      document.title = iframeDoc.title + ' - Makale Görüntüleyici';
+    }
+  } catch (e) {
+    // Cross-origin restriction - normal durum
+    console.log('Cross-origin iframe - güvenlik kısıtlaması');
+    
+    // URL'yi kontrol et - eğer data: ile başlıyorsa hata var
+    const iframe = document.getElementById('articleIframe');
+    if (iframe.src.startsWith('data:') || iframe.src.includes('about:blank')) {
+      tryAlternativeUrl();
+    }
+  }
+}
+
+function iframeError() {
+  console.log('Iframe yüklenirken hata oluştu');
+  tryAlternativeUrl();
+}
+
+function tryAlternativeUrl() {
+  const source = '{{ article.source|lower }}';
+  const alternatives = alternativeUrls[source] || [originalUrl];
+  
+  iframeLoadAttempts++;
+  
+  if (iframeLoadAttempts < alternatives.length) {
+    const nextUrl = alternatives[iframeLoadAttempts];
+    if (nextUrl && nextUrl !== 'None' && nextUrl.startsWith('http')) {
+      console.log(`Alternatif URL deneniyor (${iframeLoadAttempts}): ${nextUrl}`);
+      
+      const iframe = document.getElementById('articleIframe');
+      iframe.src = nextUrl;
+      
+      // Loading'i tekrar göster
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.querySelector('p').textContent = `Alternatif kaynak deneniyor... (${iframeLoadAttempts}/${alternatives.length})`;
+      }
+      
+      // Timeout için tekrar dene
+      setTimeout(() => {
+        if (document.getElementById('loadingOverlay').style.display !== 'none') {
+          tryAlternativeUrl();
+        }
+      }, 8000);
+      
+      return;
+    }
+  }
+  
+  // Tüm alternatifler denendi, fallback göster
+  console.log('Tüm alternatif URL\'ler denendi, fallback moda geçiliyor');
+  hideLoading();
+  showSmartFallback();
+}
+
+function showSmartFallback() {
+  fallbackMode = true;
+  const container = document.querySelector('.iframe-container');
+  
+  const source = '{{ article.source|lower }}';
+  const sourceNames = {
+    'crossref': 'CrossRef',
+    'doaj': 'DOAJ', 
+    'pubmed': 'PubMed',
+    'ieee': 'IEEE'
+  };
+  
+  container.innerHTML = `
+    <div class="fallback-content">
+      <div class="alert alert-warning mb-4">
+        <h4><i class="fas fa-shield-alt me-2"></i>Güvenlik Kısıtlaması</h4>
+        <p class="mb-0">
+          ${sourceNames[source] || 'Bu site'} güvenlik nedeniyle iframe içinde görüntülenemiyor. 
+          Aşağıdaki seçeneklerle makaleye erişebilirsiniz.
+        </p>
+      </div>
+      
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <i class="fas fa-external-link-alt fa-2x text-primary mb-3"></i>
+              <h5>Orijinal Sayfada Aç</h5>
+              <p class="text-muted mb-3">Makaleyi ${sourceNames[source] || 'orijinal'} sitesinde görüntüleyin</p>
+              <a href="${originalUrl}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-external-link-alt me-1"></i>
+                ${sourceNames[source] || 'Siteye'} Git
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <i class="fas fa-file-pdf fa-2x text-danger mb-3"></i>
+              <h5>PDF Görüntüle</h5>
+              <p class="text-muted mb-3">Makaleyi PDF formatında açın</p>
+              <a href="{{ article.pdf_link }}" target="_blank" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-1"></i>
+                PDF Aç
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Alternative Access Methods -->
+      <div class="mt-4 pt-4 border-top">
+        <h6>Alternatif Erişim Yöntemleri:</h6>
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
+          <button class="btn btn-outline-secondary btn-sm" onclick="tryProxyAccess()">
+            <i class="fas fa-globe me-1"></i>
+            Proxy ile Dene
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="downloadContent()">
+            <i class="fas fa-download me-1"></i>
+            İçeriği İndir
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('${originalUrl}')">
+            <i class="fas fa-copy me-1"></i>
+            Link Kopyala
+          </button>
+        </div>
+      </div>
+      
+      <!-- Article Preview -->
+      <div class="mt-4 pt-4 border-top">
+        <h6>Makale Bilgileri:</h6>
+        <div class="text-start">
+          <p><strong>Başlık:</strong> {{ article.title }}</p>
+          <p><strong>Yazarlar:</strong> {{ article.authors }}</p>
+          <p><strong>Dergi:</strong> {{ article.journal }}</p>
+          <p><strong>Yıl:</strong> {{ article.year }}</p>
+          {% if article.abstract %}
+            <p><strong>Özet:</strong> {{ article.abstract|truncatechars:300 }}</p>
+          {% endif %}
+          {% if article.doi %}
+            <p><strong>DOI:</strong> <a href="https://doi.org/{{ article.doi }}" target="_blank">{{ article.doi }}</a></p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function tryProxyAccess() {
+  // Google Cache veya Wayback Machine dene
+  const proxyUrls = [
+    `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(originalUrl)}`,
+    `https://web.archive.org/web/${originalUrl}`,
+    `https://archive.today/?run=1&url=${encodeURIComponent(originalUrl)}`
+  ];
+  
+  // İlk proxy URL'yi dene
+  window.open(proxyUrls[0], '_blank');
+}
+
+function downloadContent() {
+  // PDF linkini yeni sekmede aç
+  window.open('{{ article.pdf_link }}', '_blank');
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    // Geçici bildirim göster
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check me-1"></i>Kopyalandı!';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-outline-secondary');
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-secondary');
+    }, 2000);
+  });
+}
+
+function showMobileFallback() {
+  const container = document.querySelector('.iframe-container');
+  
+  container.innerHTML = `
+    <div class="fallback-content">
+      <div class="alert alert-info mb-4">
+        <h4><i class="fas fa-mobile-alt me-2"></i>Mobil Cihaz Algılandı</h4>
+        <p class="mb-0">
+          Bu makale sayfası mobil cihazlarda görüntülenmiyor. 
+          Aşağıdaki seçeneklerle makaleye erişebilirsiniz.
+        </p>
+      </div>
+      
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <i class="fas fa-file-pdf fa-2x text-danger mb-3"></i>
+              <h5>PDF İndir</h5>
+              <p class="text-muted mb-3">Makaleyi PDF olarak cihazınıza indirin</p>
+              <a href="{{ article.pdf_link }}" target="_blank" class="btn btn-danger">
+                <i class="fas fa-download me-1"></i>
+                PDF İndir
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <i class="fas fa-desktop fa-2x text-primary mb-3"></i>
+              <h5>Desktop Modda Aç</h5>
+              <p class="text-muted mb-3">Tarayıcınızı desktop moduna çevirin</p>
+              <button class="btn btn-primary" onclick="openDesktopMode()">
+                <i class="fas fa-desktop me-1"></i>
+                Desktop Mod
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Alternative Options -->
+      <div class="mt-4 pt-4 border-top">
+        <h6>Diğer Seçenekler:</h6>
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
+          <a href="${originalUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-external-link-alt me-1"></i>
+            Tarayıcıda Aç
+          </a>
+          <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('${originalUrl}')">
+            <i class="fas fa-copy me-1"></i>
+            Link Kopyala
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="shareArticle()">
+            <i class="fas fa-share me-1"></i>
+            Paylaş
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openDesktopMode() {
+  // Viewport'u desktop moduna çevir
+  let viewport = document.querySelector('meta[name="viewport"]');
+  if (viewport) {
+    viewport.setAttribute('content', 'width=1200, initial-scale=0.3, user-scalable=yes');
+  }
+  
+  // Iframe'i yeniden yükle
+  setTimeout(() => {
+    location.reload();
+  }, 500);
+}
+
+function shareArticle() {
+  if (navigator.share) {
+    navigator.share({
+      title: articleTitle,
+      text: `{{ article.authors }} tarafından yazılan "${articleTitle}" makalesini inceleyin.`,
+      url: originalUrl
+    });
+  } else {
+    // Fallback - link kopyala
+    copyToClipboard(originalUrl);
+  }
+}
+
+function hideLoading() {
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+  }
+}
+
+function showError() {
+  const iframe = document.getElementById('articleIframe');
+  const container = iframe.parentElement;
+  
+  container.innerHTML = `
+    <div class="error-message">
+      <h4><i class="fas fa-exclamation-triangle me-2"></i>Sayfa Yüklenemedi</h4>
+      <p class="mb-3">
+        Makale sayfası güvenlik kısıtlamaları nedeniyle iframe içinde görüntülenemiyor.
+      </p>
+      <div class="d-flex gap-2 justify-content-center flex-wrap">
+        <a href="${originalUrl}" target="_blank" class="btn-compact">
+          <i class="fas fa-external-link-alt"></i>
+          Makaleyi Yeni Sekmede Aç
+        </a>
+        <button class="btn-compact btn-secondary-compact" onclick="location.reload()">
+          <i class="fas fa-redo"></i>
+          Tekrar Dene
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function refreshIframe() {
+  const iframe = document.getElementById('articleIframe');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'flex';
+  }
+  
+  iframe.src = iframe.src;
+}
+
+function openInNewTab() {
+  window.open(originalUrl, '_blank');
+}
+
+// Auto-hide loading after timeout
+setTimeout(() => {
+  hideLoading();
+}, 10000); // 10 saniye timeout
+
+// Mobil cihaz algılama
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Desktop User Agent ile iframe yükleme
+function loadIframeWithDesktopUA(url) {
+  const iframe = document.getElementById('articleIframe');
+  
+  // Mobil cihazda desktop user agent simüle et
+  if (isMobile()) {
+    console.log('Mobil cihaz algılandı, desktop mode aktifleştiriliyor');
+    
+    // Viewport'u desktop moduna çevir
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute('content', 'width=1024, initial-scale=0.5, user-scalable=yes');
+    }
+    
+    // CSS ile mobil uyumluluğu düzelt
+    const style = document.createElement('style');
+    style.textContent = `
+      .iframe-container {
+        height: calc(100vh - 140px) !important;
+        overflow: auto;
+      }
+      .article-iframe {
+        min-width: 1024px;
+        width: 100%;
+        height: 100%;
+        transform-origin: 0 0;
+        transform: scale(0.9);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  iframe.src = url;
+}
+
+// Iframe yükleme durumunu kontrol et
+document.addEventListener('DOMContentLoaded', function() {
+  const iframe = document.getElementById('articleIframe');
+  
+  // Desktop URL ile yükle
+  loadIframeWithDesktopUA(originalUrl);
+  
+  // Iframe readyState kontrolü
+  if (iframe.readyState === 'complete') {
+    iframeLoaded();
+  }
+  
+  // İlk yükleme timeout'u
+  setTimeout(() => {
+    if (document.getElementById('loadingOverlay').style.display !== 'none') {
+      console.log('İlk yükleme uzun sürüyor, alternatif denenecek');
+      tryAlternativeUrl();
+    }
+  }, 10000); // 10 saniye bekle
+  
+  // X-Frame-Options hatası için dinleme
+  window.addEventListener('message', function(event) {
+    if (event.data === 'iframe-blocked') {
+      console.log('Iframe güvenlik tarafından engellendi');
+      tryAlternativeUrl();
+    }
+  });
+  
+  // Mobil cihaz hata mesajları için kontrol
+  setTimeout(() => {
+    try {
+      const iframe = document.getElementById('articleIframe');
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      
+      if (iframeDoc.body) {
+        const bodyText = iframeDoc.body.innerText.toLowerCase();
+        
+        // Mobil uyumluluk hata mesajlarını kontrol et
+        if (bodyText.includes('mobil cihaz') || 
+            bodyText.includes('mobile device') || 
+            bodyText.includes('not supported on mobile') ||
+            bodyText.includes('görüntüleyemiyoruz')) {
+          console.log('Mobil cihaz hatası algılandı');
+          showMobileFallback();
+        }
+      }
+    } catch (e) {
+      // Cross-origin kısıtlaması - normal
+    }
+  }, 5000);
+  
+  // Responsive design için pencere boyutu dinleme
+  window.addEventListener('resize', function() {
+    if (isMobile()) {
+      // Mobil cihazda scale'i ayarla
+      const iframe = document.getElementById('articleIframe');
+      const container = iframe.parentElement;
+      const scale = Math.min(container.offsetWidth / 1024, 1);
+      iframe.style.transform = `scale(${scale})`;
+      iframe.style.height = `${container.offsetHeight / scale}px`;
+    }
+  });
+});
+</script>
+{% endblock %}

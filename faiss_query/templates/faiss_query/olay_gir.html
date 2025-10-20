@@ -1,0 +1,190 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_styles %}
+<style>
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.loading-content {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    max-width: 400px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progress-steps {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.step {
+    padding: 5px 0;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.step.active {
+    opacity: 1;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.step.completed {
+    opacity: 0.8;
+    color: #28a745;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h4>Hukuki Olay Analiz Ediliyor</h4>
+            <p class="text-muted">Lütfen bekleyiniz, bu işlem olayın karmaşıklığına göre 1 - 10 dakika sürebilir...</p>
+            
+            <div class="progress-steps">
+                <div class="step" id="step1">✓ Olay metni analiz ediliyor</div>
+                <div class="step" id="step2">✓ Hukuki anahtar kelimeler çıkarılıyor</div>
+                <div class="step" id="step3">✓ Benzer kararlar aranıyor</div>
+                <div class="step" id="step4">✓ Sonuçlar hazırlanıyor</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h2 class="card-title mb-4">📋 Hukuki Olay Girişi</h2>
+            <p class="text-muted mb-4">
+                Lütfen karşılaştığınız hukuki olayı detaylı şekilde anlatın. Sistem yapay zeka destekli analiz ile benzer yargı kararlarını bulacaktır.
+            </p>
+            
+            <div class="alert alert-info mb-4">
+                <strong>💡 İpuçları:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Olayı mümkün olduğunca detaylı anlatın</li>
+                    <li>Hukuki terimleri kullanırsanız daha iyi sonuç alırsınız</li>
+                    <li>Tarih, tutar, kişi bilgileri gibi spesifik detaylar ekleyin</li>
+                </ul>
+            </div>
+
+            <form method="POST" id="olayForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="olay"><strong>Hukuki Olayınız:</strong></label>
+                    <textarea 
+                        class="form-control" 
+                        id="olay" 
+                        name="olay" 
+                        rows="6" 
+                        placeholder="Örnek: Satın aldığım arabanın motor arızası çıktı. Galeri garantisi olduğunu söylemişti ama şimdi tamir masraflarını ödemek istemiyor. Sözleşmede ayıplı mal teslimi durumunda iade veya değişim hakkım olduğu yazıyor..." 
+                        required
+                        minlength="20">
+                    </textarea>
+                    <small class="form-text text-muted">
+                        Minimum 20 karakter gereklidir. Şu anda: <span id="charCount">0</span> karakter
+                    </small>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">
+                    🔍 Yapay Zeka ile Benzer Kararları Ara
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('olayForm');
+    const textarea = document.getElementById('olay');
+    const charCount = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    // Karakter sayımı
+    textarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = count;
+        
+        if (count < 20) {
+            charCount.style.color = '#dc3545';
+            submitBtn.disabled = true;
+        } else {
+            charCount.style.color = '#28a745';
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Form gönderimi
+    form.addEventListener('submit', function(e) {
+        const text = textarea.value.trim();
+        if (text.length < 20) {
+            e.preventDefault();
+            alert('Lütfen en az 20 karakter girin.');
+            return;
+        }
+        
+        // Loading göster
+        loadingOverlay.style.display = 'flex';
+        submitBtn.disabled = true;
+        
+        // Adımları animasyonla göster
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        const stepInterval = setInterval(() => {
+            if (currentStep <= totalSteps) {
+                const step = document.getElementById(`step${currentStep}`);
+                step.classList.add('active');
+                
+                if (currentStep > 1) {
+                    const prevStep = document.getElementById(`step${currentStep - 1}`);
+                    prevStep.classList.remove('active');
+                    prevStep.classList.add('completed');
+                }
+                
+                currentStep++;
+            } else {
+                clearInterval(stepInterval);
+            }
+        }, 2000);
+    });
+    
+    // Sayfa yüklenince focus
+    textarea.focus();
+});
+</script>
+{% endblock %}

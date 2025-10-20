@@ -1,0 +1,135 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Arama Sonuçları - Lexatech{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Arama Sonuçları</h1>
+
+  <!-- Arama kriterlerini özetleyen bölüm -->
+  <div class="mb-4 text-center" style="background-color: rgba(255, 255, 255, 0.5); padding: 10px;">
+    {% if query %}
+      <p><strong>Arama Kelimesi:</strong> {{ query }}</p>
+    {% endif %}
+    {% if area != "both" %}
+      <p><strong>Arama Alanı:</strong>
+        {% if area == "judicial" %}Yargı Kararları{% endif %}
+        {% if area == "legislation" %}Mevzuat{% endif %}
+        {% if area == "articles" %}Makaleler{% endif %}
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Yeniden Arama Formu -->
+  <div class="card shadow-sm mb-5" style="background-color: rgba(255, 255, 255, 0.5);">
+    <div class="card-body">
+      <form method="get" action="{% url 'combined_search_results' %}">
+        <div class="form-row">
+          <div class="col-md-8 mb-3">
+            <input type="text" name="q" class="form-control" placeholder="Aranacak ifade..." value="{{ query }}" required>
+          </div>
+          <div class="col-md-4 mb-3" style="background-color: rgba(255, 255, 255, 0.5);">
+            <select name="area" class="form-control">
+              <option value="both" {% if area == "both" %}selected{% endif %}>Yargı Kararları, Makaleler ve Mevzuat</option>
+              <option value="judicial" {% if area == "judicial" %}selected{% endif %}>Yargı Kararları</option>
+              <option value="articles" {% if area == "articles" %}selected{% endif %}>Makaleler</option>
+              <option value="legislation" {% if area == "legislation" %}selected{% endif %}>Mevzuat</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Ara</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Yargı Kararları Sonuçları -->
+  {% if judicial_results %}
+    <h2 class="mb-3">Yargı Kararları</h2>
+    <ul class="list-group mb-5">
+      {% for decision in judicial_results %}
+        <li class="list-group-item mb-3" style="background-color: rgba(255, 255, 255, 0.5); border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}</strong><br>
+              <small class="text-muted">
+                <strong>Esas No:</strong> {{ decision.esas_numarasi }} &middot;
+                <strong>Tarih:</strong> {{ decision.karar_tarihi }}
+              </small>
+              <p class="mt-2 mb-0">
+                <strong>Anahtar Kelimeler:</strong> {{ decision.anahtar_kelimeler }}<br>
+                <strong>Özet:</strong> {{ decision.karar_ozeti|truncatewords:30 }}
+              </p>
+            </div>
+            <div>
+              <a href="{% url 'judicial_detail' decision.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- Mevzuat Sonuçları -->
+  {% if legislation_results %}
+    <h2 class="mb-3">Mevzuat</h2>
+    <ul class="list-group mb-5">
+      {% for leg in legislation_results %}
+        <li class="list-group-item mb-3" style="background-color: rgba(255, 255, 255, 0.5); border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ leg.baslik }}</strong><br>
+              <small class="text-muted">
+                {% if leg.mevzuat_numarasi %}<strong>Numara:</strong> {{ leg.mevzuat_numarasi }}{% endif %}
+                {% if leg.yayin_tarihi %} &middot; <strong>Yayın Tarihi:</strong> {{ leg.yayin_tarihi }}{% endif %}
+              </small>
+              <p class="mt-2 mb-0">{{ leg.ozet|truncatewords:30 }}</p>
+            </div>
+            <div>
+              <a href="{% url 'legislation_detail' leg.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- Makale Sonuçları -->
+  {% if article_results %}
+    <h2 class="mb-3">Makaleler</h2>
+    <ul class="list-group mb-5">
+      {% for article in article_results %}
+        <li class="list-group-item mb-3" style="background-color: rgba(255, 255, 255, 0.5); border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ article.makale_basligi }}</strong><br>
+              {% if article.dergi %}
+                <small class="text-muted"><strong>Dergi:</strong> {{ article.dergi }}</small><br>
+              {% endif %}
+              {% if article.yazarlar %}
+                <small class="text-muted"><strong>Yazarlar:</strong> {{ article.yazarlar }}</small><br>
+              {% endif %}
+              <p class="mt-2 mb-0">{{ article.makale_ozeti|truncatewords:30 }}</p>
+            </div>
+            <div>
+              <a href="{% url 'article_detail' article.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- Eğer Hiç Sonuç Yoksa -->
+  {% if not judicial_results and not legislation_results and not article_results %}
+    <p class="text-center">Arama kriterlerinize uygun kayıt bulunamadı.</p>
+  {% endif %}
+
+  <!-- Yeni Arama Yap Butonu -->
+  <div class="text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Yeni Arama Yap</a>
+  </div>
+</div>
+{% endblock %}

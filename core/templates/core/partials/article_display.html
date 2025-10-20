@@ -1,0 +1,221 @@
+<!-- Madde Görüntüleme Partial Template -->
+<div class="article-container" id="article-{{ article.id }}">
+    
+    <!-- Madde Başlığı -->
+    <div class="article-header">
+        <div class="article-number">
+            Madde {{ article.article_number }}
+        </div>
+        
+        {% if article.title %}
+            <h3 class="article-title">{{ article.title }}</h3>
+        {% endif %}
+        
+        {% if article.is_repealed %}
+            <span class="status-badge status-repealed">
+                <i class="fas fa-ban"></i> Yürürlükten Kaldırıldı
+            </span>
+        {% endif %}
+    </div>
+    
+    <!-- Madde İçeriği -->
+    <div class="article-content">
+        
+        {% if article.paragraphs.exists %}
+            <!-- Fıkralı madde yapısı -->
+            {% for paragraph in article.paragraphs.all %}
+                <div class="paragraph" id="paragraph-{{ paragraph.id }}">
+                    
+                    {% if paragraph.paragraph_number %}
+                        <span class="paragraph-number">({{ paragraph.paragraph_number }})</span>
+                    {% endif %}
+                    
+                    <div class="paragraph-text">
+                        {% if paragraph.text_html %}
+                            {{ paragraph.text_html|safe }}
+                        {% else %}
+                            {{ paragraph.text|linebreaks }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Bentler varsa -->
+                    {% if paragraph.subitems.exists %}
+                        <div class="subitems-container">
+                            {% for subitem in paragraph.subitems.all %}
+                                <div class="subitem" id="subitem-{{ subitem.id }}">
+                                    <span class="subitem-letter">{{ subitem.subitem_number }})</span>
+                                    <div class="subitem-text">
+                                        {% if subitem.text_html %}
+                                            {{ subitem.text_html|safe }}
+                                        {% else %}
+                                            {{ subitem.text }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            {% endfor %}
+            
+        {% else %}
+            <!-- Tek fıkralı madde -->
+            <div class="article-text">
+                {% if article.text_html %}
+                    {{ article.text_html|safe }}
+                {% else %}
+                    {{ article.text|linebreaks }}
+                {% endif %}
+            </div>
+            
+        {% endif %}
+        
+        <!-- Madde dipnotları -->
+        {% if article.footnotes %}
+            <div class="article-footnotes">
+                <hr>
+                <small class="text-muted">
+                    <strong>Dipnot:</strong> {{ article.footnotes }}
+                </small>
+            </div>
+        {% endif %}
+        
+        <!-- Hukuki notlar -->
+        {% if article.legal_notes %}
+            <div class="article-legal-notes">
+                <div class="alert alert-info" style="margin-top: 15px; padding: 10px; font-size: 14px;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Hukuki Not:</strong> {{ article.legal_notes }}
+                </div>
+            </div>
+        {% endif %}
+        
+    </div>
+    
+    <!-- Madde İşlemleri -->
+    <div class="article-actions" style="margin-top: 15px; display: none;">
+        <button class="btn btn-sm btn-outline-primary" onclick="copyArticleLink({{ article.id }})">
+            <i class="fas fa-link"></i> Madde Linki
+        </button>
+        
+        <button class="btn btn-sm btn-outline-secondary" onclick="printArticle({{ article.id }})">
+            <i class="fas fa-print"></i> Yazdır
+        </button>
+        
+        {% if user.is_authenticated %}
+            <button class="btn btn-sm btn-outline-success" onclick="bookmarkArticle({{ article.id }})">
+                <i class="fas fa-bookmark"></i> Kaydet
+            </button>
+        {% endif %}
+    </div>
+    
+</div>
+
+<!-- Hover efekti için JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const article = document.getElementById('article-{{ article.id }}');
+    const actions = article.querySelector('.article-actions');
+    
+    article.addEventListener('mouseenter', function() {
+        actions.style.display = 'block';
+        actions.style.opacity = '0';
+        setTimeout(() => {
+            actions.style.opacity = '1';
+            actions.style.transition = 'opacity 0.3s';
+        }, 10);
+    });
+    
+    article.addEventListener('mouseleave', function() {
+        actions.style.opacity = '0';
+        setTimeout(() => {
+            actions.style.display = 'none';
+        }, 300);
+    });
+});
+
+// Madde işlemleri fonksiyonları
+function copyArticleLink(articleId) {
+    const url = window.location.href.split('#')[0] + '#article-' + articleId;
+    navigator.clipboard.writeText(url).then(function() {
+        showToast('Madde linki kopyalandı!', 'success');
+    });
+}
+
+function printArticle(articleId) {
+    const article = document.getElementById('article-' + articleId);
+    const printContent = article.outerHTML;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Madde {{ article.article_number }}</title>
+            <link rel="stylesheet" href="{% static 'core/css/professional_legislation.css' %}">
+            <style>
+                body { font-family: 'Times New Roman', serif; padding: 20px; }
+                .article-actions { display: none !important; }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+function bookmarkArticle(articleId) {
+    // AJAX ile bookmark işlemi
+    fetch('{% url "bookmark_article" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'article_id': articleId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Madde kaydedildi!', 'success');
+        } else {
+            showToast('Hata: ' + data.error, 'error');
+        }
+    });
+}
+
+function showToast(message, type) {
+    // Basit toast bildirimi
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 250px;
+        padding: 15px;
+        border-radius: 5px;
+    `;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 500);
+    }, 3000);
+}
+</script>

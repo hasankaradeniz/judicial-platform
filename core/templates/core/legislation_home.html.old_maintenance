@@ -1,0 +1,13 @@
+<\!DOCTYPE html>
+<html>
+<head>
+    <title>Mevzuat Arama - Lexatech</title>
+</head>
+<body>
+    <div style="padding: 50px; text-align: center;">
+        <h1>Mevzuat Arama</h1>
+        <p>Mevzuat arama sistemi geçici olarak bakım altındadır.</p>
+        <p><a href="/">Ana Sayfaya Dön</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+    def clean_asterisks(self, text):
+        """Metinden yıldız işaretlerini temizle"""
+        if not text:
+            return text
+        
+        # Çift yıldızları temizle (bold)
+        text = re.sub(r'\*\*([^*]+?)\*\*', r'\1', text)
+        
+        # Tek yıldızları temizle (italic)  
+        text = re.sub(r'\*([^*]+?)\*', r'\1', text)
+        
+        # Başta ve sonda kalan yıldızları temizle
+        text = re.sub(r'^\*+|\*+$', '', text, flags=re.MULTILINE)
+        
+        # Ardışık yıldızları temizle
+        text = re.sub(r'\*{2,}', '', text)
+        
+        return text.strip()

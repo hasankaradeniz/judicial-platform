@@ -1,0 +1,892 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }} - Karar Detay{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* Modern profesyonel stil */
+  .decision-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  
+  .decision-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  
+  .decision-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .decision-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+  }
+  
+  .decision-content {
+    background: white;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .metadata-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-bottom: 3px solid #e9ecef;
+  }
+  
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  
+  .metadata-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .metadata-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  
+  .metadata-value {
+    color: #212529;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .text-content {
+    padding: 40px;
+  }
+  
+  .section-title {
+    color: #495057;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #667eea;
+    display: flex;
+    align-items: center;
+  }
+  
+  .section-title i {
+    margin-right: 10px;
+    color: #667eea;
+  }
+
+  /* ENHANCED KEYWORDS SECTION - FIXED FOR 🔹 SEPARATION */
+  .enhanced-keywords {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .keywords-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .keyword-line {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .keyword-line:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    border-left-color: #764ba2;
+  }
+
+  .keyword-line::before {
+    content: "🔹";
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .keyword-icon {
+    color: #667eea;
+    font-size: 1.2rem;
+    margin-right: 15px;
+    margin-top: 3px;
+    min-width: 22px;
+  }
+
+  .keyword-content {
+    flex: 1;
+    line-height: 1.7;
+  }
+
+  .keyword-main {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  .keyword-description {
+    color: #5a6c7d;
+    font-size: 0.92rem;
+    font-style: italic;
+    line-height: 1.6;
+    padding-left: 10px;
+    border-left: 2px solid #e9ecef;
+    margin-top: 8px;
+  }
+
+  /* ENHANCED SUMMARY SECTION */
+  .enhanced-summary {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .summary-paragraph {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .summary-paragraph:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+  }
+
+  .summary-paragraph:last-child {
+    margin-bottom: 0;
+  }
+
+  .summary-paragraph::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .summary-heading {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .summary-heading i {
+    color: #667eea;
+    font-size: 1rem;
+  }
+
+  .summary-content {
+    color: #34495e;
+    font-size: 1rem;
+    line-height: 1.8;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+
+  /* ENHANCED TEXT FORMATTING */
+  .decision-text {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #2c3e50;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+    border: 1px solid #e9ecef;
+  }
+  
+  .decision-text p {
+    margin-bottom: 2rem;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    text-indent: 2rem;
+    line-height: 1.8;
+    color: #2c3e50;
+  }
+  
+  .decision-text p:first-child {
+    text-indent: 0;
+    font-weight: 500;
+    margin-bottom: 2.5rem;
+  }
+  
+  /* Basit header stil - karar bilgileri */
+  .decision-header-simple {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .court-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  .case-numbers {
+    font-size: 1.1rem;
+    color: #495057;
+    margin-bottom: 15px;
+  }
+  
+  .court-detail {
+    font-size: 1rem;
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  /* Butonlar */
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    flex-wrap: wrap;
+  }
+  
+  .btn-modern {
+    padding: 12px 30px;
+    font-weight: 500;
+    border-radius: 25px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-primary-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary-modern {
+    background: #6c757d;
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  }
+  
+  .btn-secondary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-success-modern {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+  }
+  
+  .btn-success-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .decision-header {
+      padding: 25px 20px;
+    }
+    
+    .decision-header h1 {
+      font-size: 1.4rem;
+    }
+    
+    .text-content {
+      padding: 25px 20px;
+    }
+    
+    .metadata-section {
+      padding: 20px;
+    }
+    
+    .metadata-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .enhanced-keywords, .enhanced-summary {
+      padding: 20px;
+    }
+    
+    .keyword-line {
+      padding: 15px;
+    }
+    
+    .decision-text {
+      font-size: 1rem;
+      padding: 20px;
+    }
+    
+    .decision-text p {
+      padding: 15px;
+      text-indent: 1rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .btn-modern {
+      width: 100%;
+      max-width: 250px;
+      justify-content: center;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .decision-header {
+      background: #333 !important;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .action-buttons, .btn-modern {
+      display: none !important;
+    }
+    
+    .decision-text, .enhanced-summary, .enhanced-keywords {
+      font-size: 12pt;
+      line-height: 1.6;
+    }
+    
+    .summary-paragraph, .keyword-line {
+      break-inside: avoid;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="decision-container">
+    <!-- Profesyonel Başlık -->
+    <div class="decision-header">
+      <h1>{{ decision.karar_veren_mahkeme|upper }}</h1>
+      <div class="decision-subtitle">
+        {% if decision.esas_numarasi %}{{ decision.esas_numarasi }} Esas{% endif %}
+        {% if decision.karar_numarasi %} / {{ decision.karar_numarasi }} Karar{% endif %}
+        {% if decision.karar_tarihi %} / {{ decision.karar_tarihi|date:"d.m.Y" }}{% endif %}
+      </div>
+    </div>
+
+    <div class="decision-content">
+      <!-- Metadata Grid -->
+      <div class="metadata-section">
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-gavel"></i> Kararı Veren Mahkeme
+            </div>
+            <div class="metadata-value">{{ decision.karar_veren_mahkeme|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-hashtag"></i> Esas Numarası
+            </div>
+            <div class="metadata-value">{{ decision.esas_numarasi|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-file-alt"></i> Karar Numarası
+            </div>
+            <div class="metadata-value">{{ decision.karar_numarasi|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-calendar-alt"></i> Karar Tarihi
+            </div>
+            <div class="metadata-value">{{ decision.karar_tarihi|date:"d F Y"|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-layer-group"></i> Karar Türü
+            </div>
+            <div class="metadata-value">{{ decision.karar_turu|default:"Belirtilmemiş" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Keywords Section - Fixed for 🔹 separation -->
+      {% if decision.anahtar_kelimeler %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-tags"></i>
+          Hukuki Kavramlar ve Anahtar Kelimeler
+        </div>
+        <div class="enhanced-keywords">
+          <div class="keywords-container" id="keywordsContainer">
+            <!-- Keywords will be processed by JavaScript -->
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Enhanced Summary Section -->
+      {% if decision.karar_ozeti %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-file-contract"></i>
+          Karar Özeti
+        </div>
+        <div class="enhanced-summary">
+          <div id="summaryContainer">
+            <!-- Summary will be processed by JavaScript -->
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Ana Metin -->
+      {% if decision.karar_tam_metni %}
+      <div class="text-content">
+        <!-- Basit Karar Başlığı -->
+        <div class="decision-header-simple">
+          <div class="court-name">{{ decision.karar_veren_mahkeme }}</div>
+          <div class="case-numbers">
+            {% if decision.esas_numarasi %}{{ decision.esas_numarasi }} E.{% endif %}
+            {% if decision.karar_numarasi %} , {{ decision.karar_numarasi }} K.{% endif %}
+          </div>
+          {% if decision.karar_tarihi %}
+          <div class="court-detail">{{ decision.karar_tarihi|date:"d.m.Y" }} Tarihli Karar</div>
+          {% endif %}
+        </div>
+        
+        <div class="decision-text" id="decisionText">
+          <!-- Text will be processed by JavaScript for natural paragraphs -->
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Aksiyon Butonları -->
+      <div class="action-buttons">
+        {% if decision.dosya %}
+          <a href="{{ decision.dosya.url }}" target="_blank" class="btn-modern btn-primary-modern">
+            <i class="fas fa-download"></i>
+            Dosyayı İndir
+          </a>
+        {% endif %}
+        
+        <button onclick="window.print()" class="btn-modern btn-success-modern">
+          <i class="fas fa-print"></i>
+          Yazdır
+        </button>
+        
+        <button onclick="copyToClipboard()" class="btn-modern btn-primary-modern">
+          <i class="fas fa-copy"></i>
+          Metni Kopyala
+        </button>
+        
+        <a href="#" onclick="goBackToResults()" class="btn-modern btn-secondary-modern">
+          <i class="fas fa-arrow-left"></i>
+          Geri Dön
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// FIXED: Enhanced Keywords Processing based on 🔹 separator
+function processKeywords() {
+  const keywordsRaw = `{{ decision.anahtar_kelimeler|escapejs }}`;
+  const container = document.getElementById('keywordsContainer');
+  
+  if (!keywordsRaw || !container) return;
+  
+  // STEP 1: Split specifically by 🔹 character
+  let keywords = [];
+  
+  if (keywordsRaw.includes('🔹')) {
+    // Split by 🔹 and clean up
+    keywords = keywordsRaw
+      .split('🔹')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+  } else {
+    // Fallback: split by other separators if no 🔹 found
+    keywords = keywordsRaw
+      .split(/[|,;]/)
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+  }
+  
+  // STEP 2: Process each keyword segment
+  keywords.forEach((keywordText, index) => {
+    const keywordLine = document.createElement('div');
+    keywordLine.className = 'keyword-line';
+    
+    // Clean the text - remove any extra 🔹 at the beginning
+    keywordText = keywordText.replace(/^🔹\s*/, '').trim();
+    
+    // STEP 3: Check for description in parentheses
+    let mainKeyword = keywordText;
+    let description = '';
+    
+    const parenthesesMatch = keywordText.match(/^([^(]+)\s*\(([^)]+)\)(.*)$/);
+    if (parenthesesMatch) {
+      mainKeyword = parenthesesMatch[1].trim();
+      description = parenthesesMatch[2].trim();
+      if (parenthesesMatch[3] && parenthesesMatch[3].trim()) {
+        mainKeyword += ' ' + parenthesesMatch[3].trim();
+      }
+    }
+    
+    // STEP 4: Assign appropriate icon based on content
+    let icon = 'fas fa-tag'; // default icon
+    
+    const lowerText = mainKeyword.toLowerCase();
+    if (lowerText.includes('tutar') || lowerText.includes('miktar') || lowerText.includes('tl')) {
+      icon = 'fas fa-money-bill';
+    } else if (lowerText.includes('sonuç') || lowerText.includes('karar')) {
+      icon = 'fas fa-gavel';
+    } else if (lowerText.includes('konu') || lowerText.includes('dava')) {
+      icon = 'fas fa-clipboard-list';
+    } else if (lowerText.includes('mahkeme') || lowerText.includes('daire')) {
+      icon = 'fas fa-university';
+    } else if (lowerText.includes('tarih')) {
+      icon = 'fas fa-calendar-alt';
+    } else if (lowerText.includes('iş') || lowerText.includes('çalışma')) {
+      icon = 'fas fa-briefcase';
+    } else if (lowerText.includes('aile') || lowerText.includes('evlilik') || lowerText.includes('boşanma')) {
+      icon = 'fas fa-home';
+    } else if (lowerText.includes('miras') || lowerText.includes('tereke')) {
+      icon = 'fas fa-coins';
+    } else if (lowerText.includes('ticaret') || lowerText.includes('şirket')) {
+      icon = 'fas fa-handshake';
+    } else {
+      // Cycle through icons for variety
+      const iconOptions = [
+        'fas fa-balance-scale', 'fas fa-file-contract', 'fas fa-users',
+        'fas fa-shield-alt', 'fas fa-stamp', 'fas fa-scroll'
+      ];
+      icon = iconOptions[index % iconOptions.length];
+    }
+    
+    // STEP 5: Create the HTML structure
+    keywordLine.innerHTML = `
+      <div class="keyword-icon">
+        <i class="${icon}"></i>
+      </div>
+      <div class="keyword-content">
+        <div class="keyword-main">${mainKeyword}</div>
+        ${description ? `<div class="keyword-description">${description}</div>` : ''}
+      </div>
+    `;
+    
+    container.appendChild(keywordLine);
+  });
+  
+  console.log(`Processed ${keywords.length} keyword segments based on 🔹 separation`);
+}
+
+// Enhanced Summary Processing (unchanged)
+function processSummary() {
+  const summaryRaw = `{{ decision.karar_ozeti|escapejs }}`;
+  const container = document.getElementById('summaryContainer');
+  
+  if (!summaryRaw || !container) return;
+  
+  // Split into logical sections
+  const sections = [];
+  let currentSection = '';
+  
+  // Try to identify different sections in the summary
+  const sentences = summaryRaw.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  
+  sentences.forEach((sentence, index) => {
+    sentence = sentence.trim();
+    if (!sentence) return;
+    
+    // Detect section headers
+    if (sentence.match(/^(DAVA KONUSU|KONU|YARGITAY|MAHKEME|SONUÇ|KARAR|DEĞERLENDİRME)/i)) {
+      if (currentSection) {
+        sections.push(currentSection);
+      }
+      currentSection = sentence;
+    } else {
+      currentSection += (currentSection ? '. ' : '') + sentence;
+    }
+  });
+  
+  if (currentSection) {
+    sections.push(currentSection);
+  }
+  
+  // If no clear sections found, split by length
+  if (sections.length === 0) {
+    const words = summaryRaw.split(' ');
+    const chunkSize = Math.ceil(words.length / 3);
+    
+    for (let i = 0; i < words.length; i += chunkSize) {
+      sections.push(words.slice(i, i + chunkSize).join(' '));
+    }
+  }
+  
+  // Create section elements
+  sections.forEach((section, index) => {
+    const paragraph = document.createElement('div');
+    paragraph.className = 'summary-paragraph';
+    
+    // Detect section type and assign appropriate heading
+    let heading = 'Bölüm ' + (index + 1);
+    let icon = 'fas fa-paragraph';
+    
+    if (section.toLowerCase().includes('dava konusu') || section.toLowerCase().includes('konu')) {
+      heading = 'Dava Konusu';
+      icon = 'fas fa-clipboard-list';
+    } else if (section.toLowerCase().includes('yargıtay') || section.toLowerCase().includes('görüş')) {
+      heading = 'Yargıtay Değerlendirmesi';
+      icon = 'fas fa-balance-scale';
+    } else if (section.toLowerCase().includes('sonuç') || section.toLowerCase().includes('karar')) {
+      heading = 'Sonuç ve Karar';
+      icon = 'fas fa-gavel';
+    } else if (index === 0) {
+      heading = 'Genel Değerlendirme';
+      icon = 'fas fa-info-circle';
+    } else if (index === sections.length - 1) {
+      heading = 'Son Değerlendirme';
+      icon = 'fas fa-flag-checkered';
+    }
+    
+    paragraph.innerHTML = `
+      <div class="summary-heading">
+        <i class="${icon}"></i>
+        ${heading}
+      </div>
+      <div class="summary-content">${section}</div>
+    `;
+    
+    container.appendChild(paragraph);
+  });
+}
+
+// Go back to results function
+function goBackToResults() {
+  // First check session storage for last search URL
+  const lastSearchUrl = sessionStorage.getItem('lastSearchUrl');
+  
+  if (lastSearchUrl) {
+    // Go back to stored search results page
+    window.location.href = lastSearchUrl;
+  } else {
+    // Check if we came from search results
+    const referrer = document.referrer;
+    
+    if (referrer && referrer.includes('/search-results/')) {
+      // Go back to search results page
+      window.location.href = referrer;
+    } else if (referrer && (referrer.includes('/judicial-decisions/') || referrer.includes('/judicial_decisions/'))) {
+      // If we came from judicial decisions page (with possible filters)
+      window.location.href = referrer;
+    } else if (window.history.length > 1) {
+      // Try to go back in history
+      window.history.back();
+    } else {
+      // Default fallback to judicial decisions page
+      window.location.href = "{% url 'judicial_decisions' %}";
+    }
+  }
+  
+  return false;
+}
+
+// Copy to clipboard function
+function copyToClipboard() {
+  const textContent = document.getElementById('decisionText')?.innerText || '';
+  const summaryContent = document.getElementById('summaryContainer')?.innerText || '';
+  const keywordsContent = document.getElementById('keywordsContainer')?.innerText || '';
+  
+  const fullText = `${keywordsContent}\n\n${summaryContent}\n\n${textContent}`;
+  
+  navigator.clipboard.writeText(fullText).then(() => {
+    // Show success message
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+    button.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+    
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.style.background = '';
+    }, 2000);
+  }).catch(err => {
+    console.error('Kopyalama hatası:', err);
+  });
+}
+
+// Separate function for pattern-based splitting (only when needed)
+function splitByLegalPatterns(text) {
+  const paragraphs = [];
+  
+  // Step 1: Split at key structural points
+  // First split at "düşünüldü:" which marks end of case summary
+  const mainParts = text.split(/(düşünüldü:\s*)/i);
+  
+  for (let partIndex = 0; partIndex < mainParts.length; partIndex++) {
+    let part = mainParts[partIndex].trim();
+    if (!part || part.match(/^düşünüldü:\s*$/i)) continue;
+    
+    // For the header part (before düşünüldü), split at MAHKEMESI: and DAVA TÜRÜ:
+    if (partIndex === 0) {
+      const headerSections = part.split(/(\s*(?:MAHKEMES[İI]\s*:|DAVA TÜR[ÜU]\s*:)[^]*?)(?=\s*(?:MAHKEMES[İI]\s*:|DAVA TÜR[ÜU]\s*:|Taraflar|$))/i);
+      
+      for (let section of headerSections) {
+        section = section.trim();
+        if (section.length > 20) {
+          paragraphs.push(section);
+        }
+      }
+    } else {
+      // For content after düşünüldü, split by legal terms
+      const sentences = part.split(/(?<=[.!?])\s+(?=[A-ZÇĞIÖŞÜ])/);
+      let current = '';
+      
+      for (let sentence of sentences) {
+        sentence = sentence.trim();
+        if (!sentence) continue;
+        
+        const shouldSplit = 
+          /^(Davacı|Davalı|Mahkeme|Yargıtay|Dava konusu|Sonuç|Karar|Gerekçe|Hüküm)/i.test(sentence) ||
+          current.length > 400;
+        
+        if (shouldSplit && current.length > 50) {
+          paragraphs.push(current);
+          current = sentence;
+        } else {
+          current += (current ? ' ' : '') + sentence;
+        }
+      }
+      
+      if (current.trim()) paragraphs.push(current);
+    }
+  }
+  
+  return paragraphs.filter(p => p.length > 20);
+}
+
+// Optimized Natural Paragraph Processing for Decision Text
+function processDecisionText() {
+  const textRaw = `{{ decision.karar_tam_metni|escapejs }}`;
+  const container = document.getElementById('decisionText');
+  
+  if (!textRaw || !container) return;
+  
+  // Step 1: Fast text normalization
+  let cleanText = textRaw.replace(/\s+/g, ' ').trim();
+  
+  // Step 2: Try double line breaks first (fastest method)
+  let paragraphs = cleanText.includes('\n\n') ? 
+    cleanText.split(/\n\s*\n/) : 
+    splitByLegalPatterns(cleanText);
+  
+  // Step 3: Fast HTML generation
+  container.innerHTML = paragraphs
+    .map(p => p.trim())
+    .filter(p => p.length > 20)
+    .map(p => `<p>${p}</p>`)
+    .join('');
+}
+
+// Initialize processing when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  processKeywords();
+  processSummary();
+  processDecisionText();
+  
+  // Store referrer if it's a search results page
+  const referrer = document.referrer;
+  if (referrer && referrer.includes('/search-results/')) {
+    sessionStorage.setItem('lastSearchUrl', referrer);
+  }
+});
+</script>
+{% endblock %}

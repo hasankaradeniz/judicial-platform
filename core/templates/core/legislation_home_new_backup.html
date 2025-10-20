@@ -1,0 +1,269 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Gelişmiş Mevzuat Sistemi - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .hero-section {
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+
+  .hero-section .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-section h1,
+  .hero-section p.lead {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  
+  .stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .border-left-primary {
+    border-left: 4px solid #4e73df !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Hero Section -->
+  <div class="hero-section"
+       style="background: url('{% static 'core/images/mevzuat_bg.jpg' %}') no-repeat center center;
+              background-size: cover;
+              padding: 60px 0;">
+    <div class="container text-center">
+      <h1 class="mb-4" style="font-weight: 700;">GELİŞMİŞ MEVZUAT SİSTEMİ</h1>
+      <p class="lead mb-2" style="font-weight: 400;">{{ total_mevzuat|default:0 }} Mevzuat • {{ total_madde|default:0 }} Madde</p>
+      <p class="lead mb-4" style="font-weight: 400;">Kapsamlı mevzuat araması için kelime veya cümle giriniz.</p>
+      
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <form method="get" action="{% url 'legislation_results' %}">
+            <div class="input-group input-group-lg">
+              <input type="text" class="form-control" name="q" 
+                     placeholder="Mevzuat başlığı, konusu, anahtar kelime veya numara..." required>
+              <select name="mevzuat_turu" class="form-select" style="max-width: 200px;">
+                <option value="">Tüm Türler</option>
+                {% for turu in mevzuat_turu_stats %}
+                  <option value="{{ turu.mevzuat_turu__id }}">{{ turu.mevzuat_turu__ad }} ({{ turu.count }})</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-primary" type="submit" style="min-width: 100px;">
+                🔍 Ara
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- İstatistik Kartları -->
+  <div class="row mt-5 mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card stats-card shadow text-center">
+        <div class="card-body">
+          <div class="display-4 mb-2">📜</div>
+          <h4 class="card-title">{{ total_mevzuat|default:0 }}</h4>
+          <p class="card-text">Toplam Mevzuat</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card stats-card shadow text-center">
+        <div class="card-body">
+          <div class="display-4 mb-2">📄</div>
+          <h4 class="card-title">{{ total_madde|default:0 }}</h4>
+          <p class="card-text">Toplam Madde</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card stats-card shadow text-center">
+        <div class="card-body">
+          <div class="display-4 mb-2">📚</div>
+          <h4 class="card-title">{{ mevzuat_turu_stats|length }}</h4>
+          <p class="card-text">Mevzuat Türü</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card stats-card shadow text-center">
+        <div class="card-body">
+          <div class="display-4 mb-2">⚖️</div>
+          <h4 class="card-title">2024</h4>
+          <p class="card-text">Güncel Sistem</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mevzuat Türleri -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h3 class="text-center mb-4">📊 Mevzuat Türlerine Göre Dağılım</h3>
+      <div class="row">
+        {% for turu in mevzuat_turu_stats %}
+        <div class="col-md-3 mb-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+              <div class="display-4 mb-3">
+                {% if turu.mevzuat_turu__kategori == 'kanun' %}📜
+                {% elif turu.mevzuat_turu__kategori == 'cumhurbaskanligi_kararnamesi' %}📋
+                {% elif turu.mevzuat_turu__kategori == 'yonetmelik' %}📑
+                {% elif turu.mevzuat_turu__kategori == 'tuzuk' %}📄
+                {% elif turu.mevzuat_turu__kategori == 'genelge' %}📝
+                {% else %}📰{% endif %}
+              </div>
+              <h6 class="card-title">{{ turu.mevzuat_turu__ad }}</h6>
+              <h4 class="text-primary mb-3">{{ turu.count }}</h4>
+              <a href="{% url 'legislation_results' %}?mevzuat_turu={{ turu.mevzuat_turu__id }}" 
+                 class="btn btn-outline-primary btn-sm">
+                Görüntüle
+              </a>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="text-center text-muted">
+            <p>Henüz mevzuat türü bulunmuyor.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Son Eklenen Mevzuatlar -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h4 class="mb-4">📅 Son Eklenen Mevzuatlar</h4>
+      <div class="row">
+        {% for mevzuat in son_mevzuatlar %}
+        <div class="col-md-6 mb-3">
+          <div class="card border-left-primary shadow-sm">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    {{ mevzuat.mevzuat_turu.ad }}
+                  </div>
+                  <div class="h6 mb-0 font-weight-bold text-gray-800">
+                    <a href="{% url 'legislation_detail' mevzuat.pk %}" class="text-decoration-none">
+                      {{ mevzuat.baslik|truncatechars:60 }}
+                    </a>
+                  </div>
+                  <div class="text-xs text-muted mt-1">
+                    {% if mevzuat.mevzuat_numarasi %}No: {{ mevzuat.mevzuat_numarasi }} • {% endif %}
+                    {{ mevzuat.yayin_tarihi|date:"d.m.Y"|default:"Tarih belirtilmemiş" }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="text-muted">
+                    <small>{{ mevzuat.kayit_tarihi|timesince }} önce</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="text-center text-muted">
+            <p>Henüz mevzuat bulunmuyor.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategori Chart -->
+  {% if kategori_chart_data %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <h4 class="text-center mb-4">📈 Kategoriye Göre Dağılım</h4>
+      <div class="text-center">
+        <canvas id="kategoriChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Gelişmiş Arama Butonu -->
+  <div class="text-center mt-5 mb-5">
+    <a href="{% url 'legislation_results' %}" class="btn btn-outline-secondary btn-lg">
+      🔧 Gelişmiş Arama
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  {% if kategori_chart_data %}
+  const ctx = document.getElementById('kategoriChart').getContext('2d');
+  const chartData = {{ kategori_chart_data|safe }};
+  
+  const kategoriChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        data: chartData.data,
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB', 
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+          '#FF6384',
+          '#36A2EB'
+        ],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        },
+        title: {
+          display: true,
+          text: 'Mevzuat Kategorileri Dağılımı'
+        }
+      }
+    }
+  });
+  {% endif %}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Sayfasına Yönlendiriliyor - Lexatech</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .redirect-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .loading-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .info {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .order-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .order-info strong {
+            color: #333;
+        }
+        
+        .manual-submit {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            color: #856404;
+        }
+        
+        .submit-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-container">
+        <div class="loading-icon">⏳</div>
+        <h1>Ödeme Sayfasına Yönlendiriliyor</h1>
+        
+        <div class="info">
+            Param güvenli ödeme sayfasına yönlendiriliyorsunuz. Lütfen bekleyiniz...
+        </div>
+        
+        {% if is_form_submission %}
+        <div class="order-info">
+            <strong>Sipariş No:</strong> {{ order_id }}<br>
+            <strong>Paket:</strong> {{ package|capfirst }}<br>
+            <strong>Ödeme Yöntemi:</strong> Form Tabanlı
+        </div>
+        
+        <form id="payment-form" method="POST" action="{{ payment_url }}">
+            {% for key, value in form_params.items %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+            
+            <div class="manual-submit">
+                Otomatik yönlendirme çalışmıyorsa:
+                <br>
+                <button type="submit" class="submit-btn">Ödeme Sayfasına Git</button>
+            </div>
+        </form>
+        
+        <script>
+            // Auto-submit form after 3 seconds
+            setTimeout(function() {
+                document.getElementById('payment-form').submit();
+            }, 3000);
+        </script>
+        {% else %}
+        <div class="order-info">
+            <strong>Sipariş No:</strong> {{ order_id }}<br>
+            <strong>Paket:</strong> {{ package|capfirst }}<br>
+            <strong>Ödeme Yöntemi:</strong> 3D Secure
+        </div>
+        
+        <script>
+            // Direct redirect for 3D Secure
+            setTimeout(function() {
+                window.location.href = "{{ payment_url }}";
+            }, 3000);
+        </script>
+        {% endif %}
+    </div>
+</body>
+</html>

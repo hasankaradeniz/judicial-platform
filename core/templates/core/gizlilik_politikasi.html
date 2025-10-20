@@ -1,0 +1,111 @@
+{% extends "core/base.html" %}
+
+{% block page_title %}Lexatech - Sözleşme Hazırlama Platformu{% endblock %}
+
+{% block extra_styles %}
+
+    <style>
+        /* Genel Ayarlar */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-image: url('static/background_feature.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* İçerik Bölümü */
+        .content-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            background-color: #ffffffcc;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            line-height: 1.6;
+        }
+
+        .content-section h1, .content-section h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #004085;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0056b3;
+        }
+
+        .content-section p {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        .content-section ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: #333;
+        }
+
+        .content-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content-section a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Gizlilik Politikası İçeriği -->
+    <section class="content-section">
+        <h1>Gizlilik Politikası</h1>
+
+        <h2>Web Sitesini Kullanırken Vereceğiniz Açık Rıza’nız Nedir?</h2>
+        <p>www.Lexatech.ai internet sitesini kullanırken sizden bazı kişisel verileriniz istenmektedir. Bu talep Kişisel Verilerin Korunması Kanunu gereğince yapılmakta olup bu rızayı vermemeniz durumunda uygulamayı kullanabilmeniz mümkün değildir. Zira açık rızanız olmadıkça sizin sağlık ve cinsel hayatınıza ilişkin verilerinizi toplayabilmemiz mümkün olmamaktadır.</p>
+
+        <h2>Teknolojik İmkanlar Kullanılarak Toplanan Veriler</h2>
+        <p>www.lexatech.ai internet sitesi veya uygulamaları, çeşitli bilgiler toplayabilir. Bu bilgiler şunları içerebilir:</p>
+        <ul>
+            <li>Gezinme bilgileri ve site aktivite bilgileri</li>
+            <li>Erişim cihazı ve tarayıcı bilgileri</li>
+            <li>Çerezler ve oturum bilgileri</li>
+            <li>Gerçek zamanlı konum bilgileri</li>
+            <li>Mobil hizmetler ve cihaz bilgileri</li>
+            <li>Analytics araçları aracılığıyla toplanan kullanıcı davranış verileri</li>
+        </ul>
+
+        <h2>Kullanıcı Tarafından Kişisel Verilerin Değiştirilmek İstenmesi</h2>
+        <p>Kullanıcılar, www.lexatech.ai internet sitesi veya ilgili uygulamalar üzerinden kendi verilerini değiştirebilir veya <a href="mailto:hasan@hasankaradeniz.av.tr">hasan@hasankaradeniz.av.tr</a> adresine mail göndererek değişiklik talebinde bulunabilirler.</p>
+
+        <h2>Gizlilik Politikası Değişiklikleri</h2>
+        <p>Gizlilik Politikası zaman zaman değiştirilebilir. Revize edilmiş Gizlilik Politikası bu sayfadan yayınlanacaktır. Değişikliklerden sonra hizmetlerimizi kullanmaya devam etmeniz, bu değişiklikleri kabul ettiğiniz anlamına gelecektir.</p>
+
+        <h2>Politikaların İhlal Edildiğine İlişkin Bildirim</h2>
+        <p>Bu gizlilik politikasının ihlal edildiğini düşünüyorsanız <a href="mailto:hasan@hasankaradeniz.av.tr">hasan@hasankaradeniz.av.tr</a> adresine bildirimde bulunabilirsiniz.</p>
+    </section>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Sayfasına Yönlendiriliyor - Lexatech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5aa0 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .payment-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(26, 54, 93, 0.16);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .loading {
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a365d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .amount {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1a365d;
+            margin: 20px 0;
+        }
+        .package-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .btn-manual {
+            background: #1a365d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-manual:hover {
+            background: #2c5aa0;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h2>🔒 Güvenli Ödeme</h2>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Param Sanal Pos'a yönlendiriliyorsunuz...</p>
+        </div>
+        
+        <div class="package-info">
+            <h3>{{ package_name }}</h3>
+            <div class="amount">{{ amount }} TL</div>
+        </div>
+        
+        <p>Ödeme sayfası otomatik olarak açılacak. Eğer yönlendirme gerçekleşmezse, aşağıdaki butona tıklayın:</p>
+        
+        <form id="paymentForm" method="post" action="{{ payment_url }}">
+            {% for key, value in form_data.items %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+            <button type="submit" class="btn-manual">Ödeme Sayfasına Git</button>
+        </form>
+    </div>
+    
+    <script>
+        // 3 saniye sonra formu otomatik olarak gönder
+        setTimeout(function() {
+            document.getElementById('paymentForm').submit();
+        }, 3000);
+    </script>
+</body>
+</html>

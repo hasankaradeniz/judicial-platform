@@ -1,0 +1,444 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Lexatech - Yapay Zeka Destekli Hukuk Çözümleri | Ana Sayfa{% endblock %}
+
+{% block title_content %}Lexatech - Yapay Zeka Destekli Hukuk Çözümleri | Ana Sayfa{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Lexatech - Türkiye'nin en gelişmiş yapay zeka destekli hukuk platformu. Akademik makale arama, yargı kararları analizi, mevzuat tarama ve hukuki araştırma araçları ile hukuki çalışmalarınızı kolaylaştırın.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="Lexatech, yapay zeka hukuk, akademik makale arama, yargı kararları, mevzuat tarama, hukuki analiz, CrossRef, DOAJ, dergipark, hukuk araştırması, Türk hukuku, hukuk platformu">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Lexatech",
+  "url": "https://sozlesme.online",
+  "description": "Yapay zeka destekli hukuk çözümleri platformu",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://sozlesme.online/article/search_results/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Lexatech",
+    "url": "https://sozlesme.online",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://sozlesme.online{% static 'core/images/logo.jpeg' %}"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/company/lexatech",
+      "https://twitter.com/lexatech"
+    ]
+  },
+  "mainEntity": [
+    {
+      "@type": "Service",
+      "name": "Akademik Makale Arama",
+      "description": "CrossRef ve DOAJ API'leri kullanarak güncel akademik makaleleri arama",
+      "url": "https://sozlesme.online/articles/"
+    },
+    {
+      "@type": "Service", 
+      "name": "Yargı Kararları Analizi",
+      "description": "Türk yargı kararlarını analiz etme ve arama",
+      "url": "https://sozlesme.online/judicial-decisions/"
+    },
+    {
+      "@type": "Service",
+      "name": "Mevzuat Tarama",
+      "description": "Türk mevzuatını tarama ve analiz etme",
+      "url": "https://sozlesme.online/legislation/"
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* Responsive Home Page Styles */
+  .jumbotron.bg-light {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 15px !important;
+    margin: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  
+  .card {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: none !important;
+    border-radius: 15px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+  
+  /* Hero Section Responsive */
+  .jcard {
+    border-radius: 20px !important;
+    overflow: hidden;
+    margin: 20px auto !important;
+    max-width: 95%;
+  }
+  
+  .jcard .overlay {
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%);
+    border-radius: 20px;
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .jumbotron.bg-light {
+      margin: 10px;
+      padding: 2rem 1rem !important;
+    }
+    
+    .jcard {
+      min-height: 400px !important;
+      margin: 10px !important;
+      border-radius: 15px !important;
+    }
+    
+    .card {
+      margin-bottom: 20px;
+    }
+    
+    .container {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    
+    h1 {
+      font-size: 2rem !important;
+    }
+    
+    h2 {
+      font-size: 1.5rem !important;
+    }
+    
+    .btn {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+  
+  /* Tablet optimizations */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .jcard {
+      min-height: 450px;
+    }
+    
+    .card {
+      margin-bottom: 25px;
+    }
+  }
+  
+  /* Feature cards grid improvement */
+  .row.mt-5 {
+    margin-top: 3rem !important;
+  }
+  
+  .col-md-4 {
+    margin-bottom: 2rem;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+  }
+  
+  /* Typography improvements */
+  h1, h2, h3 {
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+  
+  p {
+    line-height: 1.6;
+    color: #4b5563;
+  }
+  
+  /* Loading animation for interactive elements */
+  .card {
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .card:hover::before {
+    left: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero / Jumbotron -->
+<div class="jcard shadow-sm mb-5" style="position: relative; background-image: url('{% static 'core/images/your_banner.jpg' %}'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 500px;">
+
+  <!-- Yarı saydam örtü -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.5);"></div>
+
+  <!-- İçerik -->
+  <div class="container text-center d-flex flex-column justify-content-center align-items-center" style="color: #333; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); min-height: 500px; position: relative; z-index: 1;">
+    <h1 class="display-4 font-weight-bold mb-4">Lexatech'e Hoşgeldiniz!</h1>
+    <p class="lead" style="line-height: 1.7; font-size: 1.3rem;">
+      Yapay zeka destekli hukuk çözümleri platformu olarak, yargı kararları, makaleler ve mevzuat verilerini hızlı ve güvenilir şekilde aramanıza olanak tanıyoruz.
+    </p>
+    <hr class="my-4" style="border-top: 1px solid rgba(0, 0, 0, 0.2); width: 60%; margin: 1.5rem auto;">
+    <p style="line-height: 1.7; font-size: 1.1rem;">
+      Platformumuz, en güncel hukuk verilerini analiz ederek doğru sonuçları sunar; böylece karar süreçleriniz hızlanır, raporlarınız zenginleşir.
+      Aramanızı kelime veya kavram bazlı yapabileceğiniz gibi; karşılaştığınız hukuki sorunu kısaca özetleyerek de yapabilirsiniz.
+      Aramanızı karşılaştığınız hukuki sorunu kısaca özetleyerek yapmanız durumunda olayınız hakkında öncelikle kısa bir hukuki açıklama üretilecektir.
+      Akabinde ise hukuki sorununuzla ilgili yargı kararları 25'erli gruplar halinde sıralanacaktır.
+      Her seferinde aramanızla ilgili, ilişkili en güncel yargı kararları, mevzuat hükümleri ve makaleler tarafınıza sunularak dilekçe ve raporlarınızı oluşturmanıza olanak tanınır.
+    </p>
+    <a class="btn btn-primary btn-lg mt-4" href="{% url 'about' %}" role="button" style="padding: 12px 30px; font-size: 1.2rem;">Nasıl Çalışır?</a>
+  </div>
+</div>
+
+
+<!-- Ana Arama Formu (Yargı Kararlarında Arama) -->
+<div class="card shadow-sm mb-5">
+  <div class="card-body">
+    <h3 class="card-title text-center">Yargı Kararlarında Arama</h3>
+    <p class="card-text text-center">658.407 yargı kararında hızlı ve akıllı arama yapın</p>
+    
+    <!-- Basit Arama Formu -->
+    <form action="{% url 'judicial_decisions' %}" method="get" class="text-center">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="input-group input-group-lg mb-3">
+            <input type="text" name="q" class="form-control" 
+                   placeholder="Arama terimini girin... (örn: boşanma nafakası, iş sözleşmesi feshi)" 
+                   autocomplete="off" required>
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Ara
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    
+    <!-- Alternatif Seçenekler -->
+    <div class="text-center">
+      <small class="text-muted">Diğer arama seçenekleri: </small>
+      <a href="{% url 'faiss_query:olay_gir' %}" class="btn btn-sm btn-outline-success">
+        <i class="fas fa-brain"></i> AI Destekli Arama
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Hukuki Olay Sorgulama (Yeni Ekstra Kutucuk) -->
+<div class="card shadow-sm mb-5">
+  <div class="card-body">
+    <h3 class="card-title text-center">Hukuki Olay Sorgulama</h3>
+    <p class="card-text text-center">Karşılaştığınız hukuki olayı yazarak ilgili kararları hızlıca listeleyin.</p>
+    <form id="faissSearchForm" method="post" action="{% url 'faiss_query:olay_gir' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="olay">Hukuki Olay Açıklaması:</label>
+        <input type="text" class="form-control" id="olay" name="olay" placeholder="Örneğin: Müvekkilin annesi 80 yaşında adına kayıtlı olan tek gayrimenkulkü çocuklarından birinin üzerine devretmiş. Diğer çocuğu bu devir işlemnin iptali için dava açmak istiyor. " required>
+      </div>
+      <button type="submit" class="btn btn-success btn-block mt-3">Olayı Sorgula</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOPLAM KARAR SAYISI SAYAÇ KARTI -->
+<div class="container mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm text-center" style="background-color: rgba(255,255,255,0.5); padding: 40px;">
+        <h3>Toplam Karar Sayısı</h3>
+        <div id="totalCounter" class="counter" style="font-size: 3rem; font-weight: bold; color: #007bff;" data-target="{{ total_decisions }}">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EN YENİ 10 YARGI KARARI -->
+<div class="card shadow-sm mb-5">
+  <div class="card-body text-center">
+    <h2 class="card-title">EN YENİ 10 YARGI KARARI</h2>
+  </div>
+</div>
+  {% if newest_decisions %}
+    <ul class="list-group">
+      {% for decision in newest_decisions %}
+        <li class="list-group-item mb-3" style="background-color: transparent; border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}</strong><br>
+              <small class="text-muted">
+                <strong>Esas No:</strong> {{ decision.esas_numarasi }} &middot;
+                <strong>Tarih:</strong> {{ decision.karar_tarihi }}
+              </small>
+              <p class="mt-2 mb-0">{{ decision.karar_ozeti|truncatewords:30 }}</p>
+            </div>
+            <div>
+              <a href="{% url 'judicial_detail' decision.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-center">Henüz yeni karar bulunamadı.</p>
+  {% endif %}
+</div>
+
+<!-- GÜNÜN YARGI KARARLARI -->
+<div class="card shadow-sm mb-5">
+  <div class="card-body text-center">
+    <h2 class="card-title">GÜNÜN YARGI KARARLARI</h2>
+  </div>
+</div>
+  {% if random_decisions %}
+    <ul class="list-group">
+      {% for decision in random_decisions %}
+        <li class="list-group-item mb-3" style="background-color: transparent; border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}</strong><br>
+              <small class="text-muted">
+                <strong>Esas No:</strong> {{ decision.esas_numarasi }} &middot;
+                <strong>Tarih:</strong> {{ decision.karar_tarihi }}
+              </small>
+              <p class="mt-2 mb-0">{{ decision.karar_ozeti|truncatewords:30 }}</p>
+            </div>
+            <div>
+              <a href="{% url 'judicial_detail' decision.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-center">Henüz öne çıkan karar bulunmamaktadır.</p>
+  {% endif %}
+</div>
+
+<!-- GÜNÜN RESMİ GAZETE İÇERİKLERİ -->
+<div class="card shadow-sm mb-5">
+  <div class="card-body text-center">
+    <h2 class="card-title">GÜNÜN RESMİ GAZETE İÇERİKLERİ</h2>
+    <div class="alert alert-success mt-3 mx-3">
+      <i class="fas fa-file-pdf me-2"></i>
+      <strong>Güncel İçerik:</strong> {{ resmi_gazete_icerikler.0.tarih|default:"Bugünün" }} tarihli Resmi Gazete (Sayı: {{ resmi_gazete_icerikler.0.sayi|default:"---" }}) 
+      ve günün içerikleri aşağıda gösterilmektedir. Her içerik kendi linkine yönlendirir.
+    </div>
+  </div>
+</div>
+  {% if resmi_gazete_icerikler %}
+    <ul class="list-group">
+      {% for icerik in resmi_gazete_icerikler %}
+        <li class="list-group-item mb-3" style="background-color: transparent; border: none; padding: 15px;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="mb-2">
+                <strong>{{ icerik.baslik }}</strong>
+              </div>
+              <small class="text-muted">
+                <strong>Sayı:</strong> {{ icerik.sayi }} &middot;
+                <strong>Tarih:</strong> {{ icerik.tarih }}
+                {% if icerik.tur %}
+                  &middot; <strong>Tür:</strong> {{ icerik.tur|title }}
+                {% endif %}
+              </small>
+              <p class="mt-2 mb-0">{{ icerik.ozet|truncatewords:25 }}</p>
+            </div>
+            <div>
+              <a href="{{ icerik.link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                {% if icerik.tur == 'pdf' %}
+                  <i class="fas fa-file-pdf me-1"></i>PDF Görüntüle
+                {% elif icerik.tur == 'htm' %}
+                  <i class="fas fa-file-alt me-1"></i>İçeriği Görüntüle
+                {% else %}
+                  <i class="fas fa-external-link-alt me-1"></i>Ziyaret Et
+                {% endif %}
+              </a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <strong>Bilgi:</strong> Bugün için henüz Resmi Gazete içeriği bulunmamaktadır.
+      <br><small>Güncel yayınlar için <a href="https://www.resmigazete.gov.tr" target="_blank" class="alert-link">resmigazete.gov.tr</a> adresini ziyaret edebilirsiniz.</small>
+    </div>
+  {% endif %}
+</div>
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Counter animation
+  const counters = document.querySelectorAll('.counter');
+  const speed = 200;
+
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const count = +counter.innerText;
+
+      const increment = target / speed;
+
+      if (count < target) {
+        counter.innerText = Math.ceil(count + increment);
+        setTimeout(updateCount, 10);
+      } else {
+        counter.innerText = target;
+      }
+    };
+
+    updateCount();
+  });
+});
+
+</script>
+{% endblock %}
+
+
+{% endblock %}

@@ -1,0 +1,668 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Arama Sonuçları: {{ query }} - Akademik Makale Platformu{% endblock %}
+
+{% block title_content %}Arama Sonuçları: {{ query }} - Akademik Makale Platformu{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --success-green: #10b981;
+    --danger-red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    background: var(--gray-50);
+  }
+
+  .search-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    color: white;
+    padding: 40px 0;
+  }
+
+  .search-box {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    border: 2px solid var(--gray-100);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    outline: none;
+  }
+
+  .search-btn {
+    background: var(--primary-blue);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .search-btn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+  }
+
+  .results-info {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .results-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .stat-badge {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .article-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+
+  .article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+
+  .article-card.crossref {
+    border-left-color: #2563eb;
+  }
+
+  .article-card.doaj {
+    border-left-color: #7c3aed;
+  }
+
+  .article-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+
+  .article-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .article-title a:hover {
+    color: var(--primary-blue);
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: var(--gray-600);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+
+  .source-badge.crossref {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+  }
+
+  .source-badge.doaj {
+    background: #f3e8ff;
+    color: #7c3aed;
+    border: 1px solid #d8b4fe;
+  }
+
+  .article-abstract {
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .article-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-pdf {
+    background: var(--danger-red);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn-pdf:hover {
+    background: #dc2626;
+    color: white;
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  .btn-detail {
+    background: var(--primary-blue);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn-detail:hover {
+    background: #1e40af;
+    color: white;
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  .btn-pdf:disabled,
+  .btn-detail:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    background: #6b7280 !important;
+  }
+
+  .btn-pdf:disabled:hover,
+  .btn-detail:disabled:hover {
+    background: #6b7280 !important;
+    transform: none !important;
+  }
+
+  .pagination-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .pagination {
+    margin: 0;
+    justify-content: center;
+  }
+
+  .page-link {
+    color: var(--primary-blue);
+    border-color: var(--gray-200);
+    padding: 10px 15px;
+  }
+
+  .page-link:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+  }
+
+  .page-item.active .page-link {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--gray-400);
+    margin-bottom: 20px;
+  }
+
+  .error-alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .search-header {
+      padding: 30px 0;
+    }
+    
+    .results-stats {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .article-meta {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .article-actions {
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="search-header">
+  <div class="container">
+    <h1 class="mb-4">
+      <i class="fas fa-search me-2"></i>
+      Arama Sonuçları
+    </h1>
+    
+    <div class="search-box">
+      <!-- Refine Search Alert -->
+      <div class="alert alert-warning mb-3" style="border-left: 4px solid #f59e0b;">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-filter text-warning me-2"></i>
+          <div>
+            <strong>🔍 Sonuçları Daralt</strong> - Daha spesifik arama yapmak için yeni kelimeler ekleyin
+            <br><small class="text-muted">Örn: "ticaret kanunu madde 11" veya "anayasa hukuku temel haklar"</small>
+          </div>
+        </div>
+      </div>
+      
+      <form method="get" action="{% url 'article_search_results' %}" id="refine-search-form">
+        <div class="row align-items-center">
+          <div class="col-md-8 mb-3 mb-md-0">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-search text-primary"></i>
+              </span>
+              <input type="text" class="form-control search-input" name="q" 
+                     value="{{ query }}" 
+                     placeholder="🔍 Sonuçları daraltmak için daha spesifik arama yapın..." 
+                     required>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3 mb-md-0">
+            <button class="btn btn-primary search-btn w-100" type="submit">
+              <i class="fas fa-filter me-1"></i> Daralt
+            </button>
+          </div>
+          <div class="col-md-2">
+            <a href="{% url 'articles' %}" class="btn btn-outline-secondary w-100">
+              <i class="fas fa-plus me-1"></i> Yeni Arama
+            </a>
+          </div>
+        </div>
+        
+        <!-- Quick Filter Buttons -->
+        <div class="mt-3">
+          <div class="d-flex flex-wrap gap-2">
+            <span class="text-muted small me-2">Hızlı filtreler:</span>
+            <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter=" 2024">
+              📅 2024
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter=" anayasa">
+              ⚖️ Anayasa
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter=" ticaret">
+              💼 Ticaret
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter=" medeni">
+              👥 Medeni
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter=" ceza">
+              🔒 Ceza
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  {% if error_message %}
+    <div class="error-alert">
+      <h5><i class="fas fa-exclamation-triangle me-2"></i>Hata</h5>
+      <p class="mb-0">{{ error_message }}</p>
+    </div>
+  {% endif %}
+
+  {% if query %}
+    <!-- Results Info -->
+    <div class="results-info">
+      <div class="results-stats">
+        <div>
+          <h5 class="mb-2">
+            <i class="fas fa-quote-left me-2"></i>
+            "{{ query }}" için arama sonuçları
+          </h5>
+          <p class="text-muted mb-0">
+            <i class="fas fa-info-circle text-info me-1"></i>
+            DergiPark veritabanından toplam {{ total_results }} makale bulundu
+          </p>
+          {% if total_results > 0 %}
+            <div class="alert alert-success mt-2" role="alert">
+              <i class="fas fa-check-circle me-2"></i>
+              <strong>PDF Erişimi:</strong> Bulunan makalelerin tam metnine erişim için PDF görüntüleyici sistemi aktiftir.
+            </div>
+          {% endif %}
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="stat-badge">
+            <i class="fas fa-clock me-1"></i>
+            {{ search_time }} ms
+          </span>
+          <span class="stat-badge">
+            <i class="fas fa-database me-1"></i>
+            1 Akademik Veritabanı
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Articles -->
+    {% if articles %}
+      {% for article in articles %}
+        <div class="article-card {{ article.source|lower }}">
+          <!-- Source Badge -->
+          <div class="source-badge {{ article.source|lower }}">
+            {{ article.source_icon }} {{ article.source }}
+          </div>
+          
+          <!-- Title -->
+          <h3 class="article-title">
+            {% if article.detail_link %}
+              <a href="{{ article.detail_link }}" target="_blank">{{ article.title }}</a>
+            {% else %}
+              {{ article.title }}
+            {% endif %}
+          </h3>
+          
+          <!-- Meta Information -->
+          <div class="article-meta">
+            {% if article.authors %}
+              <div class="meta-item">
+                <i class="fas fa-user"></i>
+                <strong>Yazarlar:</strong> {{ article.authors }}
+              </div>
+            {% endif %}
+            
+            {% if article.journal %}
+              <div class="meta-item">
+                <i class="fas fa-book"></i>
+                <strong>Dergi:</strong> {{ article.journal }}
+              </div>
+            {% endif %}
+            
+            {% if article.year %}
+              <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <strong>Yıl:</strong> {{ article.year }}
+              </div>
+            {% endif %}
+            
+            {% if article.doi %}
+              <div class="meta-item">
+                <i class="fas fa-link"></i>
+                <strong>DOI:</strong> {{ article.doi }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Abstract -->
+          {% if article.abstract %}
+            <div class="article-abstract">
+              {{ article.abstract }}
+            </div>
+          {% endif %}
+          
+          <!-- Actions -->
+          <div class="article-actions">
+            {% if article.id %}
+              <!-- Gerçek makale sayfasını iframe ile görüntüle -->
+              <a href="{% url "article_pdf_viewer" source=article.source|lower article_id=article.id %}?q={{ query|urlencode }}" class="btn-pdf">
+                <i class="fas fa-eye"></i>
+                Makale Görüntüle
+              </a>
+              
+              {% if article.detail_link %}
+                <a href="{{ article.detail_link }}" target="_blank" class="btn-detail">
+                  <i class="fas fa-external-link-alt"></i>
+                  Kaynak Sitesi
+                </a>
+              {% endif %}
+            {% else %}
+              <!-- Fallback - eski sistem -->
+              {% if total_results <= 3 %}
+                <button class="btn-pdf" disabled title="Örnek veri - gerçek PDF mevcut değil">
+                  <i class="fas fa-file-pdf"></i>
+                  PDF İndir (Örnek)
+                </button>
+                
+                <button class="btn-detail" disabled title="Örnek veri - gerçek link mevcut değil">
+                  <i class="fas fa-external-link-alt"></i>
+                  Detayları Gör (Örnek)
+                </button>
+              {% else %}
+                {% if article.pdf_link %}
+                  <a href="{{ article.pdf_link }}" target="_blank" class="btn-pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF İndir
+                  </a>
+                {% endif %}
+                
+                {% if article.detail_link %}
+                  <a href="{{ article.detail_link }}" target="_blank" class="btn-detail">
+                    <i class="fas fa-external-link-alt"></i>
+                    Detayları Gör
+                  </a>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+
+      <!-- Pagination - Custom for API results -->
+      {% if total_results > 10 %}
+        <div class="pagination-container">
+          <nav aria-label="Arama sonuçları sayfalama">
+            <ul class="pagination">
+              {% if has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?q={{ query }}&page=1" aria-label="İlk sayfa">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?q={{ query }}&page={{ previous_page }}" aria-label="Önceki sayfa">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for num in page_range %}
+                {% if current_page == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?q={{ query }}&page={{ next_page }}" aria-label="Sonraki sayfa">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                {% if total_pages <= 250 %}
+                <li class="page-item">
+                  <a class="page-link" href="?q={{ query }}&page={{ total_pages }}" aria-label="Son sayfa">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                  </a>
+                </li>
+                {% endif %}
+              {% endif %}
+            </ul>
+          </nav>
+          
+          <!-- Pagination info -->
+          <div class="pagination-info mt-3 text-center text-muted">
+            <small>
+              <i class="fas fa-info-circle"></i>
+              Sayfa {{ current_page }} / {{ total_pages|default:"?" }} 
+              ({{ start_index }}-{{ end_index }} / ~{{ total_results }} sonuç)
+            </small>
+          </div>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>Sonuç Bulunamadı</h3>
+        <p class="text-muted mb-4">
+          "{{ query }}" araması için herhangi bir makale bulunamadı.
+        </p>
+        <div class="mb-3">
+          <strong>Öneriler:</strong>
+        </div>
+        <ul class="list-unstyled text-muted">
+          <li>• Farklı anahtar kelimeler deneyin</li>
+          <li>• Daha genel terimler kullanın</li>
+          <li>• Yazım kontrolü yapın</li>
+          <li>• İngilizce terimler de deneyin</li>
+        </ul>
+        <a href="{% url 'articles' %}" class="btn btn-primary mt-3">
+          <i class="fas fa-arrow-left me-2"></i>
+          Yeni Arama Yap
+        </a>
+      </div>
+    {% endif %}
+  {% else %}
+    <!-- No Query -->
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>Arama Terimi Giriniz</h3>
+      <p class="text-muted mb-4">
+        Makale aramak için yukarıdaki arama kutusunu kullanın.
+      </p>
+      <a href="{% url 'articles' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Ana Sayfaya Dön
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Quick filter functionality
+document.querySelectorAll('.quick-filter').forEach(button => {
+    button.addEventListener('click', function() {
+        const filter = this.getAttribute('data-filter');
+        const searchInput = document.querySelector('input[name="q"]');
+        const currentValue = searchInput.value;
+        
+        // Add filter if not already present
+        if (!currentValue.includes(filter.trim())) {
+            searchInput.value = currentValue + filter;
+        }
+        
+        // Submit form
+        document.getElementById('refine-search-form').submit();
+    });
+});
+
+// Highlight current search terms in results
+document.addEventListener('DOMContentLoaded', function() {
+    const query = "{{ query|escapejs }}";
+    if (query) {
+        const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2);
+        
+        document.querySelectorAll('.article-title, .article-abstract').forEach(element => {
+            let html = element.innerHTML;
+            searchTerms.forEach(term => {
+                const regex = new RegExp(`(${term})`, 'gi');
+                html = html.replace(regex, '<mark style="background: #fff3cd; padding: 2px 4px; border-radius: 3px;">$1</mark>');
+            });
+            element.innerHTML = html;
+        });
+    }
+});
+</script>
+
+{% endblock %}

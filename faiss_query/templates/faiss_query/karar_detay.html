@@ -1,0 +1,777 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load text_filters %}
+
+{% block title %}{{ karar.mahkeme }} - {{ karar.karar_no }} - Karar Detay{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* Modern profesyonel stil */
+  .decision-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  
+  .decision-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  
+  .decision-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .decision-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+  }
+  
+  .decision-content {
+    background: white;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .metadata-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-bottom: 3px solid #e9ecef;
+  }
+  
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  
+  .metadata-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .metadata-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  
+  .metadata-value {
+    color: #212529;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .text-content {
+    padding: 40px;
+  }
+  
+  .section-title {
+    color: #495057;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #667eea;
+    display: flex;
+    align-items: center;
+  }
+  
+  .section-title i {
+    margin-right: 10px;
+    color: #667eea;
+  }
+  
+  /* Profesyonel metin formatı */
+  .decision-text {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #2c3e50;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    column-count: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+    border: 1px solid #e9ecef;
+  }
+  
+  .decision-text p {
+    margin-bottom: 2.5rem;
+    text-indent: 2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .decision-text p:first-child {
+    text-indent: 0;
+  }
+  
+  .decision-text p:first-child::first-letter {
+    float: left;
+    font-size: 4rem;
+    line-height: 3rem;
+    padding-right: 8px;
+    padding-top: 4px;
+    font-family: 'Georgia', serif;
+    color: #667eea;
+    font-weight: bold;
+  }
+  
+  /* Özet bölümü */
+  .summary-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+  }
+  
+  .summary-text {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #2c3e50;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    margin: 0;
+  }
+  
+  /* Anahtar kelimeler */
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .keyword-tag {
+    background: #667eea;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  /* Butonlar */
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    flex-wrap: wrap;
+  }
+  
+  .btn-modern {
+    padding: 12px 30px;
+    font-weight: 500;
+    border-radius: 25px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-primary-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary-modern {
+    background: #6c757d;
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  }
+  
+  .btn-secondary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-success-modern {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+  }
+  
+  .btn-success-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Print styles */
+  @media print {
+    .decision-header {
+      background: #333 !important;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .action-buttons, .btn-modern {
+      display: none !important;
+    }
+    
+    .decision-text {
+      font-size: 12pt;
+      line-height: 1.6;
+    }
+    
+    .metadata-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .decision-header {
+      padding: 25px 20px;
+    }
+    
+    .decision-header h1 {
+      font-size: 1.4rem;
+    }
+    
+    .text-content {
+      padding: 25px 20px;
+    }
+    
+    .metadata-section {
+      padding: 20px;
+    }
+    
+    .metadata-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .decision-text {
+      font-size: 1rem;
+      padding: 20px;
+    }
+    
+    .decision-text p {
+      text-indent: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 0.3rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .btn-modern {
+      width: 100%;
+      max-width: 250px;
+      justify-content: center;
+    }
+  }
+
+
+  /* Decision Text Formatting from Judicial Detail */
+  /* Simple Format Specific Styles */
+  /* Danıştay Format Specific Styles */
+  .danistay-paragraph {
+    text-indent: 2rem !important;
+    margin-bottom: 2rem !important; /* Daha fazla boşluk Danıştay için */
+    line-height: 1.9 !important;
+    text-align: justify;
+    padding: 5px 0;
+  }
+  
+  .danistay-paragraph:first-of-type {
+    text-indent: 0 !important;
+  }
+  
+  /* Danıştay spacing between paragraphs */
+  br.danistay-spacing {
+    display: block;
+    height: 1.5rem !important;
+    margin: 15px 0;
+  }
+  
+  /* Türk Milleti Adına special header */
+  .section-header-special {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #c41e3a;
+    text-align: center;
+    margin: 30px 0 20px 0;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffebeb 100%);
+    border-radius: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  
+  /* Enhanced section headers for Danıştay */
+  .section-header {
+    font-size: 1.1rem !important;
+    margin-top: 25px !important;
+    margin-bottom: 20px !important;
+  }  .karar-header-center {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .karar-header-center strong {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  
+  .paragraph-indent {
+    text-indent: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+    line-height: 1.8 !important;
+    text-align: justify;
+    padding: 8px 0;
+  }
+  
+  .paragraph-indent:first-of-type {
+    text-indent: 0 !important;
+    margin-top: 1rem;
+  }
+  
+  /* Add spacing between paragraphs */
+  .paragraph-indent + .paragraph-indent {
+    margin-top: 1.2rem !important;
+  }
+  
+  /* Better spacing for br tags */
+  br {
+    line-height: 2.5;
+    margin: 10px 0;
+    display: block;
+    height: 1rem;
+  }  
+    /* Simple Format Specific Styles */
+    .karar-header-center {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 8px;
+    }
+    
+    .karar-header-center strong {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+      letter-spacing: 1px;
+    }
+    
+    .paragraph-indent {
+      text-indent: 2rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+      text-align: justify;
+    }
+    
+    .paragraph-indent:first-of-type {
+      text-indent: 0;
+    }
+  .court-header-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .decision-title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 1.5rem 0;
+    padding: 0.5rem;
+    background: #f8fafc;
+    border-radius: 4px;
+  }
+  .info-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .info-label {
+    font-weight: 700;
+    color: #475569;
+    text-align: left;
+  }
+  .info-value {
+    color: #1e293b;
+  }
+  .main-section-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e40af;
+    text-align: center;
+    margin: 2rem 0 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(to right, #f0f9ff, #e0f2fe, #f0f9ff);
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .section-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 1.5rem 0 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid #3b82f6;
+    display: inline-block;
+  }
+  .section-header-conclusion {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #000000;
+    margin: 1.5rem 0 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 3px solid #000000;
+    display: block;
+  }
+  .numbered-item {
+    font-weight: 600;
+    color: #3b82f6;
+    margin-right: 0.5rem;
+    display: inline;
+  }
+  .legal-ref {
+    color: #dc2626;
+    font-weight: 500;
+    background: rgba(220, 38, 38, 0.1);
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+  .court-ref {
+    color: #7c3aed;
+    font-weight: 500;
+    font-style: italic;
+  }
+  .conclusion-paragraph {
+    margin-bottom: 1.5rem !important;
+    padding: 0;
+    background: none;
+    border: none;
+    font-weight: 400;
+    color: #1e293b;
+  }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="decision-container">
+    <!-- Profesyonel Başlık -->
+    <div class="decision-header">
+      <h1>{{ karar.mahkeme|upper|default:"MAHKEME BİLGİSİ YOK" }}</h1>
+      <div class="decision-subtitle">
+        {% if karar.esas_no %}{{ karar.esas_no }} Esas{% endif %}
+        {% if karar.karar_no %} / {{ karar.karar_no }} Karar{% endif %}
+        {% if karar.tarih %} / {{ karar.tarih }}{% endif %}
+      </div>
+    </div>
+
+    <div class="decision-content">
+      <!-- Metadata Grid -->
+      <div class="metadata-section">
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-gavel"></i> Kararı Veren Mahkeme
+            </div>
+            <div class="metadata-value">{{ karar.mahkeme|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-hashtag"></i> Esas Numarası
+            </div>
+            <div class="metadata-value">{{ karar.esas_no|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-file-alt"></i> Karar Numarası
+            </div>
+            <div class="metadata-value">{{ karar.karar_no|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-calendar-alt"></i> Karar Tarihi
+            </div>
+            <div class="metadata-value">{{ karar.tarih|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          
+        </div>
+      </div>
+
+      <!-- Özet Bölümü -->
+      {% if karar.ozet %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-file-contract"></i>
+          Karar Özeti
+        </div>
+        <div class="summary-section">
+          <div class="summary-text">{{ karar.ozet|format_summary|safe }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Ana Metin -->
+      {% if karar_tam_metni %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-scroll"></i>
+          Karar Tam Metni
+        </div>
+        <div class="decision-text" id="decisionText">
+          {{ karar_tam_metni|safe|linebreaks }}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Aksiyon Butonları -->
+      <div class="action-buttons">
+        <button onclick="window.print()" class="btn-modern btn-success-modern">
+          <i class="fas fa-print"></i>
+          Yazdır
+        </button>
+        
+        <button onclick="copyToClipboard()" class="btn-modern btn-primary-modern">
+          <i class="fas fa-copy"></i>
+          Metni Kopyala
+        </button>
+        
+        <button onclick="window.history.back(); return false;" class="btn-modern btn-secondary-modern">
+          <i class="fas fa-arrow-left"></i>
+          Listeye Geri Dön
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Metin kopyalama fonksiyonu
+function copyToClipboard() {
+  const decisionText = document.getElementById('decisionText');
+  if (!decisionText) {
+    alert('Kopyalanacak metin bulunamadı.');
+    return;
+  }
+  
+  // Metni seç ve kopyala
+  const textContent = decisionText.innerText || decisionText.textContent;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(textContent).then(function() {
+      showToast('Karar metni panoya kopyalandı!', 'success');
+    }).catch(function(err) {
+      console.error('Kopyalama hatası: ', err);
+      fallbackCopyTextToClipboard(textContent);
+    });
+  } else {
+    fallbackCopyTextToClipboard(textContent);
+  }
+}
+
+// Fallback kopyalama metodu
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+  
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showToast('Karar metni panoya kopyalandı!', 'success');
+    } else {
+      showToast('Kopyalama işlemi başarısız oldu.', 'error');
+    }
+  } catch (err) {
+    showToast('Kopyalama desteklenmiyor.', 'error');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// Toast notification gösterme
+function showToast(message, type = 'info') {
+  // Mevcut toast'ları temizle
+  const existingToasts = document.querySelectorAll('.custom-toast');
+  existingToasts.forEach(toast => toast.remove());
+  
+  const toast = document.createElement('div');
+  toast.className = `custom-toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  // Toast stillerini ekle
+  const style = document.createElement('style');
+  style.textContent = `
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border-left: 4px solid;
+      z-index: 9999;
+      animation: slideInRight 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast-success { border-left-color: #28a745; }
+    .toast-error { border-left-color: #dc3545; }
+    .toast-info { border-left-color: #17a2b8; }
+    
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .toast-success .fas { color: #28a745; }
+    .toast-error .fas { color: #dc3545; }
+    .toast-info .fas { color: #17a2b8; }
+    
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  
+  if (!document.querySelector('#toast-styles')) {
+    style.id = 'toast-styles';
+    document.head.appendChild(style);
+  }
+  
+  document.body.appendChild(toast);
+  
+  // 3 saniye sonra toast'ı kaldır
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Yazdırma öncesi optimizasyon
+window.addEventListener('beforeprint', function() {
+  document.title = `${document.querySelector('.decision-header h1').textContent} - Karar Detayı`;
+});
+
+// Sayfa yüklendiğinde basit optimizasyon
+document.addEventListener('DOMContentLoaded', function() {
+  const decisionText = document.getElementById('decisionText');
+  if (decisionText) {
+    // Sadece boş paragrafları temizle
+    const paragraphs = decisionText.querySelectorAll('p');
+    paragraphs.forEach(p => {
+      if (p.textContent.trim() === '') {
+        p.remove();
+      }
+    });
+  }
+});
+</script>
+{% endblock %}
+<style>
+  /* Paragraph Spacer for visual separation */
+  .paragraph-spacer {
+    display: block;
+    height: 1.5rem;
+    clear: both;
+  }
+  
+  /* Ensure paragraphs have proper spacing */
+  p.paragraph-indent, p.danistay-paragraph {
+    margin-top: 0 \!important;
+    margin-bottom: 0 \!important;
+  }
+  
+  /* Additional spacing after section headers */
+  .section-header + .paragraph-spacer,
+  .section-header + p {
+    margin-top: 0.5rem;
+  }
+</style>

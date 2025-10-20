@@ -1,0 +1,657 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Yargı Kararları - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --secondary: #f59e0b;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+        background-color: var(--gray-50);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: -2rem;
+    }
+    
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .header-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    /* Unified Search Form */
+    .search-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .search-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .search-form {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        padding: 0.9rem 1rem;
+        border: 2px solid var(--gray-300);
+        border-radius: 10px;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        transition: all 0.2s;
+        min-height: 50px;
+        background: white;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+    
+    .search-input-group {
+        position: relative;
+    }
+    
+    .search-input {
+        padding-left: 3.5rem;
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        font-size: 1.1rem;
+    }
+    
+    .btn-group {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 140px;
+    }
+    
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-secondary {
+        background: var(--gray-200);
+        color: var(--gray-700);
+    }
+    
+    .btn-secondary:hover {
+        background: var(--gray-300);
+    }
+    
+    /* Results */
+    .results-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem 2rem;
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+    
+    .results-count {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+    
+    .results-info {
+        font-size: 0.9rem;
+        color: var(--gray-600);
+    }
+    
+    .results-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+    
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        transition: all 0.2s;
+        border: 1px solid var(--gray-200);
+    }
+    
+    .result-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+        border-color: var(--primary);
+    }
+    
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.75rem;
+    }
+    
+    .court-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        background: var(--gray-100);
+        color: var(--gray-700);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .court-badge.yargitay { background: #fef3c7; color: #92400e; }
+    .court-badge.danistay { background: #dbeafe; color: #1e40af; }
+    .court-badge.anayasa { background: #fce7f3; color: #9f1239; }
+    
+    .result-date {
+        font-size: 0.9rem;
+        color: var(--gray-500);
+    }
+    
+    .result-title {
+        font-weight: 600;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .result-numbers {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: var(--gray-600);
+        margin-bottom: 0.75rem;
+    }
+    
+    .result-summary {
+        color: var(--gray-700);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    .result-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .result-link:hover {
+        color: var(--primary-light);
+        text-decoration: underline;
+    }
+    
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+    
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .page-link {
+        padding: 0.6rem 0.9rem;
+        min-width: 45px;
+        text-align: center;
+        border: 2px solid var(--gray-300);
+        border-radius: 8px;
+        color: var(--gray-700);
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 600;
+    }
+    
+    .page-link:hover {
+        background: var(--gray-100);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    .page-link.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Loading */
+    .loading-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    
+    .loading-spinner {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    .spinner {
+        border: 3px solid var(--gray-200);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Alert */
+    .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fcd34d;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-title { font-size: 2rem; }
+        .search-form { grid-template-columns: 1fr; }
+        .btn-group { flex-direction: column; }
+        .results-header { flex-direction: column; align-items: start; gap: 0.5rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="page-header">
+    <div class="header-content">
+        <h1 class="header-title">Yargı Kararları</h1>
+        <p class="header-subtitle">Hukuki kararları arayın ve inceleyin</p>
+    </div>
+</div>
+
+<!-- Unified Search -->
+<div class="search-section">
+    <div class="search-card">
+        <h2 class="search-title">Karar Arama</h2>
+        <form method="get" action="{% url 'judicial_decisions' %}" id="searchForm">
+            <div class="search-form">
+                <!-- Main Search -->
+                <div class="form-group full-width">
+                    <label for="q">Arama Terimi (Opsiyonel)</label>
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" 
+                               name="q" 
+                               id="q"
+                               class="form-control search-input" 
+                               placeholder="Karar metni, anahtar kelime..."
+                               value="{{ query }}">
+                    </div>
+                </div>
+                
+                <!-- Court Type -->
+                <div class="form-group">
+                    <label for="court_type">Mahkeme Türü</label>
+                    <select name="court_type" id="court_type" class="form-control">
+                        <option value="">Tümü</option>
+                        {% for stat in court_type_stats %}
+                        <option value="{{ stat.karar_turu }}" 
+                                {% if court_type == stat.karar_turu %}selected{% endif %}>
+                            {{ stat.karar_turu }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Chamber -->
+                <div class="form-group">
+                    <label for="chamber">Daire</label>
+                    <select name="chamber" id="chamber" class="form-control">
+                        <option value="">Tümü</option>
+                    </select>
+                </div>
+                
+                <!-- Decision Number -->
+                <div class="form-group">
+                    <label for="decision_number">Karar Numarası</label>
+                    <input type="text" 
+                           name="decision_number" 
+                           id="decision_number" 
+                           class="form-control" 
+                           placeholder="Örn: 2021/1234"
+                           value="{{ decision_number }}">
+                </div>
+                
+                <!-- Case Number -->
+                <div class="form-group">
+                    <label for="case_number">Esas Numarası</label>
+                    <input type="text" 
+                           name="case_number" 
+                           id="case_number" 
+                           class="form-control" 
+                           placeholder="Örn: 2021/5678"
+                           value="{{ case_number }}">
+                </div>
+                
+                <!-- Date Range -->
+                <div class="form-group">
+                    <label for="date_range">Tarih Aralığı</label>
+                    <select name="date_range" id="date_range" class="form-control">
+                        <option value="">Tüm Zamanlar</option>
+                        <option value="today" {% if date_range == 'today' %}selected{% endif %}>Bugün</option>
+                        <option value="week" {% if date_range == 'week' %}selected{% endif %}>Son 1 Hafta</option>
+                        <option value="month" {% if date_range == 'month' %}selected{% endif %}>Son 1 Ay</option>
+                        <option value="3months" {% if date_range == '3months' %}selected{% endif %}>Son 3 Ay</option>
+                        <option value="6months" {% if date_range == '6months' %}selected{% endif %}>Son 6 Ay</option>
+                        <option value="year" {% if date_range == 'year' %}selected{% endif %}>Son 1 Yıl</option>
+                    </select>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Temizle
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Ara
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="results-section">
+    {% if decisions %}
+        <div class="results-header">
+            <div>
+                <span class="results-count">{{ total_count|floatformat:0 }}</span> sonuç bulundu
+                {% if search_time %}
+                    <span class="results-info">({{ search_time }} ms)</span>
+                {% endif %}
+            </div>
+            {% if limited %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i> 
+                    Çok fazla sonuç bulundu. İlk 5000 sonuç gösteriliyor.
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="results-grid">
+            {% for decision in decisions %}
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="court-badge {{ decision.karar_turu|lower }}">
+                        {{ decision.karar_turu }}
+                    </span>
+                    {% if decision.karar_tarihi %}
+                    <span class="result-date">
+                        {{ decision.karar_tarihi|date:"d.m.Y" }}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <h3 class="result-title">{{ decision.karar_veren_mahkeme }}</h3>
+                
+                <div class="result-numbers">
+                    {% if decision.esas_numarasi %}
+                    <span><strong>Esas:</strong> {{ decision.esas_numarasi }}</span>
+                    {% endif %}
+                    {% if decision.karar_numarasi %}
+                    <span><strong>Karar:</strong> {{ decision.karar_numarasi }}</span>
+                    {% endif %}
+                </div>
+                
+                {% if decision.karar_ozeti %}
+                <p class="result-summary">{{ decision.karar_ozeti|truncatewords:30 }}</p>
+                {% endif %}
+                
+                <a href="{% url 'judicial_detail' decision.id %}" class="result-link">
+                    Detayları Görüntüle <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if decisions.has_other_pages %}
+        <div class="pagination-container">
+            <div class="pagination">
+                {% if decisions.has_previous %}
+                    <a href="?{{ request.GET.urlencode }}&page={{ decisions.previous_page_number }}" class="page-link">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% endif %}
+                
+                {% for num in page_range %}
+                    {% if num == decisions.number %}
+                        <span class="page-link active">{{ num }}</span>
+                    {% elif num == '...' %}
+                        <span class="page-link disabled">...</span>
+                    {% else %}
+                        <a href="?{{ request.GET.urlencode }}&page={{ num }}" class="page-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if decisions.has_next %}
+                    <a href="?{{ request.GET.urlencode }}&page={{ decisions.next_page_number }}" class="page-link">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="search-card" style="text-align: center; padding: 3rem;">
+            <i class="fas fa-search" style="font-size: 3rem; color: var(--gray-400); margin-bottom: 1rem; display: block;"></i>
+            <h3 style="color: var(--gray-700); margin-bottom: 0.5rem;">
+                {% if query or court_type or chamber or date_range or decision_number or case_number %}
+                    Sonuç bulunamadı
+                {% else %}
+                    Arama yapın
+                {% endif %}
+            </h3>
+            <p style="color: var(--gray-600);">
+                {% if query or court_type or chamber or date_range or decision_number or case_number %}
+                    Farklı kriterlerle tekrar deneyin
+                {% else %}
+                    Yukarıdaki formu kullanarak yargı kararlarını arayabilirsiniz
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Arama yapılıyor...</p>
+    </div>
+</div>
+
+<script>
+// Dynamic Chambers
+const chamberData = {
+    'YARGITAY': [
+        '1. Hukuk Dairesi', '2. Hukuk Dairesi', '3. Hukuk Dairesi', '4. Hukuk Dairesi',
+        '5. Hukuk Dairesi', '6. Hukuk Dairesi', '7. Hukuk Dairesi', '8. Hukuk Dairesi',
+        '9. Hukuk Dairesi', '10. Hukuk Dairesi', '11. Hukuk Dairesi', '12. Hukuk Dairesi',
+        '13. Hukuk Dairesi', '14. Hukuk Dairesi', '15. Hukuk Dairesi', '16. Hukuk Dairesi',
+        '17. Hukuk Dairesi', '18. Hukuk Dairesi', '19. Hukuk Dairesi', '20. Hukuk Dairesi',
+        '21. Hukuk Dairesi', '22. Hukuk Dairesi', '23. Hukuk Dairesi',
+        '1. Ceza Dairesi', '2. Ceza Dairesi', '3. Ceza Dairesi', '4. Ceza Dairesi',
+        '5. Ceza Dairesi', '6. Ceza Dairesi', '7. Ceza Dairesi', '8. Ceza Dairesi',
+        '9. Ceza Dairesi', '10. Ceza Dairesi', '11. Ceza Dairesi', '12. Ceza Dairesi',
+        '13. Ceza Dairesi', '14. Ceza Dairesi', '15. Ceza Dairesi', '16. Ceza Dairesi'
+    ],
+    'DANISTAY': [
+        '1. Daire', '2. Daire', '3. Daire', '4. Daire', '5. Daire',
+        '6. Daire', '7. Daire', '8. Daire', '9. Daire', '10. Daire',
+        '11. Daire', '12. Daire', '13. Daire', '14. Daire', '15. Daire',
+        'İdari Dava Daireleri Kurulu', 'Vergi Dava Daireleri Kurulu'
+    ],
+    'SAYISTAY': [
+        '1. Daire', '2. Daire', '3. Daire', '4. Daire', '5. Daire',
+        '6. Daire', '7. Daire', 'Genel Kurul'
+    ],
+    'ANAYASA MAHKEMESI': [
+        'Birinci Bölüm', 'İkinci Bölüm', 'Genel Kurul'
+    ]
+};
+
+document.getElementById('court_type').addEventListener('change', function() {
+    const courtType = this.value;
+    const chamberSelect = document.getElementById('chamber');
+    
+    chamberSelect.innerHTML = '<option value="">Tümü</option>';
+    
+    if (courtType && chamberData[courtType]) {
+        chamberData[courtType].forEach(function(chamber) {
+            const option = document.createElement('option');
+            option.value = chamber;
+            option.textContent = chamber;
+            if ('{{ chamber }}' === chamber) option.selected = true;
+            chamberSelect.appendChild(option);
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courtTypeSelect = document.getElementById('court_type');
+    if (courtTypeSelect.value) {
+        courtTypeSelect.dispatchEvent(new Event('change'));
+    }
+});
+
+document.getElementById('searchForm').addEventListener('submit', function() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+});
+
+function clearFilters() {
+    document.getElementById('searchForm').reset();
+    document.getElementById('chamber').innerHTML = '<option value="">Tümü</option>';
+    window.location.href = '{% url "judicial_decisions" %}';
+}
+</script>
+{% endblock %}

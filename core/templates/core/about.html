@@ -1,0 +1,486 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Hakkımızda - Lexatech{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Lexatech Hakkında</h1>
+
+  <div class="row mb-5">
+    <div class="col-lg-8 mx-auto">
+      <p class="text-center lead">Lexatech, Türkiye'nin en gelişmiş yapay zeka destekli hukuk arama ve analiz platformudur. Yargı kararları, mevzuat ve akademik makalelere hızlı erişim sağlayan platformumuz, modern AI teknolojileri ile hukuk dünyasını dijitalleştiriyor.</p>
+    </div>
+  </div>
+
+  <!-- Platform Özellikleri -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Platform Özellikleri</h2>
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+              <h5 class="card-title">Yapay Zeka Destekli Arama</h5>
+              <p class="card-text">Gelişmiş AI algoritmaları ile doğal dil işleme ve anlamsal arama</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-database fa-3x text-success mb-3"></i>
+              <h5 class="card-title">Kapsamlı Veri Tabanı</h5>
+              <p class="card-text">Milyonlarca yargı kararı, güncel mevzuat ve akademik makale</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+              <h5 class="card-title">Analiz ve Tahmin</h5>
+              <p class="card-text">Dava sonuçları tahmini ve risk analizi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yeni AI Özellikler -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="text-center mb-4">🤖 Yapay Zeka Özellikleri</h2>
+      <div class="row">
+        <div class="col-lg-6 mb-4">
+          <div class="card h-100 border-primary">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-robot text-primary"></i> AI Hukuk Asistanı</h5>
+              <p class="card-text">Google Gemini AI ile desteklenen akıllı hukuk asistanı. Doğal dil ile sorularınızı sorun, anında yanıt alın.</p>
+              <a href="/ai/assistant/" class="btn btn-outline-primary btn-sm">Deneyin</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+          <div class="card h-100 border-success">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-gavel text-success"></i> Akıllı Dava Analizi</h5>
+              <p class="card-text">PDF belgelerinizi yükleyin, AI ile dava türü, benzer kararlar ve sonuç tahminleri alın.</p>
+              <a href="/ai/case-analyzer/" class="btn btn-outline-success btn-sm">Analiz Et</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+          <div class="card h-100 border-warning">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-file-signature text-warning"></i> Hukuki Metin Üretici</h5>
+              <p class="card-text">Dava dilekçesi, sözleşme ve hukuki görüşler gibi belgeleri AI ile otomatik oluşturun.</p>
+              <a href="/ai/text-generator/" class="btn btn-outline-warning btn-sm">Oluştur</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+          <div class="card h-100 border-info">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-chart-pie text-info"></i> Dava Sonucu Tahmini</h5>
+              <p class="card-text">Benzer davalar analiz edilerek dava sonucu tahmin edilir ve risk analizi yapılır.</p>
+              <a href="/case-outcome-analyzer/" class="btn btn-outline-info btn-sm">Tahmin Et</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gelişmiş Özellikler -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="text-center mb-4">🔍 Gelişmiş Arama ve Analiz</h2>
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-microphone fa-3x text-danger mb-3"></i>
+              <h5 class="card-title">Sesli Asistan</h5>
+              <p class="card-text">Sorularınızı sesli olarak sorun, sesli yanıt alın</p>
+              <a href="/voice-assistant/" class="btn btn-outline-danger btn-sm">Deneyin</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-project-diagram fa-3x text-purple mb-3"></i>
+              <h5 class="card-title">Görsel Hukuk Haritası</h5>
+              <p class="card-text">Mahkeme hiyerarşisi ve hukuk alanlarının görsel haritası</p>
+              <a href="/visual-legal-map/" class="btn btn-outline-secondary btn-sm">Keşfet</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-history fa-3x text-dark mb-3"></i>
+              <h5 class="card-title">Zaman Makinesi</h5>
+              <p class="card-text">Tarihi hukuki belgeler ve kronolojik arama</p>
+              <a href="/time-machine-search/" class="btn btn-outline-dark btn-sm">Geçmişe Git</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nasıl Çalışır -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Nasıl Çalışır?</h2>
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <div class="text-center">
+            <div class="bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <span class="h4 mb-0">1</span>
+            </div>
+            <h5>Kayıt Olun</h5>
+            <p>Ücretsiz hesap oluşturun ve platforma giriş yapın</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="text-center">
+            <div class="bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <span class="h4 mb-0">2</span>
+            </div>
+            <h5>Arama Yapın</h5>
+            <p>Yargı kararları, mevzuat ve makaleler arasında arama yapın</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="text-center">
+            <div class="bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <span class="h4 mb-0">3</span>
+            </div>
+            <h5>AI Özelliklerini Kullanın</h5>
+            <p>Dava analizi, metin üretimi ve tahmin özelliklerinden faydalanın</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="text-center">
+            <div class="bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <span class="h4 mb-0">4</span>
+            </div>
+            <h5>Abonelik Alın</h5>
+            <p>Tüm özelliklere tam erişim için abonelik paketlerinden birini seçin</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sıkça Sorulan Sorular (Genişletilmiş) -->
+<div class="mt-5">
+  <h2 class="text-center mb-4">❓ Sıkça Sorulan Sorular</h2>
+  <div class="accordion" id="faqAccordion">
+
+    <!-- Soru 1 -->
+    <div class="card">
+      <div class="card-header" id="faq1">
+        <h5 class="mb-0">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1">
+            Lexatech nedir ve ne işe yarar?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse1" class="collapse show" data-parent="#faqAccordion">
+        <div class="card-body">
+          Lexatech, Türkiye'nin en gelişmiş <strong>yapay zeka destekli hukuk arama ve analiz platformudur</strong>. Yargı kararları, mevzuat ve akademik makalelere hızlı erişim sağlamanın yanı sıra, AI destekli dava analizi, metin üretimi ve tahmin özellikleri sunar.
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 2 -->
+    <div class="card">
+      <div class="card-header" id="faq2">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse2">
+            Platformda hangi AI özellikleri bulunuyor?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse2" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Lexatech'te bulunan AI özellikleri:</p>
+          <ul>
+            <li><strong>AI Hukuk Asistanı:</strong> Google Gemini AI ile doğal dil desteği</li>
+            <li><strong>Akıllı Dava Analizi:</strong> PDF belgelerinden otomatik analiz</li>
+            <li><strong>Hukuki Metin Üretici:</strong> Dava dilekçesi ve sözleşme oluşturma</li>
+            <li><strong>Dava Sonucu Tahmini:</strong> Risk analizi ve başarı oranı tahmini</li>
+            <li><strong>Sesli Asistan:</strong> Ses ile soru-cevap özelliği</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 3 -->
+    <div class="card">
+      <div class="card-header" id="faq3">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse3">
+            AI Hukuk Asistanı nasıl çalışıyor?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse3" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>AI Hukuk Asistanı, Google'ın Gemini AI teknolojisini kullanarak:</p>
+          <ul>
+            <li>Doğal dil ile sorulan hukuki soruları anlayabilir</li>
+            <li>Türkçe hukuk terminolojisini tanır</li>
+            <li>Kapsamlı veritabanından en güncel bilgileri getirir</li>
+            <li>Hukuki kavramları basit şekilde açıklar</li>
+            <li>İlgili mevzuat ve içtihatları önerir</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 4 -->
+    <div class="card">
+      <div class="card-header" id="faq4">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse4">
+            Dava analizi nasıl yapılıyor?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse4" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Akıllı Dava Analizi özelliği:</p>
+          <ul>
+            <li>PDF belgelerinizi otomatik olarak okur ve analiz eder</li>
+            <li>Dava türünü (boşanma, alacak, iş hukuku vb.) belirler</li>
+            <li>Benzer davaları FAISS vektör araması ile bulur</li>
+            <li>Başarı oranı ve risk analizi yapar</li>
+            <li>İlgili mevzuat ve içtihatları önerir</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 5 -->
+    <div class="card">
+      <div class="card-header" id="faq5">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse5">
+            Ücretsiz olarak Lexatech'i kullanabilir miyim?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse5" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Evet, Lexatech'in bazı temel özelliklerini ücretsiz olarak kullanabilirsiniz:</p>
+          <ul>
+            <li><strong>Ücretsiz arama</strong> yapabilirsiniz</li>
+            <li>Özet bilgileri görüntüleyebilirsiniz</li>
+            <li>Sınırlı AI asistan kullanımı</li>
+            <li>Tam AI özellikleri ve detaylı analizler için <strong>abonelik paketi</strong> gereklidir</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 6 -->
+    <div class="card">
+      <div class="card-header" id="faq6">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse6">
+            Abonelik paketleri nelerdir?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse6" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Lexatech abonelik paketleri:</p>
+          <ul>
+            <li><strong>Aylık Paket:</strong> ₺1.000 - Temel AI özellikleri</li>
+            <li><strong>3 Aylık Paket:</strong> ₺2.700 - %10 indirim</li>
+            <li><strong>6 Aylık Paket:</strong> ₺5.200 - %13 indirim</li>
+            <li><strong>Yıllık Paket:</strong> ₺10.000 - %17 indirim</li>
+          </ul>
+          <p>Tüm paketlerde AI özellikleri, sınırsız arama ve analiz imkanı mevcuttur.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 7 -->
+    <div class="card">
+      <div class="card-header" id="faq7">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse7">
+            Hangi ödeme yöntemlerini kullanabilirim?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse7" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Ödeme yöntemleri:</p>
+          <ul>
+            <li><strong>Kredi Kartı</strong> (Visa, MasterCard, American Express)</li>
+            <li><strong>Banka Kartı</strong> (Debit kartlar)</li>
+            <li><strong>Param Sanal POS</strong> güvenli ödeme altyapısı</li>
+            <li>Tüm ödemeler SSL sertifikası ile korunmaktadır</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 8 -->
+    <div class="card">
+      <div class="card-header" id="faq8">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse8">
+            Veriler güvenilir mi ve kaynakları nelerdir?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse8" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p><strong>Evet, tüm veriler güvenilir kaynaklardan alınmaktadır:</strong></p>
+          <ul>
+            <li><strong>Yargı Kararları:</strong> Resmi mahkeme kararları</li>
+            <li><strong>Mevzuat:</strong> Mevzuat.gov.tr ve Resmi Gazete</li>
+            <li><strong>Akademik Makaleler:</strong> DergiPark, Google Scholar</li>
+            <li><strong>Güncel Takip:</strong> Düzenli olarak güncellenir</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 9 -->
+    <div class="card">
+      <div class="card-header" id="faq9">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse9">
+            Sesli asistan nasıl kullanılır?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse9" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Sesli Asistan özelliği:</p>
+          <ul>
+            <li>Mikrofon butonuna tıklayarak sorunuzu sesli olarak sorun</li>
+            <li>Türkçe ses tanıma teknolojisi kullanır</li>
+            <li>Yanıtları hem metin hem de ses olarak alabilirsiniz</li>
+            <li>Hukuki terimler ve sorular optimize edilmiştir</li>
+            <li>Mobil cihazlarda da çalışır</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 10 -->
+    <div class="card">
+      <div class="card-header" id="faq10">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse10">
+            Görsel Hukuk Haritası ve Zaman Makinesi nedir?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse10" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p><strong>Görsel Hukuk Haritası:</strong></p>
+          <ul>
+            <li>Mahkeme hiyerarşisini görsel olarak gösterir</li>
+            <li>Hukuk alanları arası ilişkileri haritalar</li>
+            <li>İnteraktif ağ diagramları</li>
+          </ul>
+          <p><strong>Zaman Makinesi:</strong></p>
+          <ul>
+            <li>Tarihi hukuki belgeler arasında arama</li>
+            <li>Kronolojik gelişimleri takip etme</li>
+            <li>Hukuki değişimlerin zaman çizelgesi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 11 -->
+    <div class="card">
+      <div class="card-header" id="faq11">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse11">
+            Teknik destek nasıl alınır?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse11" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p>Teknik destek kanalları:</p>
+          <ul>
+            <li><strong>E-posta:</strong> lexatech.ai@gmail.com</li>
+            <li><strong>Canlı Destek:</strong> Platform içi mesajlaşma</li>
+            <li><strong>Çalışma Saatleri:</strong> Hafta içi 09:00-18:00</li>
+            <li><strong>Hızlı Yanıt:</strong> Ortalama 2 saat içinde</li>
+            <li><strong>AI Asistan:</strong> 7/24 otomatik destek</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Soru 12 -->
+    <div class="card">
+      <div class="card-header" id="faq12">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse12">
+            Mobil cihazlarda kullanılabiliyor mu?
+          </button>
+        </h5>
+      </div>
+      <div id="collapse12" class="collapse" data-parent="#faqAccordion">
+        <div class="card-body">
+          <p><strong>Evet, Lexatech tamamen mobil uyumludur:</strong></p>
+          <ul>
+            <li>Responsive tasarım - tüm cihazlarda çalışır</li>
+            <li>Mobil tarayıcılarda tam işlevsellik</li>
+            <li>Sesli asistan mobil cihazlarda desteklenir</li>
+            <li>Dokunmatik optimizasyon</li>
+            <li>Hızlı yükleme süreleri</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- İletişim Bilgileri -->
+<div class="row mt-5 mb-5">
+  <div class="col-12">
+    <div class="card bg-light">
+      <div class="card-body text-center">
+        <h3 class="card-title">💬 Başka Sorularınız Var mı?</h3>
+        <p class="card-text">Lexatech hakkında daha fazla bilgi almak istiyorsanız bizimle iletişime geçin.</p>
+        <div class="row justify-content-center">
+          <div class="col-md-4">
+            <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
+            <p><strong>E-posta</strong><br>lexatech.ai@gmail.com</p>
+          </div>
+          <div class="col-md-4">
+            <i class="fas fa-robot fa-2x text-success mb-2"></i>
+            <p><strong>AI Asistan</strong><br>7/24 Otomatik Destek</p>
+          </div>
+          <div class="col-md-4">
+            <i class="fas fa-comments fa-2x text-info mb-2"></i>
+            <p><strong>Canlı Destek</strong><br>Hafta içi 09:00-18:00</p>
+          </div>
+        </div>
+        <a href="/ai/assistant/" class="btn btn-primary mt-3">AI Asistan ile Sohbet Et</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

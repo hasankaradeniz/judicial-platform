@@ -1,0 +1,132 @@
+{% extends "core/base.html" %}
+
+{% block page_title %}Lexatech - Kullanıcı Sözleşmesi{% endblock %}
+
+{% block extra_styles %}
+
+    <style>
+        /* Genel Ayarlar */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-image: url('static/background_feature.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* İçerik Bölümü */
+        .content-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            background-color: #ffffffcc;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            line-height: 1.6;
+        }
+
+        .content-section h1, .content-section h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #004085;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0056b3;
+        }
+
+        .content-section p {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        .content-section ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: #333;
+        }
+
+        .content-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content-section a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Kullanıcı Sözleşmesi İçeriği -->
+    <section class="content-section">
+        <h1>Kullanıcı Sözleşmesi</h1>
+
+        <h2>Madde 1: Taraflar</h2>
+        <p>İşbu sözleşme; <br>
+           Bir tarafta Av. Hasan Karadeniz ile diğer tarafta www.lexatech.ai internet sitesine Kullanıcı olarak kaydı yapılan/yapan gerçek kişi arasında aşağıdaki şartlar dahilinde imza altına alınmıştır.
+        </p>
+
+        <h2>Madde 2: Kısaltmalar</h2>
+        <p>İşbu sözleşmede geçen bazı terimler:</p>
+        <ul>
+            <li>“Hizmet Sunan”: Av. Hasan Karadeniz</li>
+            <li>“Kullanıcı”: www.lexatech.ai internet sitesine üye olarak kayıt yaptıran gerçek kişiler</li>
+            <li>“Lexatech”: Hizmet Sunan tarafından işletilen Lexatech internet sitesi ve mobil uygulamaları</li>
+            <li>“Online Ödeme Sistemi”: lexatech.ai internet sitesi abonelik ücretinin tahsilatını sağlayan sistem</li>
+        </ul>
+
+        <!-- Diğer Maddeler Buraya Eklenecek -->
+        <h2>Madde 3: Amaç</h2>
+        <p>Bu sözleşmenin amacı, Lexatech.ai internet sitesi üzerinden kullanıcıya sunulacak hizmetler ve tarafların hak ve yükümlülüklerini düzenlemektir.</p>
+
+        <h2>Madde 4: Kullanıcı Hak ve Yükümlülükleri</h2>
+        <p>Kullanıcı Lexatech.ai internet sitesine kayıt olurken verdiği kişisel bilgilerin doğru olduğunu ve gerektiğinde güncelleme yapacağını kabul eder.</p>
+
+        <h2>Madde 5: Hizmet Sunan Hak ve Yükümlülükleri</h2>
+        <p>Hizmet Sunan, site üzerinde bakım çalışmaları yapabilir. Bu durumlarda kullanıcıya herhangi bir sorumluluk yüklenmez.</p>
+
+        <h2>Madde 6: Mali Hükümler</h2>
+        <p>Lexatech.ai internet sitesine üye olan kullanıcı, ücretli abonelik dönemine geçişte ödeme yapacağını kabul eder.</p>
+
+        <h2>Madde 7: Kişisel Verilerin Korunması</h2>
+        <p>Kullanıcı, kişisel verilerinin yasal amaçlarla işlenebileceğini kabul eder.</p>
+
+        <h2>Madde 8: Fesih</h2>
+        <p>Sözleşme, Kullanıcı’nın kaydının iptali ile sona erdirilebilir.</p>
+
+        <h2>Madde 9: Hesabın Kapatılması veya Askıya Alınması</h2>
+        <p>Kullanıcı hesabının kapatılmasını talep edebilir, ancak bu durumda herhangi bir iade talebinde bulunamaz.</p>
+
+        <h2>Madde 10: Mücbir Sebepler</h2>
+        <p>Mücbir sebeplerden dolayı hizmet aksadığında Hizmet Sunan sorumluluk kabul etmez.</p>
+
+        <h2>Madde 11: Son Hükümler</h2>
+        <p>Sözleşmenin herhangi bir hükmü geçersiz hale gelirse, diğer hükümler geçerliliğini korur.</p>
+
+        <h2>Madde 12: Yürürlük</h2>
+        <p>Kullanıcı tarafından bu sözleşmenin onaylanmasıyla, sözleşme yürürlüğe girer.</p>
+    </section>
+
+    {% endblock %}

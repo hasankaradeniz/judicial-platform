@@ -1,0 +1,467 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block page_title %}Lexatech - Yapay Zeka Destekli Hukuk Çözümleri{% endblock %}</title>
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N5JVZLR7');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- SEO & OG Meta Etiketleri -->
+  {% block meta_description %}
+  <meta name="description" content="Lexatech - Yapay zeka destekli hukuk çözümleri, akademik makale arama, yargı kararları, mevzuat tarama ve hukuki analiz platformu.">
+  {% endblock %}
+  
+  {% block meta_keywords %}
+  <meta name="keywords" content="Lexatech, yapay zeka, hukuk çözümleri, akademik makale, yargı kararları, mevzuat, hukuki analiz, CrossRef, DOAJ, dergipark, hukuk araştırması">
+  {% endblock %}
+  
+  <meta name="author" content="Avukat Hasan Karadeniz">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="language" content="Turkish">
+  <meta name="distribution" content="global">
+  <meta name="revisit-after" content="1 days">
+  
+  {% block canonical_url %}
+  <link rel="canonical" href="https://sozlesme.online{{ request.get_full_path }}">
+  {% endblock %}
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:type" content="website">
+  {% block og_title %}
+  <meta property="og:title" content="{% block title_content %}Lexatech - Yapay Zeka Destekli Hukuk Çözümleri{% endblock %}">
+  {% endblock %}
+  
+  {% block og_description %}
+  <meta property="og:description" content="Yapay zeka destekli hukuk platformu. Akademik makale arama, yargı kararları analizi, mevzuat tarama ve hukuki araştırma araçları.">
+  {% endblock %}
+  
+  {% block og_url %}
+  <meta property="og:url" content="https://sozlesme.online{{ request.get_full_path }}">
+  {% endblock %}
+  
+  {% block og_image %}
+  <meta property="og:image" content="https://sozlesme.online{% static 'core/images/logo.jpeg' %}">
+  {% endblock %}
+  
+  <meta property="og:site_name" content="Lexatech">
+  <meta property="og:locale" content="tr_TR">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  {% block twitter_title %}
+  <meta name="twitter:title" content="Lexatech - Yapay Zeka Destekli Hukuk Çözümleri">
+  {% endblock %}
+  
+  {% block twitter_description %}
+  <meta name="twitter:description" content="Yapay zeka destekli hukuk platformu. Akademik makale arama, yargı kararları analizi, mevzuat tarama.">
+  {% endblock %}
+  
+  {% block twitter_image %}
+  <meta name="twitter:image" content="https://sozlesme.online{% static 'core/images/logo.jpeg' %}">
+  {% endblock %}
+  
+  <!-- Structured Data for Google -->
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Lexatech",
+    "url": "https://sozlesme.online",
+    "description": "Yapay zeka destekli hukuk çözümleri platformu",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sozlesme.online/article/search_results/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Lexatech",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://sozlesme.online{% static 'core/images/logo.jpeg' %}"
+      }
+    }
+  }
+  </script>
+  {% endblock %}
+  
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE">
+  
+  <!-- Bing/Microsoft Verification -->
+  <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="{% static 'core/images/logo.jpeg' %}">
+  <link rel="apple-touch-icon" href="{% static 'core/images/logo.jpeg' %}">'
+
+  <!-- Font Awesome (ikonlar için) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Bootstrap 4.5.2 CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  {% block extra_styles %}{% endblock %}
+
+  <style>
+    /* Genel Stil Ayarları */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: url("{% static 'core/images/background_feature.jpg' %}") no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Navbar - Enhanced Responsive */
+    .navbar-custom {
+      background-color: #333;
+      min-height: 70px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1030;
+    }
+    
+    .navbar-custom .navbar-brand img {
+      height: 50px;
+      transition: transform 0.3s ease;
+    }
+    
+    .navbar-custom .navbar-brand img:hover {
+      transform: scale(1.05);
+    }
+    
+    .navbar-custom .nav-link {
+      color: #fff !important;
+      margin-right: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 10px 15px !important;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .navbar-custom .nav-link:hover {
+      color: #fbbf24 !important;
+      background-color: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
+    }
+    
+    /* Mobile Hamburger Menu */
+    .navbar-toggler {
+      border: 2px solid #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      background-color: rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-toggler:hover {
+      background-color: rgba(255,255,255,0.2);
+      transform: scale(1.05);
+    }
+    
+    .navbar-toggler:focus {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+    }
+    
+    /* Custom hamburger icon with text */
+    .navbar-toggler-icon {
+      background-image: none !important;
+      width: auto;
+      height: auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .navbar-toggler-icon::before {
+      content: 'MENÜ';
+      color: #fff;
+    }
+    
+    /* Mobile menu styles */
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        background-color: #333;
+        margin-top: 15px;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      
+      .navbar-custom .nav-link {
+        margin: 5px 0;
+        padding: 12px 20px !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 1.1rem;
+      }
+      
+      .navbar-custom .nav-link:hover {
+        background-color: rgba(255,255,255,0.15);
+        margin-left: 10px;
+      }
+      
+      .navbar-nav.ml-auto {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255,255,255,0.2);
+      }
+      
+      .btn-outline-light {
+        margin: 5px 0 !important;
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    /* Desktop menu active states */
+    @media (min-width: 992px) {
+      .navbar-custom .nav-link.active {
+        background-color: rgba(255,255,255,0.15);
+        color: #fbbf24 !important;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+    }
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    footer a:hover {
+      color: #fff;
+    }
+
+    /* AI Dropdown Menü Stilleri */
+    .dropdown-menu {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 8px 0;
+      margin-top: 8px;
+    }
+
+    .dropdown-item {
+      color: #333;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+    }
+
+    .dropdown-item i {
+      margin-right: 10px;
+      width: 16px;
+      text-align: center;
+    }
+
+    .dropdown-divider {
+      margin: 8px 0;
+      border-top: 1px solid #e9ecef;
+    }
+  </style>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N5JVZLR7" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- Header / Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'core/images/logo.jpeg' %}" alt="Lexatech Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+              aria-controls="navbarContent" aria-expanded="false" aria-label="Menüyü Aç/Kapat">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Ana Sayfa</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Nasıl Çalışır?</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'ai_features_home' %}">
+              <i class="fas fa-brain"></i> Yapay Zeka Araçları
+          <li class="nav-item"><a class="nav-link" href="{% url 'faiss_query:olay_gir' %}"><i class="fas fa-search"></i> Hukuki Olay Sorgula</a></li>
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'judicial_decisions' %}">Yargı Kararları</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'articles' %}">Makaleler</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'legislation_home' %}">Mevzuat</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#resmi-gazete">Resmi Gazete</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'paketler' %}">Paketler</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                Hoşgeldiniz, {{ user.username }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="{% url 'profile' %}">Profilim</a>
+                {% if user.is_superuser %}
+                  <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <form method="post" action="{% url 'account_logout' %}" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item">Çıkış Yap</button>
+                </form>
+              </div>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="btn btn-outline-light mr-2" href="{% url 'login' %}">Giriş Yap</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-outline-light" href="{% url 'signup' %}">Üye Ol</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container my-5" style="padding-top:80px;">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h5>Lexatech</h5>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'about' %}">Nasıl Çalışır?</a></li>
+            <li><a href="{% url 'gizlilik_politikasi' %}">Gizlilik Politikası</a></li>
+            <li><a href="{% url 'ziyaretci_veri_koruma' %}">KVKK Aydınlatma Metni</a></li>
+            <li><a href="{% url 'mesafeli_satis_sozlesmesi' %}">Mesafeli Satış Sözleşmesi</a></li>
+            <li><a href="{% url 'teslimat_iade_sartlari' %}">Teslimat & İade Şartları</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h5>Hizmetler</h5>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'judicial_decisions' %}">Yargı Kararları</a></li>
+            <li><a href="{% url 'articles' %}">Makaleler</a></li>
+            <li><a href="{% url 'legislation_home' %}">Mevzuat</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h5>Sosyal Medya</h5>
+          <ul class="list-unstyled d-flex">
+            <li>
+              <a href="https://www.facebook.com/yourpage" target="_blank">
+                <img src="{% static 'core/images/facebook.png' %}" alt="Facebook" style="height:30px; margin-right:10px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/yourpage" target="_blank">
+                <img src="{% static 'core/images/instagram.png' %}" alt="Instagram" style="height:30px; margin-right:10px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/yourpage" target="_blank">
+                <img src="{% static 'core/images/twitter.png' %}" alt="Twitter" style="height:30px; margin-right:10px;">
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/yourpage" target="_blank">
+                <img src="{% static 'core/images/linkedin.png' %}" alt="LinkedIn" style="height:30px; margin-right:10px;">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h5>İletişim</h5>
+          <ul class="list-unstyled">
+            <li><a href="mailto:lexatech.ai@gmail.com">lexatech.ai@gmail.com</a></li>
+            <li>0212 970 06 44</li>
+            <li>Yeşilköy Mah. Atatürk Cad. EGS Blokları</li>
+            <li>No:12/1 Bakırköy/İstanbul</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col text-center">
+          <small>&copy; {{ now|date:"Y" }} Lexatech. Tüm hakları saklıdır.</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- jQuery, Popper.js ve Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  {% block extra_scripts %}
+  {% endblock %}
+<script>
+// Smooth scroll for anchor links
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if we need to scroll to anchor on page load
+  if (window.location.hash) {
+    setTimeout(function() {
+      const target = document.querySelector(window.location.hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 500);
+  }
+  
+  // Handle anchor links
+  document.querySelectorAll('a[href*="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href.includes('#')) {
+        const targetId = href.split('#')[1];
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          e.preventDefault();
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.pushState(null, null, href);
+        }
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

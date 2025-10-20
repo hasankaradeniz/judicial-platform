@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>NLP Arama</title>
+  <!-- CSRF Token için gerekli meta etiketi -->
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    textarea { width: 100%; max-width: 600px; }
+    #results { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>NLP Destekli Arama</h1>
+  <form id="nlp-search-form">
+    <label for="text">Arama metnini giriniz:</label><br>
+    <textarea id="text" name="text" rows="5" placeholder="Örneğin: Davacı ile davalı arasındaki sözleşmeye aykırılık..."></textarea><br><br>
+    <button type="submit">Ara</button>
+  </form>
+
+  <div id="results"></div>
+
+  <script>
+    // CSRF token'ı meta etiketten alalım
+    function getCSRFToken() {
+      return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
+    document.getElementById('nlp-search-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var text = document.getElementById('text').value;
+      var csrfToken = getCSRFToken();
+
+      fetch('/nlp_search/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrfToken
+        },
+        body: 'text=' + encodeURIComponent(text)
+      })
+      .then(response => response.json())
+      .then(data => {
+        var resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '<h2>Sonuçlar</h2>';
+        if (data.error) {
+          resultsDiv.innerHTML += '<p>Hata: ' + data.error + '</p>';
+        } else {
+          resultsDiv.innerHTML += '<p><strong>Analiz Edilen Varlıklar:</strong> ' + data.entities.join(', ') + '</p>';
+          if (data.results && data.results.length > 0) {
+            var ul = document.createElement('ul');
+            data.results.forEach(function(item) {
+              var li = document.createElement('li');
+              li.innerHTML = '<strong>' + item.karar_veren_mahkeme + '</strong> - ' + item.karar_numarasi + ' (' + item.karar_tarihi + ')<br>' + item.karar_ozeti;
+              ul.appendChild(li);
+            });
+            resultsDiv.appendChild(ul);
+          } else {
+            resultsDiv.innerHTML += '<p>Sonuç bulunamadı.</p>';
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Hata:', error);
+      });
+    });
+  </script>
+</body>
+</html>

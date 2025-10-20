@@ -1,0 +1,357 @@
+# faiss_query/views.py
+
+import os
+import pickle
+import faiss
+import google.generativeai as genai
+import numpy as np
+from django.conf import settings
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from sentence_transformers import SentenceTransformer
+import markdown
+import re
+
+# FAISS dizinlerini lazy loading ile yükleyelim
+FAISS_DIR = os.path.join(settings.BASE_DIR, 'faiss_dizinleri')
+available_indexes = [f for f in os.listdir(FAISS_DIR) if f.endswith(".index")]
+
+index_mapping = {}
+_loaded_indexes = {}
+
+def load_faiss_index(alan_adi):
+    """FAISS indeksini lazy loading ile yükle"""
+    if alan_adi in _loaded_indexes:
+        return _loaded_indexes[alan_adi]
+    
+    index_path = os.path.join(FAISS_DIR, f"faiss_{alan_adi}.index")
+    map_path = os.path.join(FAISS_DIR, f"mapping_{alan_adi}.pkl")
+    
+    try:
+        index = faiss.read_index(index_path)
+        with open(map_path, "rb") as f:
+            mapping = pickle.load(f)
+        
+        _loaded_indexes[alan_adi] = {"index": index, "mapping": mapping}
+        return _loaded_indexes[alan_adi]
+    except Exception as e:
+        print(f"⚠️ {alan_adi} için yükleme hatası: {e}")
+        return None
+
+# Mevcut alan adlarını önceden belirle (indeks yükleme olmadan)
+for file in available_indexes:
+    alan_adi = file.replace("faiss_", "").replace(".index", "")
+    index_mapping[alan_adi] = None  # Placeholder
+
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+genai.configure(api_key=settings.GEMINI_API_KEY)
+gemini_model = genai.GenerativeModel(model_name="gemini-2.5-pro-preview-03-25")
+
+# ---------------------------
+# Olay giriş view
+# ---------------------------
+def olay_gir(request):
+    if request.method == "POST":
+        olay = request.POST.get("olay")
+        if olay:
+            from django.core.cache import cache
+            import hashlib
+            
+            # Olayı session'a kaydet
+            request.session['olay'] = olay
+            
+            # Olay için cache key oluştur
+            olay_hash = hashlib.md5(olay.encode('utf-8')).hexdigest()
+            cache_key = f'hukuki_aciklama_{olay_hash}'
+            
+            # Cache'den açıklamayı kontrol et
+            cached_aciklama = cache.get(cache_key)
+            
+            if cached_aciklama:
+                # Cache'de varsa direkt kullan
+                request.session['hukuki_aciklama'] = cached_aciklama
+            else:
+                # Cache'de yoksa Gemini ile üret ve cache'le
+                try:
+                    prompt = f"Aşağıdaki olaya göre Türk hukukuna göre genel bir hukuki açıklama yap. Açıklama sade, net ve bilgi verici olsun.\n\nOlay: {olay}"
+                    cevap = gemini_model.generate_content(prompt)
+                    hukuki_aciklama_raw = cevap.text
+                    hukuki_aciklama_html = markdown.markdown(hukuki_aciklama_raw)
+                    
+                    # Cache'e kaydet (7 gün)
+                    cache.set(cache_key, hukuki_aciklama_html, 604800)
+                    request.session['hukuki_aciklama'] = hukuki_aciklama_html
+                except Exception as e:
+                    # Gemini hatasında varsayılan açıklama
+                    default_aciklama = "<p>Girdiğiniz olay Türk hukuk sistemi kapsamında değerlendirilmektedir. Aşağıdaki kararlar benzer durumlarla ilgili örnek teşkil edebilir.</p>"
+                    request.session['hukuki_aciklama'] = default_aciklama
+
+            return redirect('faiss_query:karar_listesi')
+    return render(request, 'faiss_query/olay_gir.html')
+
+# ---------------------------
+# Karar listesi view
+# ---------------------------
+def extract_legal_keywords(olay_text):
+    """Gemini AI ile olaydan hukuki anahtar kelimeleri ve benzer durumları çıkar"""
+    from django.core.cache import cache
+    import hashlib
+    
+    # Cache key oluştur
+    text_hash = hashlib.md5(olay_text.encode('utf-8')).hexdigest()
+    cache_key = f'legal_keywords_expanded_{text_hash}'
+    
+    # Cache'den kontrol et
+    cached_keywords = cache.get(cache_key)
+    if cached_keywords:
+        return cached_keywords
+    
+    try:
+        prompt = f"""
+        Aşağıdaki hukuki olayı analiz et ve benzer durumları da kapsayacak şekilde geniş anahtar kelime setini çıkar:
+        
+        OLAY: {olay_text}
+        
+        Şu kategorilerde anahtar kelimeler ver:
+        1. Ana hukuki terimler (direkt ilişkili)
+        2. Benzer durumlar (geniş ilişkili)
+        3. İlgili hukuki kavramlar
+        
+        ÖRNEK: Eğer miras konusuysa:
+        Ana: miras, tereke, vasiyet, muris
+        Benzer: mal kaçırma, hile, mirasçı, devir, bağışlama
+        Kavramlar: iptal davası, tenkis, saklpay
+        
+        Sonucu sadece virgülle ayrılmış olarak ver (15-20 kelime):
+        """
+        
+        response = gemini_model.generate_content(prompt)
+        keywords = [kw.strip() for kw in response.text.split(',') if kw.strip() and len(kw.strip()) > 2]
+        
+        # Cache'e kaydet (1 saat)
+        cache.set(cache_key, keywords[:20], 3600)
+        return keywords[:20]  # En fazla 20 anahtar kelime
+    except:
+        # Gemini başarısız olursa genişletilmiş hukuki terimler
+        hukuki_alan_terimleri = {
+            'miras': ['miras', 'tereke', 'vasiyet', 'muris', 'mirasçı', 'devir', 'bağışlama', 'mal kaçırma', 'iptal', 'tenkis', 'saklpay', 'hile'],
+            'sözleşme': ['sözleşme', 'anlaşma', 'mukavele', 'ifa', 'ihlal', 'ayp', 'tazminat', 'borç', 'fesih'],
+            'aile': ['boşanma', 'nafaka', 'velayet', 'eş', 'evlilik', 'velayit', 'iştirak', 'mal rejimi'],
+            'emlak': ['tapu', 'gayrimenkul', 'mülkiyet', 'kira', 'kiracı', 'irtifak', 'intifa', 'zilyetlik'],
+            'iş': ['işçi', 'işveren', 'iş', 'çalışma', 'maaş', 'kıdem', 'işsizlik', 'iş kazası']
+        }
+        
+        found_terms = []
+        olay_lower = olay_text.lower()
+        
+        # Anahtar kelimeleri tespit et ve genişlet
+        for alan, terimler in hukuki_alan_terimleri.items():
+            for terim in terimler:
+                if terim in olay_lower:
+                    found_terms.extend(terimler)
+                    break
+        
+        # Temel terimler ekle
+        base_terms = ['iptal', 'dava', 'hak', 'yukümlülük', 'sorumluluk']
+        found_terms.extend(base_terms)
+        
+        return list(set(found_terms))[:15]
+
+def calculate_legal_relevance(olay, karar_data, keywords):
+    """Esnek ve kapsayıcı hukuki alakalılık skorunu hesapla"""
+    karar_text = f"{karar_data.get('ozet', '')} {karar_data.get('metin', '')}".lower()
+    olay_lower = olay.lower()
+    
+    # 1. Anahtar kelime eşleşme skoru (0-40 puan) - daha esnek
+    keyword_score = 0
+    high_value_matches = 0
+    medium_value_matches = 0
+    
+    for keyword in keywords:
+        if keyword.lower() in karar_text:
+            # Yüksek değerli terimler
+            if any(term in keyword.lower() for term in ['miras', 'tereke', 'muris', 'devir', 'bağışlama', 'iptal', 'tenkis']):
+                keyword_score += 6
+                high_value_matches += 1
+            # Orta değerli terimler
+            elif any(term in keyword.lower() for term in ['dava', 'hak', 'mal', 'gayrimenkul', 'mülkiyet']):
+                keyword_score += 4
+                medium_value_matches += 1
+            # Genel terimler
+            else:
+                keyword_score += 2
+    
+    keyword_score = min(keyword_score, 40)
+    
+    # 2. Kavramsal benzerlik skoru (0-30 puan) - genişletilmiş
+    concept_score = 0
+    
+    # Ana konsept grupları
+    concept_groups = {
+        'miras_devir': ['miras', 'devir', 'bağışlama', 'hibesiz', 'tereke', 'mirasçı'],
+        'iptal_dava': ['iptal', 'dava', 'geçersiz', 'hukuksuz', 'butlan'],
+        'mal_hukuku': ['mal', 'gayrimenkul', 'mülkiyet', 'tapu', 'zilyetlik'],
+        'aile_iliskisi': ['anne', 'baba', 'çocuk', 'mirasçı', 'ebeveyn', 'aile']
+    }
+    
+    for group_name, terms in concept_groups.items():
+        olay_matches = sum(1 for term in terms if term in olay_lower)
+        karar_matches = sum(1 for term in terms if term in karar_text)
+        
+        if olay_matches >= 1 and karar_matches >= 1:
+            concept_score += 8
+        elif karar_matches >= 2:  # Karar bu konuyla ilgili
+            concept_score += 5
+    
+    concept_score = min(concept_score, 30)
+    
+    # 3. Benzer durum puanı (0-20 puan)
+    situation_score = 0
+    
+    # Miras hukuku durumları
+    if any(term in olay_lower for term in ['miras', 'anne', 'çocuk', 'devir']):
+        miras_terms = ['miras', 'tereke', 'mirasçı', 'tenkis', 'saklpay', 'vasiyet']
+        matches = sum(1 for term in miras_terms if term in karar_text)
+        situation_score += min(matches * 3, 15)
+    
+    # İptal dava durumları
+    if any(term in olay_lower for term in ['iptal', 'dava', 'geçersiz']):
+        iptal_terms = ['iptal', 'butlan', 'geçersiz', 'hukuksuz', 'dava']
+        matches = sum(1 for term in iptal_terms if term in karar_text)
+        situation_score += min(matches * 2, 10)
+    
+    situation_score = min(situation_score, 20)
+    
+    # 4. Karar kalitesi bonusu (0-10 puan)
+    quality_bonus = 0
+    if len(karar_text) > 300:  # Detaylı karar
+        quality_bonus += 3
+    if any(term in karar_text for term in ['gerekçe', 'sonuç', 'hukuki', 'kanun']):
+        quality_bonus += 3
+    if len(karar_text) > 1000:  # Çok detaylı
+        quality_bonus += 4
+    
+    quality_bonus = min(quality_bonus, 10)
+    
+    total_score = keyword_score + concept_score + situation_score + quality_bonus
+    
+    # Bonus: Eğer yüksek değerli eşleşme varsa ekstra puan
+    if high_value_matches >= 1:
+        total_score += 5
+    if high_value_matches >= 2:
+        total_score += 10
+    
+    return min(total_score, 100)
+
+def karar_listesi(request):
+    olay = request.session.get('olay')
+    hukuki_aciklama = request.session.get('hukuki_aciklama')
+    if not olay:
+        return redirect('faiss_query:olay_gir')
+
+    # Hukuki anahtar kelimeleri çıkar
+    legal_keywords = extract_legal_keywords(olay)
+    
+    # Geliştirilmiş embedding: olay + anahtar kelimeler
+    enhanced_query = f"{olay} {' '.join(legal_keywords)}"
+    embedding = embedding_model.encode([enhanced_query])
+
+    # FAISS tarama - lazy loading ile
+    top_results = []
+    for alan_adi in index_mapping.keys():
+        data = load_faiss_index(alan_adi)
+        if data is None:
+            continue
+            
+        index = data["index"]
+        mapping = data["mapping"]
+
+        # Çok daha fazla sonuç al (geniş filtreleme için)
+        D, I = index.search(np.array(embedding).astype('float32'), 25)
+        
+        for dist, idx in zip(D[0], I[0]):
+            if idx != -1 and idx < len(mapping):
+                karar_data = mapping[idx]
+                
+                # Hukuki alakalılık skorunu hesapla
+                relevance_score = calculate_legal_relevance(olay, karar_data, legal_keywords)
+                
+                # Esnek minimum alakalılık eşiği (25/100)
+                if relevance_score >= 25:
+                    # FAISS distance'ı relevance score ile birleştir (ağırlık daha çok relevance'da)
+                    combined_score = (1.0 - dist) * 0.3 + (relevance_score / 100) * 0.7
+                    top_results.append((combined_score, idx, karar_data, alan_adi, relevance_score))
+
+    # Kombinasyon skoruna göre sırala (yüksekten alçağa)
+    sorted_results = sorted(top_results, key=lambda x: x[0], reverse=True)
+
+    # En iyi 150 sonucu al (çeşitlilik için)
+    sorted_results = sorted_results[:150]
+    
+    paginator = Paginator(sorted_results, 20)  # Sayfa başına 20 sonuç
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Debug bilgisi
+    debug_info = {
+        'total_results': len(sorted_results),
+        'keywords': legal_keywords,
+        'min_score': min([r[4] for r in sorted_results]) if sorted_results else 0,
+        'max_score': max([r[4] for r in sorted_results]) if sorted_results else 0,
+    }
+
+    return render(request, 'faiss_query/karar_listesi.html', {
+        'olay': olay,
+        'hukuki_aciklama': hukuki_aciklama,
+        'page_obj': page_obj,
+        'legal_keywords': legal_keywords,
+        'debug_info': debug_info,
+    })
+
+
+def highlight_keywords(text, keywords):
+    """
+    Metindeki önemli kelimeleri <mark> etiketi ile sarı renkle vurgular.
+    """
+    for word in keywords:
+        # Kelimenin tam eşleşmesini yapalım (parçalı eşleşme olmasın)
+        text = re.sub(rf'(\b{re.escape(word)}\b)', r'<mark>\1</mark>', text, flags=re.IGNORECASE)
+    return text
+
+# ---------------------------
+# Karar detay view
+# ---------------------------
+def karar_detay(request, alan, index):
+    olay = request.session.get('olay')
+    if not olay:
+        return redirect('faiss_query:olay_gir')
+
+    page = request.GET.get('page', 1)
+
+    alan_data = load_faiss_index(alan)
+    if not alan_data:
+        return redirect('faiss_query:karar_listesi')
+
+    # index view URL'den string olarak gelir, int'e çevir
+    try:
+        index = int(index)
+    except ValueError:
+        return redirect('faiss_query:karar_listesi')
+
+    mapping = alan_data["mapping"]
+    if index < 0 or index >= len(mapping):
+        return redirect('faiss_query:karar_listesi')
+
+    karar = mapping[index]
+    # karar artık dict
+
+    keywords = [kelime for kelime in re.findall(r'\b\w{4,}\b', olay)]
+    karar_tam_metni = highlight_keywords(karar.get("metin", ""), keywords)
+
+    return render(request, 'faiss_query/karar_detay.html', {
+        'karar': karar,
+        'alan': alan,
+        'page': page,
+        'karar_tam_metni': karar_tam_metni,
+    })

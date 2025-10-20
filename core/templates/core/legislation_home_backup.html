@@ -1,0 +1,497 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Mevzuat Arama - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* CONSISTENT COLOR SCHEME */
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --gold-light: #fbd38d;
+    --emerald: #047857;
+    --emerald-light: #10b981;
+    --crimson: #c53030;
+    --crimson-light: #fc8181;
+    --marble-white: #fdfdfe;
+    --silk-gray: #f7fafc;
+    --ash-gray: #edf2f7;
+    --charcoal: #2d3748;
+    --slate: #4a5568;
+    --obsidian: #1a202c;
+    
+    /* Enhanced Shadows */
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --shadow-premium: 0 8px 32px rgba(26, 54, 93, 0.16);
+    --shadow-royal: 0 12px 48px rgba(26, 54, 93, 0.24);
+    --shadow-inset: inset 0 2px 4px rgba(26, 54, 93, 0.06);
+    
+    /* Premium Gradients */
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, var(--gold-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+    --gradient-paper: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 54, 93, 0.3);
+    z-index: 1;
+  }
+  
+  .hero-section .container {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .hero-section .lead {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+  
+  .search-form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .search-form .form-control {
+    height: 60px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px 0 0 30px;
+    padding: 0 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .search-form .btn {
+    height: 60px;
+    padding: 0 35px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    background: var(--gradient-emerald);
+    box-shadow: var(--shadow-legal);
+  }
+  
+  .search-form .btn:hover {
+    background: var(--emerald);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-premium);
+  }
+  
+  /* Loading overlay */
+  .search-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+  }
+  
+  .search-loading-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: var(--shadow-royal);
+    max-width: 400px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .search-loading-spinner {
+    border: 4px solid var(--ash-gray);
+    border-top: 4px solid var(--emerald);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .feature-section {
+    padding: 60px 0;
+    background: rgba(248, 249, 250, 0.7);
+    backdrop-filter: blur(10px);
+  }
+  
+  .feature-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-legal);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-premium);
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--royal-blue);
+  }
+  
+  .feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--charcoal);
+  }
+  
+  .feature-text {
+    color: var(--slate);
+    line-height: 1.6;
+  }
+  
+  .mevzuat-types {
+    padding: 60px 0;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+  }
+  
+  .type-card {
+    background: var(--gradient-royal);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-legal);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .type-card:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-premium);
+    background: var(--gradient-gold);
+  }
+  
+  .type-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .type-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  
+  .info-banner {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 40px 0;
+    box-shadow: var(--shadow-legal);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    .hero-section h1 {
+      font-size: 2.5rem;
+    }
+    
+    .search-form .form-control,
+    .search-form .btn {
+      height: 50px;
+      font-size: 1rem;
+    }
+    
+    .search-form .form-control {
+      border-radius: 25px 25px 0 0;
+    }
+    
+    .search-form .btn {
+      border-radius: 0 0 25px 25px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1>🏛️ MEVZUAT ARAMA SİSTEMİ</h1>
+    <p class="lead">Türkiye'nin mevzuat veritabanında arama yapın ve PDF formatında görüntüleyin</p>
+    
+    <!-- Ana Arama Formu -->
+    <form method="get" action="{% url 'legislation_results' %}" class="search-form">
+      <div class="input-group">
+        <input type="text" 
+               class="form-control" 
+               name="q" 
+               placeholder="Kanun, yönetmelik veya mevzuat adı girin..." 
+               required
+               value="{{ request.GET.q }}">
+        <div class="input-group-append">
+          <button class="btn btn-success" type="submit">
+            <i class="fas fa-search"></i> ARA
+          </button>
+        </div>
+      </div>
+    </form>
+    
+    <p class="mt-3 mb-0">
+      <small><i class="fas fa-info-circle"></i> Mevzuat bilgileri PDF formatında görüntülenecektir</small>
+    </p>
+  </div>
+</div>
+
+<!-- Arama Loading Overlay -->
+<div class="search-loading-overlay" id="searchLoadingOverlay">
+  <div class="search-loading-content">
+    <div class="search-loading-spinner"></div>
+    <h4><i class="fas fa-search"></i> Arama Yapılıyor</h4>
+    <p class="mb-0">
+      Mevzuat aranıyor, lütfen bekleyin...
+    </p>
+  </div>
+</div>
+
+<!-- Bilgi Banner -->
+<div class="container">
+  <div class="info-banner">
+    <h5><i class="fas fa-shield-check"></i> GÜNCEL VE GÜVENİLİR MEVZUAT ERİŞİMİ</h5>
+    <p class="mb-3">
+      <strong>Farklı sayfalarda arama yapmaktan ve mevzuatın güncel olup olmadığı konusunda endişelenmekten kurtulun!</strong>
+    </p>
+    <p class="mb-2">
+      ✅ <strong>En Güncel Metinler:</strong> Sistemimiz doğrudan <strong>mevzuat.gov.tr</strong>'den en son güncellenmiş mevzuat metinlerini getirir.<br>
+      ✅ <strong>Tek Noktadan Erişim:</strong> Tüm mevzuat türlerini (kanun, yönetmelik, tüzük, genelge) tek yerden arayabilirsiniz.<br>
+      ✅ <strong>Resmi PDF Formatı:</strong> Mevzuat metinleri, değişiklik dipnotları ile birlikte orijinal PDF formatında sunulur.<br>
+      ✅ <strong>Otomatik Güncellik Kontrolü:</strong> Sistem her zaman en güncel sürümü bulur ve görüntüler.
+    </p>
+    <p class="mb-0">
+      <em>Bu sayede zaman kaybetmeden güvenilir ve güncel mevzuat bilgilerine ulaşabilirsiniz.</em>
+    </p>
+  </div>
+</div>
+
+<!-- Özellikler -->
+<div class="feature-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <h3 class="feature-title">PDF Görüntüleme</h3>
+          <p class="feature-text">
+            Mevzuat metinlerini orijinal PDF formatında görüntüler. 
+            Resmi belgeleri eksiksiz şekilde okuyabilirsiniz.
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="feature-title">Resmi Kaynak</h3>
+          <p class="feature-text">
+            Tüm mevzuat bilgileri Türkiye Cumhuriyeti'nin resmi mevzuat sitesinden 
+            doğrudan çekilmektedir.
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-download"></i>
+          </div>
+          <h3 class="feature-title">İndirme ve Yazdırma</h3>
+          <p class="feature-text">
+            PDF formatındaki mevzuat metinlerini kolayca indirebilir 
+            ve yazdırabilirsiniz.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mevzuat Türleri -->
+<div class="mevzuat-types">
+  <div class="container">
+    <h2 class="text-center mb-5">📚 Mevzuat Türleri</h2>
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=1" class="type-card">
+          <div class="type-icon">📜</div>
+          <h4 class="type-title">Kanunlar</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=2" class="type-card">
+          <div class="type-icon">📋</div>
+          <h4 class="type-title">Cumhurbaşkanlığı Kararnameleri</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=5" class="type-card">
+          <div class="type-icon">📑</div>
+          <h4 class="type-title">Yönetmelikler</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=6" class="type-card">
+          <div class="type-icon">📄</div>
+          <h4 class="type-title">Tüzükler</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=7" class="type-card">
+          <div class="type-icon">📰</div>
+          <h4 class="type-title">Tebliğler</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=8" class="type-card">
+          <div class="type-icon">📝</div>
+          <h4 class="type-title">Genelgeler</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}?mevzuat_turu=9" class="type-card">
+          <div class="type-icon">🌍</div>
+          <h4 class="type-title">Uluslararası Anlaşmalar</h4>
+        </a>
+      </div>
+      <div class="col-md-3 mb-4">
+        <a href="{% url 'legislation_results' %}" class="type-card">
+          <div class="type-icon">🔍</div>
+          <h4 class="type-title">Tümünü Gör</h4>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nasıl Çalışır -->
+<div class="feature-section">
+  <div class="container">
+    <h2 class="text-center mb-5">🔍 Nasıl Çalışır?</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <div class="feature-icon text-primary">
+            <i class="fas fa-edit"></i>
+          </div>
+          <h4>1. Arama Yapın</h4>
+          <p class="text-muted">Yukarıdaki kutucuğa aradığınız mevzuat ismini yazın</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <div class="feature-icon text-warning">
+            <i class="fas fa-search"></i>
+          </div>
+          <h4>2. Mevzuat Bulma</h4>
+          <p class="text-muted">Sistem mevzuat.gov.tr'den sonuçları arar</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="text-center">
+          <div class="feature-icon text-success">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <h4>3. PDF Görüntüleme</h4>
+          <p class="text-muted">Bulunan mevzuatları PDF formatında görüntüleyin</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Arama kutusuna focus
+    const searchInput = document.querySelector('input[name="q"]');
+    if (searchInput) {
+        searchInput.focus();
+    }
+    
+    // Form validasyonu ve loading
+    const searchForm = document.querySelector('.search-form');
+    const loadingOverlay = document.getElementById('searchLoadingOverlay');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const query = searchInput.value.trim();
+            if (query.length < 2) {
+                e.preventDefault();
+                alert('Lütfen en az 2 karakter girin.');
+                searchInput.focus();
+                return false;
+            }
+            
+            // Loading overlay'i göster
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+            
+            // Form submit edilsin - loading overlay sayfa değişene kadar görünür kalacak
+            return true;
+        });
+    }
+    
+    console.log('PDF mevzuat arama sistemi hazır');
+});
+</script>
+{% endblock %}

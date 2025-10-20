@@ -1,0 +1,727 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ mevzuat.baslik }} - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  /* PROFESSIONAL LEGAL DOCUMENT DESIGN */
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --gold-light: #fbd38d;
+    --emerald: #047857;
+    --emerald-light: #10b981;
+    --crimson: #c53030;
+    --crimson-light: #fc8181;
+    --marble-white: #fdfdfe;
+    --silk-gray: #f7fafc;
+    --ash-gray: #edf2f7;
+    --charcoal: #2d3748;
+    --slate: #4a5568;
+    --obsidian: #1a202c;
+    
+    /* Enhanced Shadows */
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --shadow-premium: 0 8px 32px rgba(26, 54, 93, 0.16);
+    --shadow-royal: 0 12px 48px rgba(26, 54, 93, 0.24);
+    --shadow-inset: inset 0 2px 4px rgba(26, 54, 93, 0.06);
+    
+    /* Premium Gradients */
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, var(--gold-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+    --gradient-paper: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    
+    /* Typography Scale */
+    --text-royal: 1.75rem;
+    --text-grand: 1.5rem;
+    --text-noble: 1.25rem;
+    --text-formal: 1.125rem;
+    --text-standard: 1rem;
+    --text-fine: 0.875rem;
+    
+    /* Spacing Scale */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gradient-paper);
+    color: var(--charcoal);
+    line-height: 1.7;
+    font-size: var(--text-standard);
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Legal Document Container */
+  .legal-document-container {
+    max-width: 1400px;
+    margin: var(--space-2xl) auto;
+    background: var(--marble-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-royal);
+    overflow: hidden;
+    border: 1px solid var(--ash-gray);
+  }
+
+  /* Document Header */
+  .document-header {
+    background: var(--gradient-royal);
+    color: var(--marble-white);
+    padding: var(--space-2xl) var(--space-3xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .document-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    opacity: 0.5;
+  }
+
+  .document-title {
+    font-family: 'Source Serif Pro', serif;
+    font-size: var(--text-royal);
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .document-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+    position: relative;
+    z-index: 1;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-formal);
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    backdrop-filter: blur(10px);
+  }
+
+  .meta-item i {
+    color: var(--gold-light);
+    font-size: var(--text-noble);
+  }
+
+  /* PDF View Styles */
+  .display-mode-selector {
+    background: var(--gradient-gold);
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 3px solid var(--royal-blue);
+  }
+
+  .mode-selector-title {
+    color: var(--obsidian);
+    font-size: var(--text-noble);
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  }
+
+  .mode-selector-title i {
+    margin-right: var(--space-sm);
+    color: var(--royal-blue);
+  }
+
+  /* PDF Container Enhancements */
+  .pdf-container {
+    background: var(--marble-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-premium);
+    border: 1px solid var(--ash-gray);
+    min-height: 100vh;
+  }
+
+  /* PDF Toolbar */
+  .pdf-toolbar {
+    background: var(--gradient-royal);
+    color: white;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .pdf-tools {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .pdf-tool-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-fine);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+
+  .pdf-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .pdf-tool-btn i {
+    margin-right: var(--space-xs);
+  }
+
+  .pdf-info {
+    font-size: var(--text-fine);
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  /* PDF Viewer Enhancements */
+  .pdf-viewer {
+    position: relative;
+    background: #f8f9fa;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-legal);
+    min-height: 100vh;
+    margin: var(--space-md) 0;
+  }
+
+  .pdf-viewer embed {
+    display: block;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-sm);
+    margin: var(--space-xs);
+    width: calc(100% - var(--space-sm));
+    height: calc(100vh - 120px);
+    border: none;
+  }
+
+  /* PDF Loading State */
+  .pdf-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--slate);
+    font-size: var(--text-formal);
+    z-index: 1;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  .pdf-loading i {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+    color: var(--royal-blue);
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Fullscreen PDF styles */
+  .pdf-viewer:fullscreen {
+    background: white;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pdf-viewer:fullscreen embed {
+    height: 100vh !important;
+    width: 100% !important;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  /* Alert styles */
+  .alert {
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    margin: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .alert-info {
+    background: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid #3498db;
+    color: #2c3e50;
+  }
+
+  .alert i {
+    font-size: var(--text-formal);
+    color: #3498db;
+  }
+
+  /* Button styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-outline-primary {
+    color: var(--royal-blue);
+    border: 1px solid var(--royal-blue);
+    background: transparent;
+  }
+
+  .btn-outline-primary:hover {
+    background: var(--royal-blue);
+    color: white;
+  }
+
+  .btn-outline-secondary {
+    color: var(--slate);
+    border: 1px solid var(--slate);
+    background: transparent;
+  }
+
+  .btn-outline-secondary:hover {
+    background: var(--slate);
+    color: white;
+  }
+
+  .btn-sm {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-fine);
+  }
+
+  .btn-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .legal-document-container {
+      margin: var(--space-lg) var(--space-sm);
+    }
+    
+    .document-header {
+      padding: var(--space-xl) var(--space-lg);
+    }
+    
+    .document-title {
+      font-size: var(--text-grand);
+    }
+    
+    .pdf-viewer embed {
+      height: calc(100vh - 150px);
+      margin: var(--space-xs);
+      width: calc(100% - var(--space-sm));
+    }
+    
+    .pdf-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .pdf-tools {
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="legal-document-container">
+  <!-- Document Header -->
+  <div class="document-header">
+    <h1 class="document-title">{{ mevzuat.baslik }}</h1>
+    <div class="document-meta">
+      {% if mevzuat.kategori %}
+      <div class="meta-item">
+        <i class="fas fa-tag"></i>
+        <span>{{ mevzuat.kategori }}</span>
+      </div>
+      {% endif %}
+      <div class="meta-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>{{ mevzuat.tarih }}</span>
+      </div>
+      <div class="meta-item">
+        <i class="fas fa-link"></i>
+        <span>Kaynak: mevzuat.gov.tr</span>
+      </div>
+      <div class="meta-item">
+        <i class="fas fa-shield-alt"></i>
+        <span>Güncel Metin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Yükleme Uyarı Mesajı -->
+  <div id="pdf-loading-message" class="alert alert-info" style="margin: 20px; border-left: 4px solid #007bff; background: rgba(0, 123, 255, 0.1); border-radius: 8px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="spinner-border spinner-border-sm" role="status" style="color: #007bff; margin-right: 5px;">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div>
+        <strong>PDF Mevzuat Yükleniyor...</strong><br>
+        Mevzuatın en güncel hali PDF olarak getirilmektedir. Mevzuat metninde yapılan değişiklikler her sayfada dipnot olarak eklenmiştir.
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF View Title -->
+  <div class="display-mode-selector">
+    <h3 class="mode-selector-title">
+      <i class="fas fa-file-pdf"></i>
+      PDF Görünüm
+    </h3>
+  </div>
+
+  <!-- PDF View -->
+  <div class="pdf-container">
+    {% if mevzuat.pdf_url %}
+      <!-- Enhanced PDF Toolbar with Useful Tools -->
+      <div class="pdf-toolbar">
+        <div class="pdf-tools">
+          <button class="pdf-tool-btn" onclick="downloadPdf()" title="PDF'i İndir">
+            <i class="fas fa-download"></i> İndir
+          </button>
+          <button class="pdf-tool-btn" onclick="printPdf()" title="PDF'i Yazdır">
+            <i class="fas fa-print"></i> Yazdır
+          </button>
+          <button class="pdf-tool-btn" onclick="openPdfNewTab()" title="Yeni Sekmede Aç">
+            <i class="fas fa-external-link-alt"></i> Yeni Sekme
+          </button>
+          <button class="pdf-tool-btn" onclick="toggleFullscreen()" title="Tam Ekran">
+            <i class="fas fa-expand"></i> Tam Ekran
+          </button>
+          <button class="pdf-tool-btn" onclick="zoomIn()" title="Yakınlaştır">
+            <i class="fas fa-search-plus"></i> Yakınlaştır
+          </button>
+          <button class="pdf-tool-btn" onclick="zoomOut()" title="Uzaklaştır">
+            <i class="fas fa-search-minus"></i> Uzaklaştır
+          </button>
+          <button class="pdf-tool-btn" onclick="resetZoom()" title="Zoom Sıfırla">
+            <i class="fas fa-compress-arrows-alt"></i> %100
+          </button>
+        </div>
+        <div class="pdf-tools">
+          <span class="pdf-info">
+            <i class="fas fa-file-pdf"></i> PDF Görünüm - {{ mevzuat.baslik }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- PDF Arama Uyarısı -->
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>PDF Arama İpucu:</strong> 
+        PDF içinde arama yapmak için <strong>Ctrl+F</strong> (Windows/Linux) veya <strong>Cmd+F</strong> (Mac) tuşlarını kullanın. PDF tamamen yüklendikten sonra arama özelliği aktif olacaktır.
+      </div>
+      
+      <div class="pdf-viewer" id="pdfViewer">
+        <div class="pdf-loading" id="pdfLoading">
+          <i class="fas fa-file-pdf fa-3x"></i>
+          <p>PDF yükleniyor...</p>
+        </div>
+        <embed 
+          id="mevzuatPdf"
+          src="{% url 'external_mevzuat_pdf_proxy' external_id %}"
+          type="application/pdf"
+          onload="hidePdfLoading()"
+          onerror="showPdfError()">
+        </embed>
+      </div>
+    {% else %}
+      <div class="text-center p-5">
+        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+        <h4>PDF Aranıyor</h4>
+        <p class="mb-4">Mevzuat PDF'i bulunmaya çalışılıyor...</p>
+        
+        <!-- Alternative PDF URLs -->
+        <div class="alert alert-info mb-4">
+          <h6><i class="fas fa-info-circle"></i> PDF Erişim Seçenekleri</h6>
+          <div class="btn-group-vertical" style="width: 100%;">
+            <a href="https://www.mevzuat.gov.tr/MevzuatMetin/1.5.{{ mevzuat.url|slice:'?MevzuatNo='|slice:':&' }}.pdf" 
+               target="_blank" class="btn btn-outline-primary btn-sm mb-2">
+              <i class="fas fa-file-pdf"></i> PDF Format 1 (Tertip 5)
+            </a>
+            <a href="https://www.mevzuat.gov.tr/MevzuatMetin/1.4.{{ mevzuat.url|slice:'?MevzuatNo='|slice:':&' }}.pdf" 
+               target="_blank" class="btn btn-outline-primary btn-sm mb-2">
+              <i class="fas fa-file-pdf"></i> PDF Format 2 (Tertip 4)
+            </a>
+            <a href="{{ mevzuat.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-globe"></i> Orijinal Sayfa
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Navigation Buttons -->
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-md-6">
+      <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg btn-block">
+        <i class="fas fa-arrow-left"></i>
+        Sonuçlara Dön
+      </a>
+    </div>
+    <div class="col-md-6">
+      <a href="{% url 'legislation_home' %}" class="btn btn-outline-primary btn-lg btn-block">
+        <i class="fas fa-search"></i>
+        Yeni Arama Yap
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+// PDF-only mode - simplified and clean
+console.log('PDF mode initialized');
+
+// Initialize PDF mode on load
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing PDF mode...');
+  hidePdfLoading();
+});
+
+// PDF Management Functions
+function hidePdfLoading() {
+  const loading = document.getElementById('pdfLoading');
+  const loadingMessage = document.getElementById('pdf-loading-message');
+  
+  if (loading) {
+    setTimeout(() => {
+      loading.style.display = 'none';
+    }, 2000);
+  }
+  
+  // PDF yüklendiğinde uyarı mesajını gizle
+  if (loadingMessage) {
+    setTimeout(() => {
+      loadingMessage.style.display = 'none';
+    }, 2000);
+  }
+}
+
+function showPdfError() {
+  const loading = document.getElementById('pdfLoading');
+  const loadingMessage = document.getElementById('pdf-loading-message');
+  
+  if (loading) {
+    loading.innerHTML = `
+      <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <p>PDF yüklenirken hata oluştu.</p>
+      <button onclick="reloadPdf()" class="btn btn-outline-primary btn-sm">
+        <i class="fas fa-redo"></i> Tekrar Dene
+      </button>
+    `;
+  }
+  
+  // PDF yükleme hatası durumunda uyarı mesajını hata mesajına çevir
+  if (loadingMessage) {
+    loadingMessage.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 1.2em;"></i>
+        <div>
+          <strong>PDF Yükleme Hatası:</strong><br>
+          Mevzuat PDF'i yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin veya tekrar deneyin.
+        </div>
+      </div>
+    `;
+    loadingMessage.style.borderLeftColor = '#dc3545';
+    loadingMessage.style.background = 'rgba(220, 53, 69, 0.1)';
+  }
+}
+
+function reloadPdf() {
+  const pdf = document.getElementById('mevzuatPdf');
+  const loading = document.getElementById('pdfLoading');
+  const loadingMessage = document.getElementById('pdf-loading-message');
+  
+  if (pdf && loading) {
+    loading.style.display = 'block';
+    loading.innerHTML = `
+      <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+      <p>PDF tekrar yükleniyor...</p>
+    `;
+    pdf.src = pdf.src; // Reload PDF
+  }
+  
+  // PDF yeniden yüklenirken uyarı mesajını tekrar göster
+  if (loadingMessage) {
+    loadingMessage.style.display = 'block';
+    loadingMessage.style.borderLeftColor = '#007bff';
+    loadingMessage.style.background = 'rgba(0, 123, 255, 0.1)';
+    loadingMessage.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="spinner-border spinner-border-sm" role="status" style="color: #007bff; margin-right: 5px;">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div>
+          <strong>PDF Mevzuat Yükleniyor...</strong><br>
+          Mevzuatın en güncel hali PDF olarak getirilmektedir. Mevzuat metninde yapılan değişiklikler her sayfada dipnot olarak eklenmiştir.
+        </div>
+      </div>
+    `;
+  }
+}
+
+// PDF Toolbar Functions
+function downloadPdf() {
+  const url = '{% url "external_mevzuat_pdf_proxy" external_id %}';
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = '{{ mevzuat.baslik }}.pdf';
+  link.click();
+  showNotification('PDF indiriliyor...', 'info');
+}
+
+function printPdf() {
+  const iframe = document.getElementById('mevzuatPdf');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.print();
+  } else {
+    window.print();
+  }
+  showNotification('PDF yazdırılıyor...', 'info');
+}
+
+function openPdfNewTab() {
+  const url = '{% url "external_mevzuat_pdf_proxy" external_id %}';
+  window.open(url, '_blank');
+  showNotification('PDF yeni sekmede açıldı', 'success');
+}
+
+function toggleFullscreen() {
+  const viewer = document.getElementById('pdfViewer');
+  if (viewer) {
+    if (!document.fullscreenElement) {
+      viewer.requestFullscreen().catch(err => {
+        console.error('Fullscreen failed:', err);
+        showNotification('Tam ekran modu desteklenmiyor', 'warning');
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }
+}
+
+// PDF Zoom Functions
+let currentZoom = 1.0;
+
+function zoomIn() {
+  currentZoom += 0.2;
+  applyZoom();
+}
+
+function zoomOut() {
+  if (currentZoom > 0.4) {
+    currentZoom -= 0.2;
+    applyZoom();
+  }
+}
+
+function resetZoom() {
+  currentZoom = 1.0;
+  applyZoom();
+}
+
+function applyZoom() {
+  const iframe = document.getElementById('mevzuatPdf');
+  if (iframe) {
+    iframe.style.transform = `scale(${currentZoom})`;
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.width = `${100 / currentZoom}%`;
+    iframe.style.height = `${(100 / currentZoom)}vh`;
+    
+    // Update zoom display
+    const zoomBtn = document.querySelector('[onclick="resetZoom()"]');
+    if (zoomBtn) {
+      const percentage = Math.round(currentZoom * 100);
+      zoomBtn.innerHTML = `<i class="fas fa-compress-arrows-alt"></i> ${percentage}%`;
+    }
+    
+    showNotification(`Zoom: ${Math.round(currentZoom * 100)}%`, 'info');
+  }
+}
+
+// Utility Functions
+function showNotification(message, type = 'info', duration = 3000) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#2196f3'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    max-width: 400px;
+    word-wrap: break-word;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, duration);
+}
+</script>
+{% endblock %}

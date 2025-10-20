@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ article.makale_basligi }} - Makale Detay{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Detaylar İçin Yarı Saydam Kart -->
+  <div class="card shadow-sm" style="background-color: rgba(255, 255, 255, 0.8); padding: 20px;">
+    <h1 class="text-center mb-4">{{ article.makale_basligi }}</h1>
+
+    {% if article.dergi %}
+      <p><strong>Dergi:</strong> {{ article.dergi }}</p>
+    {% endif %}
+    {% if article.yazarlar %}
+      <p><strong>Yazarlar:</strong> {{ article.yazarlar }}</p>
+    {% endif %}
+    {% if article.makale_ozeti %}
+      <p><strong>Özet:</strong> {{ article.makale_ozeti }}</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- Butonların Aynı Satırda Görünmesi -->
+    <div class="d-flex justify-content-center mt-4">
+      {% if article.dosya %}
+        <a href="{{ article.dosya.url }}" target="_blank" class="btn btn-primary mr-2">
+          Makaleyi Görüntüle
+        </a>
+      {% endif %}
+      <a href="javascript:history.back()" class="btn btn-secondary">Arama Sonuçlarına Geri Dön</a>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

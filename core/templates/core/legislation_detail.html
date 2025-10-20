@@ -1,0 +1,698 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ mevzuat.baslik }} - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2c5aa0;
+    --secondary: #d69e2e;
+    --secondary-light: #fbd38d;
+    --white: #ffffff;
+    --light-gray: #f7fafc;
+    --gray: #e2e8f0;
+    --dark-gray: #4a5568;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background-color: var(--light-gray);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .breadcrumb {
+    padding: 20px 0;
+    font-size: 14px;
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb-item {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .breadcrumb-item:hover {
+    color: var(--primary);
+  }
+
+  .breadcrumb-separator {
+    color: var(--text-secondary);
+  }
+
+  .breadcrumb-current {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .content-wrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .mevzuat-header {
+    margin-bottom: 32px;
+  }
+
+  .mevzuat-type-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .mevzuat-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .mevzuat-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-item i {
+    color: var(--primary);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--gray);
+    margin-bottom: 32px;
+  }
+
+  .action-btn {
+    padding: 10px 20px;
+    border: 1px solid var(--gray);
+    border-radius: 8px;
+    background: white;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .action-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .action-btn.primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .action-btn.primary:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+  }
+
+  .content-section {
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-icon {
+    color: var(--primary);
+  }
+
+  .mevzuat-summary {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+  }
+
+  .mevzuat-summary h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .mevzuat-summary p {
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .articles-container {
+    display: grid;
+    gap: 16px;
+  }
+
+  .article-item {
+    background: var(--light-gray);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .article-item:hover {
+    background: var(--gray);
+    transform: translateX(4px);
+  }
+
+  .article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .article-number {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 16px;
+  }
+
+  .article-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .article-action-btn {
+    padding: 4px 8px;
+    background: white;
+    border: 1px solid var(--gray);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .article-action-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .article-content {
+    color: var(--text-primary);
+    line-height: 1.8;
+    font-size: 15px;
+  }
+
+  .article-subitems {
+    margin-left: 20px;
+    margin-top: 12px;
+    padding-left: 20px;
+    border-left: 2px solid var(--primary);
+  }
+
+  .article-subitem {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+
+  .info-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 80px;
+  }
+
+  .info-value {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  .related-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .related-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--light-gray);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .related-item:hover {
+    background: var(--gray);
+    color: var(--primary);
+    transform: translateX(4px);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 12px;
+    background: var(--light-gray);
+    border-radius: 8px;
+  }
+
+  .stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+  }
+
+  .empty-state i {
+    font-size: 48px;
+    color: var(--gray);
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 968px) {
+    .main-content {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .content-wrapper {
+      padding: 20px;
+    }
+
+    .mevzuat-title {
+      font-size: 22px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="container">
+  <nav class="breadcrumb">
+    <div class="breadcrumb-list">
+      <a href="{% url 'home' %}" class="breadcrumb-item">Ana Sayfa</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="{% url 'legislation_home' %}" class="breadcrumb-item">Mevzuat</a>
+      <span class="breadcrumb-separator">/</span>
+      {% if mevzuat.kategori %}
+      <a href="{% url 'legislation_results' %}?category={{ mevzuat.kategori.kod }}" class="breadcrumb-item">
+        {{ mevzuat.kategori.ad }}
+      </a>
+      <span class="breadcrumb-separator">/</span>
+      {% endif %}
+      <span class="breadcrumb-current">{{ mevzuat.baslik|truncatewords:10 }}</span>
+    </div>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+  <div class="main-content">
+    <!-- Content -->
+    <div class="content-wrapper">
+      <!-- Header -->
+      <div class="mevzuat-header">
+        <span class="mevzuat-type-badge">{{ mevzuat.mevzuat_turu.ad }}</span>
+        <h1 class="mevzuat-title">{{ mevzuat.baslik }}</h1>
+        
+        <div class="mevzuat-meta">
+          {% if mevzuat.mevzuat_numarasi %}
+          <span class="meta-item">
+            <i class="fas fa-hashtag"></i> {{ mevzuat.mevzuat_numarasi }}
+          </span>
+          {% endif %}
+          
+          {% if mevzuat.resmi_gazete_tarihi %}
+          <span class="meta-item">
+            <i class="fas fa-calendar"></i> RG: {{ mevzuat.resmi_gazete_tarihi|date:"d.m.Y" }}
+          </span>
+          {% endif %}
+          
+          {% if mevzuat.resmi_gazete_sayisi %}
+          <span class="meta-item">
+            <i class="fas fa-newspaper"></i> RG No: {{ mevzuat.resmi_gazete_sayisi }}
+          </span>
+          {% endif %}
+          
+          {% if mevzuat.yurutulme_tarihi %}
+          <span class="meta-item">
+            <i class="fas fa-play-circle"></i> Yürürlük: {{ mevzuat.yurutulme_tarihi|date:"d.m.Y" }}
+          </span>
+          {% endif %}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          {% if mevzuat.pdf_url %}
+          <a href="{{ mevzuat.pdf_url }}" target="_blank" class="action-btn primary">
+            <i class="fas fa-file-pdf"></i> PDF İndir
+          </a>
+          {% endif %}
+          
+          <button class="action-btn" onclick="printMevzuat()">
+            <i class="fas fa-print"></i> Yazdır
+          </button>
+          
+          <button class="action-btn" onclick="shareMevzuat()">
+            <i class="fas fa-share-alt"></i> Paylaş
+          </button>
+          
+          <button class="action-btn" onclick="copyLink()">
+            <i class="fas fa-link"></i> Linki Kopyala
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      {% if mevzuat.konu or mevzuat.ozet %}
+      <div class="content-section">
+        <div class="mevzuat-summary">
+          <h3>Özet</h3>
+          <p>{{ mevzuat.ozet|default:mevzuat.konu|linebreaks }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Articles -->
+      <div class="content-section">
+        <h2 class="section-title">
+          <i class="fas fa-list section-icon"></i>
+          Maddeler ({{ maddeler.count }})
+        </h2>
+        
+        {% if maddeler %}
+        <div class="articles-container" id="articles-list">
+          {% for madde in maddeler %}
+          <div class="article-item" id="madde-{{ madde.id }}">
+            <div class="article-header">
+              <div class="article-number">Madde {{ madde.madde_no }}</div>
+              <div class="article-actions">
+                <button class="article-action-btn" onclick="copyArticle({{ madde.id }})" title="Kopyala">
+                  <i class="fas fa-copy"></i>
+                </button>
+                <button class="article-action-btn" onclick="shareArticle({{ madde.id }})" title="Paylaş">
+                  <i class="fas fa-share"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="article-content">
+              {{ madde.metin|linebreaks }}
+              
+              {% if madde.alt_maddeler.exists %}
+              <div class="article-subitems">
+                {% for alt_madde in madde.alt_maddeler.all %}
+                <div class="article-subitem">
+                  {% if alt_madde.bent_no %}
+                  <strong>{{ alt_madde.bent_no }})</strong>
+                  {% elif alt_madde.fıkra_no %}
+                  <strong>({{ alt_madde.fıkra_no }})</strong>
+                  {% endif %}
+                  {{ alt_madde.metin }}
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p>Bu mevzuata ait madde bulunmamaktadır.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Info Card -->
+      <div class="sidebar-card">
+        <h3 class="sidebar-title">Mevzuat Bilgileri</h3>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Tür:</span>
+            <span class="info-value">{{ mevzuat.mevzuat_turu.ad }}</span>
+          </div>
+          
+          {% if mevzuat.kategori %}
+          <div class="info-item">
+            <span class="info-label">Kategori:</span>
+            <span class="info-value">{{ mevzuat.kategori.ad }}</span>
+          </div>
+          {% endif %}
+          
+          <div class="info-item">
+            <span class="info-label">Durum:</span>
+            <span class="info-value">{{ mevzuat.get_durum_display }}</span>
+          </div>
+          
+          {% if mevzuat.anahtar_kelimeler %}
+          <div class="info-item">
+            <span class="info-label">Etiketler:</span>
+            <span class="info-value">{{ mevzuat.anahtar_kelimeler }}</span>
+          </div>
+          {% endif %}
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number">{{ maddeler.count }}</span>
+            <span class="stat-label">Madde</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">4</span>
+            <span class="stat-label">Kitap</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Mevzuat -->
+      {% if ilgili_mevzuat %}
+      <div class="sidebar-card">
+        <h3 class="sidebar-title">İlgili Mevzuat</h3>
+        <div class="related-list">
+          {% for item in ilgili_mevzuat %}
+          <a href="{% url 'legislation_detail' item.id %}" class="related-item">
+            <i class="fas fa-angle-right"></i>
+            {{ item.baslik|truncatewords:8 }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Same Category -->
+      {% if ayni_kategori %}
+      <div class="sidebar-card">
+        <h3 class="sidebar-title">Aynı Kategoride</h3>
+        <div class="related-list">
+          {% for item in ayni_kategori %}
+          <a href="{% url 'legislation_detail' item.id %}" class="related-item">
+            <i class="fas fa-angle-right"></i>
+            {{ item.baslik|truncatewords:8 }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href);
+  alert('Link kopyalandı!');
+}
+
+function shareMevzuat() {
+  if (navigator.share) {
+    navigator.share({
+      title: '{{ mevzuat.baslik }}',
+      text: '{{ mevzuat.baslik }} - Lexatech Mevzuat',
+      url: window.location.href
+    });
+  } else {
+    copyLink();
+  }
+}
+
+function printMevzuat() {
+  window.print();
+}
+
+function copyArticle(maddeId) {
+  const maddeElement = document.getElementById('madde-' + maddeId);
+  const text = maddeElement.querySelector('.article-content').innerText;
+  navigator.clipboard.writeText(text);
+  alert('Madde metni kopyalandı!');
+}
+
+function shareArticle(maddeId) {
+  const maddeElement = document.getElementById('madde-' + maddeId);
+  const maddeNo = maddeElement.querySelector('.article-number').innerText;
+  const url = window.location.href + '#madde-' + maddeId;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: '{{ mevzuat.baslik }} - ' + maddeNo,
+      text: maddeNo + ' - {{ mevzuat.baslik }}',
+      url: url
+    });
+  } else {
+    navigator.clipboard.writeText(url);
+    alert('Madde linki kopyalandı!');
+  }
+}
+
+// Print styles
+</script>
+
+<style>
+@media print {
+  .sidebar, .action-buttons, .breadcrumb, .article-actions {
+    display: none !important;
+  }
+  
+  .main-content {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .content-wrapper {
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
+</style>
+{% endblock %}

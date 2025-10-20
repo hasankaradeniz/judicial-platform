@@ -1,0 +1,131 @@
+
+{% extends "core/base.html" %}
+
+{% block page_title %}Lexatech - Sözleşme Hazırlama Platformu{% endblock %}
+
+{% block extra_styles %}
+
+  <style>
+
+        .content-section {
+        max-width: 800px;
+        margin: 3rem auto;
+        background-color: #ffffffcc; /* Hafif opak arka plan rengi */
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        line-height: 1.6;
+        }
+
+        .content-section h1, .content-section h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .content-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #004085;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0056b3;
+        }
+
+        .content-section p {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        .content-section ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: #333;
+        }
+
+        .content-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content-section a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+
+    <!-- Aydınlatma Metni İçeriği -->
+    <section class="content-section">
+        <h1>Kişisel Verilerin Korunması ve İşlenmesi Aydınlatma Metni</h1>
+
+        <h2>1. Veri Sorumlusu ve Temsilcisi</h2>
+        <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında kişisel verileriniz, veri sorumlusu olarak Lexatech tarafından açıklanan kapsamda işlenebilecektir.</p>
+
+        <h2>2. Kişisel Verilerin Toplanma Yöntemleri</h2>
+        <p>Şirket tarafından kişisel veriler aşağıdaki yöntemlerden herhangi biri kullanılarak toplanabilir:</p>
+        <ul>
+            <li>Her türlü sözlü, yazılı, elektronik ortam</li>
+            <li>www.lexatech.ai internet siteleri</li>
+            <li>Çağrı merkezi, mobil uygulamalar</li>
+        </ul>
+
+        <h2>3. Toplanan Başlıca Kişisel Verileriniz</h2>
+        <p>Toplanan kişisel verileriniz aşağıdaki gibi sınıflandırılabilir:</p>
+        <ul>
+            <li>Kimlik Bilgileri: Ad-Soyad, TC Kimlik Numarası</li>
+            <li>İletişim Bilgileri: GSM numarası, telefon numarası, e-posta adresi</li>
+            <li>Finansal Bilgiler: Banka hesap numarası, IBAN numarası, kredi kartı bilgileri</li>
+            <li>Hukuki İşlem ve Uyum Bilgileri: Mahkeme kararları, avukat yazışmaları</li>
+            <li>Diğer Bilgiler: Görsel ve işitsel veriler, demografik bilgiler, lokasyon bilgileri</li>
+        </ul>
+
+        <h2>4. Kişisel Verilerin İşlenebileceği Başlıca Amaçlar</h2>
+        <p>Kişisel Verileriniz Lexatech tarafından aşağıdaki amaçlarla işlenebilir:</p>
+        <ul>
+            <li>Kanunlarda açıkça öngörülmesi</li>
+            <li>Bir sözleşmenin kurulması veya ifasıyla ilgili işlemler</li>
+            <li>Şirket’in hukuki yükümlülüklerini yerine getirmesi</li>
+            <li>Bir hakkın tesisi, kullanılması veya korunması</li>
+            <li>Kişisel veri sahibinin temel hak ve özgürlüklerine zarar vermemek kaydıyla şirketin meşru menfaatleri doğrultusunda veri işleme faaliyetlerinde bulunulması</li>
+        </ul>
+
+        <h2>5. Kişisel Verilerin İşlenme Süresi</h2>
+        <p>Lexatech ile paylaşmış olduğunuz kişisel veriler, ilgili mevzuatlarda belirtilen süreler boyunca saklanabilir ve işlenebilir. Saklama süresi dolan veriler, şirket prosedürleri doğrultusunda güvenli bir şekilde imha edilmektedir.</p>
+
+        <h2>6. Kişisel Verilerin Korunması için Alınan Önlemler</h2>
+        <p>Kişisel verilerinizin güvenliği için Lexatech tarafından gerekli teknik ve idari önlemler alınmaktadır. Verilerinizin güvenliği, gizliliği ve bütünlüğünün sağlanması için çeşitli şifreleme yöntemleri, güvenlik duvarları ve erişim kontrol mekanizmaları kullanılır.</p>
+
+        <h2>7. Kişisel Veri Sahibinin Hakları</h2>
+        <p>KVKK madde 11 uyarınca kişisel veri sahipleri, şirketimize başvurarak aşağıdaki haklarını kullanabilirler:</p>
+        <ul>
+            <li>Kişisel veri işlenip işlenmediğini öğrenme</li>
+            <li>Kişisel verileri işlenmişse buna ilişkin bilgi talep etme</li>
+            <li>Kişisel verilerin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme</li>
+            <li>Yurt içinde veya yurt dışında kişisel verilerin aktarıldığı üçüncü kişileri bilme</li>
+            <li>Kişisel verilerin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme</li>
+            <li>KVKK’nın ilgili maddeleri uyarınca işlenmiş olmasına rağmen, işlenmesini gerektiren sebeplerin ortadan kalkması hâlinde kişisel verilerin silinmesini veya yok edilmesini isteme</li>
+            <li>İlgili işlemlerin, kişisel verilerin aktarıldığı üçüncü kişilere bildirilmesini isteme</li>
+            <li>İşlenen verilerin münhasıran otomatik sistemler aracılığıyla analiz edilmesi suretiyle kişisel veri sahibinin aleyhine bir sonucun ortaya çıkmasına itiraz etme</li>
+            <li>Kişisel verilerin kanuna aykırı işlenmesi sebebiyle zarara uğraması hâlinde zararın giderilmesini talep etme</li>
+        </ul>
+
+        <h2>8. Başvuru ve İletişim</h2>
+        <p>KVKK kapsamındaki haklarınızı kullanmak ve kişisel verilerinizle ilgili diğer talepleriniz için bize <a href="mailto:bilgi@lexatech.com">bilgi@lexatech.com</a> adresinden ulaşabilirsiniz.</p>
+    </section>
+
+    {% endblock %}

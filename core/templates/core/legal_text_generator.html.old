@@ -1,0 +1,856 @@
+<!-- PROFESSIONAL TEMPLATE v2 LOADED -->
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}Hukuki Metin Üretici{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+  --royal-blue: #1a365d;
+  --royal-blue-light: #2c5aa0;
+  --gold-accent: #d69e2e;
+  --emerald: #047857;
+  --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+  --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+  --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+  --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, #ecc94b 100%);
+}
+
+body { 
+  background: var(--gradient-royal);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.generator-container { 
+  max-width: 1000px; 
+  margin: 40px auto; 
+  padding: 40px; 
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px; 
+  box-shadow: 0 20px 60px rgba(26, 54, 93, 0.2);
+  color: #333;
+}
+
+.main-title { 
+  text-align: center; 
+  color: var(--royal-blue);
+  font-size: 2.8rem;
+  margin-bottom: 20px; 
+  text-shadow: none;
+  font-weight: 700;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+
+.tab-navigation { 
+  display: flex; 
+  margin-bottom: 30px; 
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.tab-button { 
+  flex: 1; 
+  padding: 18px 25px; 
+  background: transparent; 
+  border: none; 
+  color: #666; 
+  cursor: pointer; 
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab-button.active { 
+  background: var(--gradient-royal);
+  color: white; 
+}
+
+.tab-button:hover:not(.active) {
+  background: rgba(26, 54, 93, 0.1);
+  color: var(--royal-blue);
+}
+
+.tab-panel { 
+  display: none; 
+}
+
+.tab-panel.active { 
+  display: block; 
+}
+
+.form-group { 
+  margin-bottom: 25px; 
+}
+
+.form-label { 
+  display: block; 
+  color: var(--royal-blue);
+  margin-bottom: 10px; 
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-input, .form-select, .form-textarea { 
+  width: 100%; 
+  padding: 15px 18px; 
+  background: white;
+  color: #333; 
+  border: 2px solid #e9ecef; 
+  border-radius: 10px; 
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus { 
+  outline: none;
+  border-color: var(--royal-blue);
+  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+}
+
+.file-upload-zone {
+  border: 3px dashed #d1d5db;
+  border-radius: 15px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+  margin-bottom: 20px;
+}
+
+.file-upload-zone:hover, .file-upload-zone.dragover {
+  border-color: var(--royal-blue);
+  background: rgba(26, 54, 93, 0.05);
+}
+
+.file-upload-icon {
+  font-size: 3rem;
+  color: var(--royal-blue);
+  margin-bottom: 15px;
+}
+
+.submit-button { 
+  width: 100%;
+  background: var(--gradient-royal);
+  color: white; 
+  padding: 18px 30px; 
+  border: none; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.submit-button:hover:not(:disabled) { 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(26, 54, 93, 0.3);
+}
+
+.submit-button:disabled { 
+  opacity: 0.6; 
+  cursor: not-allowed;
+  transform: none;
+}
+
+.file-list { 
+  margin-top: 15px; 
+}
+
+.file-item { 
+  background: white;
+  padding: 15px 20px; 
+  margin-bottom: 10px; 
+  border-radius: 10px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #e9ecef;
+  border-left: 4px solid var(--emerald);
+}
+
+.file-remove {
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.file-remove:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.message-container { 
+  margin-top: 30px; 
+  padding: 25px; 
+  border-radius: 15px; 
+  display: none;
+}
+
+.loading-message { 
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid var(--gold-accent);
+  text-align: center; 
+  color: #856404;
+}
+
+.loading-spinner {
+  font-size: 2.5rem;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+  color: var(--gold-accent);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.result-message { 
+  background: white;
+  border: 2px solid var(--emerald);
+  color: #333;
+}
+
+.result-container {
+  margin-top: 30px;
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  border: 2px solid var(--emerald);
+  display: none;
+}
+
+.result-container.active {
+  display: block;
+}
+
+.document-preview {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  font-family: 'Times New Roman', serif;
+  line-height: 1.8;
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  color: #333;
+}
+
+.error-message { 
+  background: #f8d7da;
+  border: 2px solid #dc3545;
+  color: #721c24; 
+}
+
+.action-buttons {
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  background: var(--royal-blue);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn:hover {
+  background: var(--royal-blue-light);
+  transform: translateY(-1px);
+}
+
+.success-icon { color: var(--emerald); }
+.error-icon { color: #dc3545; }
+.warning-icon { color: var(--gold-accent); }
+
+@media (max-width: 768px) {
+  .generator-container { 
+    margin: 20px; 
+    padding: 25px; 
+  }
+  
+  .main-title { 
+    font-size: 2.2rem; 
+  }
+  
+  .tab-navigation {
+    flex-direction: column;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="generator-container">
+  <h1 class="main-title">
+    <i class="fas fa-gavel"></i> Hukuki Metin Üretici
+  </h1>
+  <p class="subtitle">Yapay zeka destekli profesyonel hukuki belge oluşturma platformu</p>
+  
+  <div class="tab-navigation">
+    <button class="tab-button active" onclick="switchTab('template')">
+      <i class="fas fa-file-alt"></i> Şablon Kullan
+    </button>
+    <button class="tab-button" onclick="switchTab('upload')">
+      <i class="fas fa-cloud-upload-alt"></i> Belge Yükle
+    </button>
+  </div>
+  
+  <!-- Template Tab -->
+  <div id="template-panel" class="tab-panel active">
+    <form id="template-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-list"></i> Belge Türü Seçin:
+        </label>
+        <select class="form-select" id="template-type" required>
+          <option value="">Bir tür seçiniz...</option>
+          <option value="dilekce">Dava Dilekçesi</option>
+          <option value="sozlesme">Sözleşme Taslağı</option>
+          <option value="mektup">Resmi Mektup</option>
+          <option value="cevap">Cevap Dilekçesi</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-edit"></i> Belge Detayları:
+        </label>
+        <textarea class="form-textarea" id="template-content" rows="6" required 
+          placeholder="Oluşturmak istediğiniz belge hakkında detaylı bilgi verin. Örnek: Taraflar, konu, talep edilen hususlar..."></textarea>
+      </div>
+      
+      <button type="submit" class="submit-button">
+        <i class="fas fa-magic"></i> Belge Oluştur
+      </button>
+    </form>
+  </div>
+  
+  <!-- Upload Tab -->
+  <div id="upload-panel" class="tab-panel">
+    <form id="upload-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-upload"></i> Belge Seçin:
+        </label>
+        <div class="file-upload-zone" id="file-drop-zone">
+          <div class="file-upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h3 style="color: #333; margin: 15px 0;">Dosyaları Buraya Sürükleyin</h3>
+          <p style="color: #666;">veya tıklayarak dosya seçin</p>
+          <p style="color: #999;"><small>PDF, DOC, DOCX, TXT formatları desteklenir (Max: 10MB)</small></p>
+          <input type="file" id="sourceDocuments" multiple accept=".pdf,.doc,.docx,.txt" style="display: none;">
+        </div>
+        
+        <div id="selected-files" class="file-list"></div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-question-circle"></i> Belge Türü:
+        </label>
+        <input type="text" class="form-input" id="customDocumentType" required
+          placeholder="Örn: İstinaf dilekçesi, Temyiz dilekçesi, İtiraz dilekçesi, Karşı dava...">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-comment-alt"></i> Ek Açıklama:
+        </label>
+        <textarea class="form-textarea" id="additionalInstructions" rows="4" 
+          placeholder="Oluşturulacak belge hakkında ek talimatlar verebilirsiniz..."></textarea>
+      </div>
+      
+      <button type="submit" class="submit-button" id="upload-submit-btn">
+        <i class="fas fa-file-export"></i> Belgelerden Oluştur
+      </button>
+    </form>
+  </div>
+  
+  <!-- Loading -->
+  <div id="loading-container" class="message-container loading-message">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner"></i>
+    </div>
+    <h3>Belge Oluşturuluyor...</h3>
+    <p>Bu işlem birkaç dakika sürebilir, lütfen bekleyiniz.</p>
+  </div>
+  
+  <!-- Result Container -->
+  <div id="resultContainer" class="result-container">
+    <h3 style="color: var(--emerald); margin-bottom: 20px;">
+      <i class="fas fa-check-circle success-icon"></i> Oluşturulan Belge:
+    </h3>
+    <div id="documentPreview" class="document-preview">İçerik bulunamadı.</div>
+    <div class="action-buttons">
+      <button class="action-btn" onclick="copyToClipboard()">
+        <i class="fas fa-copy"></i> Kopyala
+      </button>
+      <button class="action-btn" onclick="downloadDocument()">
+        <i class="fas fa-file-alt"></i> TXT İndir
+      </button>
+      <button class="action-btn" onclick="downloadDocumentWord()">
+        <i class="fas fa-file-word"></i> Word İndir
+      </button>
+      <button class="action-btn" onclick="printDocument()">
+        <i class="fas fa-print"></i> Yazdır
+      </button>
+      <button class="action-btn" onclick="resetForm()">
+        <i class="fas fa-plus"></i> Yeni Belge
+      </button>
+    </div>
+  </div>
+  
+  <!-- Error -->
+  <div id="error-container" class="message-container error-message">
+    <h4><i class="fas fa-exclamation-triangle error-icon"></i> Hata Oluştu</h4>
+    <p id="error-text"></p>
+    <div class="action-buttons">
+      <button class="action-btn" onclick="hideMessages()">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedFiles = [];
+let uploadedFiles = [];
+let generatedDocument = null;
+
+// Tab switching
+function switchTab(tabName) {
+    // Update buttons
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update panels
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    document.getElementById(tabName + '-panel').classList.add('active');
+    
+    hideMessages();
+}
+
+// File handling
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('file-drop-zone');
+    const fileInput = document.getElementById('sourceDocuments');
+    
+    // Click to select files
+    dropZone.addEventListener('click', () => {
+        console.log('Upload area clicked!');
+        fileInput.click();
+    });
+    
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        console.log('File input changed!', e.target.files);
+        handleFiles(e.target.files);
+    });
+    
+    // Form submissions
+    document.getElementById('template-form').addEventListener('submit', handleTemplateSubmit);
+    document.getElementById('upload-form').addEventListener('submit', handleUploadSubmit);
+});
+
+function handleFiles(files) {
+    const validFiles = Array.from(files).filter(file => {
+        // Size check (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showError('Dosya boyutu çok büyük: ' + file.name + ' (Max: 10MB)');
+            return false;
+        }
+        
+        // Type check
+        const validExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+        const fileName = file.name.toLowerCase();
+        const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+        
+        if (!isValid) {
+            showError('Desteklenmeyen dosya türü: ' + file.name);
+            return false;
+        }
+        
+        return true;
+    });
+    
+    uploadedFiles = uploadedFiles.concat(validFiles);
+    updateFileList();
+}
+
+function updateFileList() {
+    const fileListContainer = document.getElementById('selected-files');
+    fileListContainer.innerHTML = '';
+    
+    uploadedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <span><i class="fas fa-file"></i> ${file.name} (${formatFileSize(file.size)})</span>
+            <span class="file-remove" onclick="removeFile(${index})">
+                <i class="fas fa-times"></i>
+            </span>
+        `;
+        fileListContainer.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    uploadedFiles.splice(index, 1);
+    updateFileList();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Form submissions
+function handleTemplateSubmit(e) {
+    e.preventDefault();
+    
+    const templateType = document.getElementById('template-type').value;
+    const content = document.getElementById('template-content').value.trim();
+    
+    if (!templateType || !content) {
+        showError('Lütfen tüm alanları doldurun.');
+        return;
+    }
+    
+    showLoading();
+    
+    const requestData = {
+        template_type: templateType,
+        parameters: {
+            prompt: content
+        }
+    };
+    
+    fetch('/ai/generate-text/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            generatedDocument = {
+                content: data.content || data.generated_text,
+                template_name: templateType
+            };
+            displayGeneratedDocument(generatedDocument);
+        } else {
+            showError(data.error || 'Belge oluşturulurken hata oluştu.');
+        }
+    })
+    .catch(error => {
+        showError('Bağlantı hatası: ' + error.message);
+    });
+}
+
+function handleUploadSubmit(e) {
+    e.preventDefault();
+    
+    const documentType = document.getElementById('customDocumentType').value.trim();
+    const additionalInstructions = document.getElementById('additionalInstructions').value.trim();
+    
+    if (uploadedFiles.length === 0) {
+        showError('Lütfen en az bir dosya seçin.');
+        return;
+    }
+    
+    if (!documentType) {
+        showError('Lütfen belge türünü belirtin.');
+        return;
+    }
+    
+    showLoading();
+    
+    const formData = new FormData();
+    
+    // Add files
+    uploadedFiles.forEach(file => {
+        formData.append('source_documents', file);
+    });
+    
+    // Add other data
+    formData.append('document_type', documentType);
+    formData.append('additional_instructions', additionalInstructions);
+    
+    fetch('/ai/generate-from-multiple-documents/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('API Response:', data);
+        if (data.success) {
+            generatedDocument = {
+                content: data.content,
+                template_name: data.title || documentType
+            };
+            displayGeneratedDocument(generatedDocument);
+        } else {
+            showError(data.error || 'Belge oluşturulurken hata oluştu.');
+        }
+    })
+    .catch(error => {
+        showError('Bağlantı hatası: ' + error.message);
+    });
+}
+
+function displayGeneratedDocument(documentData) {
+    console.log('=== displayGeneratedDocument BAŞLADI ===');
+    console.log('documentData:', documentData);
+    
+    // Null/undefined kontrolü
+    if (!documentData) {
+        console.error('HATA: documentData null veya undefined!');
+        return;
+    }
+    
+    // Preview element kontrolü
+    const preview = document.getElementById('documentPreview');
+    if (!preview) {
+        console.error('HATA: documentPreview elementi bulunamadı!');
+        return;
+    }
+    
+    // Content kontrolü
+    if (!documentData.content) {
+        console.error('HATA: documentData.content boş veya undefined!');
+        preview.textContent = 'İçerik bulunamadı.';
+        return;
+    }
+    
+    // Content'i set et
+    preview.textContent = documentData.content;
+    
+    // Result container'ı göster
+    const resultContainer = document.getElementById('resultContainer');
+    if (resultContainer) {
+        resultContainer.classList.add('active');
+        resultContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    hideMessages();
+    console.log('=== displayGeneratedDocument SONU ===');
+}
+
+// Message functions
+function hideMessages() {
+    document.querySelectorAll('.message-container').forEach(container => {
+        container.style.display = 'none';
+    });
+}
+
+function showLoading() {
+    hideMessages();
+    document.getElementById('loading-container').style.display = 'block';
+}
+
+function showError(message) {
+    hideMessages();
+    document.getElementById('error-text').textContent = message;
+    document.getElementById('error-container').style.display = 'block';
+}
+
+// Action functions
+function copyToClipboard() {
+    if (!generatedDocument || !generatedDocument.content) return;
+    
+    navigator.clipboard.writeText(generatedDocument.content).then(() => {
+        alert('Metin panoya kopyalandı!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedDocument.content;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Metin panoya kopyalandı!');
+    });
+}
+
+function downloadDocument() {
+
+function downloadDocumentWord() {
+  if (!generatedDocument || !generatedDocument.content) {
+    showStatus("Önce bir belge oluşturmanız gerekiyor.", "error");
+    return;
+  }
+
+  // Word indirme için POST isteği
+  fetch("/ai/download-word/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify({
+      content: generatedDocument.content,
+      title: generatedDocument.template_name || "Hukuki Belge",
+      document_type: generatedDocument.document_type || "belge"
+    })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error("Download failed");
+    return response.blob();
+  })
+  .then(blob => {
+    // Blob URL oluştur ve indir
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = (generatedDocument.template_name || "hukuki_belge") + ".docx";
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+    showStatus("Word belgesi indirildi!", "success");
+  })
+  .catch(error => {
+    console.error("Word download error:", error);
+    showStatus("Word indirme başarısız oldu.", "error");
+  });
+}
+    if (!generatedDocument || !generatedDocument.content) return;
+    
+    const blob = new Blob([generatedDocument.content], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = (generatedDocument.template_name || 'hukuki_belge') + '_' + new Date().getTime() + '.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+}
+
+function printDocument() {
+    if (!generatedDocument || !generatedDocument.content) return;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${generatedDocument.template_name || 'Hukuki Belge'}</title>
+            <style>
+                body { font-family: 'Times New Roman', serif; padding: 20px; line-height: 1.6; }
+                pre { white-space: pre-wrap; font-family: 'Times New Roman', serif; }
+            </style>
+        </head>
+        <body>
+            <pre>${generatedDocument.content}</pre>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+}
+
+function resetForm() {
+    hideMessages();
+    uploadedFiles = [];
+    selectedFiles = [];
+    generatedDocument = null;
+    updateFileList();
+    document.getElementById('template-form').reset();
+    document.getElementById('upload-form').reset();
+    
+    // Switch to template tab
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    document.querySelector('.tab-button').classList.add('active');
+    document.getElementById('template-panel').classList.add('active');
+}
+</script>
+{% endblock %}<\!-- Template updated: 20 Ağu 2025 Çar +03 17:30:49 -->

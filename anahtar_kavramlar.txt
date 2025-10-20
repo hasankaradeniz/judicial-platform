@@ -1,0 +1,4206 @@
+[Kisiler Hukuku]
+gerçek kişi
+tüzel kişi
+kişilik hakkı
+kişilik değeri
+kişiliğin korunması
+kişiliğe saldırı
+kişiliğin ihlali
+hak ehliyeti
+fiil ehliyeti
+ehliyetin sınırları
+ehliyetsizlik
+sınırlı ehliyet
+tam ehliyet
+sınırlı ehliyetsizlik
+tam ehliyetsizlik
+ayırt etme gücü
+ayırt etme yeteneği
+küçük
+ergin
+reşit
+vesayet
+kayyım
+yasal temsilci
+vasi
+yasal danışman
+vesayet dairesi
+vesayet kararı
+vesayet altına alma
+denetim makamı
+kısıtlama
+kısıtlama kararı
+kısıtlı kişi
+vesayet dosyası
+fiil ehliyeti kazanılması
+fiil ehliyeti kaybı
+ehliyetsiz kişi
+kısıtlanmış kişi
+fiil ehliyeti olmayan kişi
+yerleşim yeri
+yerleşim yeri belirleme
+yerleşim yeri değişikliği
+yerleşim yeri tespiti
+hukuki yerleşim yeri
+fiili yerleşim yeri
+seçilmiş yerleşim yeri
+ikametgah adresi
+nüfus kayıtları
+adres tespiti
+yerleşim yeri uyuşmazlığı
+adres beyanı
+adın düzeltilmesi
+adın değiştirilmesi
+soyad değişikliği
+isim düzeltme
+isim tashihi
+isim hakkı
+ad üzerindeki hak
+adın korunması
+isim tespiti
+isim benzerliği
+soyadı uyuşmazlığı
+soyadı hakkı
+soyadı belirleme
+ad üzerindeki müdahale
+nüfus müdürlüğü kararı
+adın yanlış yazılması
+isim düzeltme davası
+soyadı düzeltme davası
+şeref ve haysiyet
+manevi zarar
+özel hayatın gizliliği
+kişisel veriler
+özel alan ihlali
+kişisel bütünlük
+beden bütünlüğü
+manevi tazminat
+kişisel onur
+medya yoluyla kişilik ihlali
+fotoğraf izni
+izinsiz görüntü
+kişisel alan
+kişilik haklarına saldırı
+haber yapma sınırı
+kişilik haklarının zedelenmesi
+karalama kampanyası
+itibar kaybı
+kişisel veri ihlali
+kişisel verilerin korunması
+doğum
+ölüm
+gaiplik
+ölüm karinesi
+ölüm sicili
+ölümün tespiti
+cenaze töreni hakkı
+cesedin saygı ile muamelesi
+cesedin iadesi
+ölünün adının kullanılması
+kaybolma
+ölüm kararı
+ölüm tarihi
+mirasın açılması
+dernek
+vakıf
+şirket
+kooperatif
+sendika
+baro
+meslek odası
+tüzel kişiliğin sona ermesi
+tüzel kişilik yetkisi
+yönetim kurulu
+tüzel kişilik tespiti
+tüzel kişi ehliyeti
+tüzel kişi sorumluluğu
+dernekler masası
+vakıf senedi
+tüzük
+kuruluş bildirimi
+tüzel kişilik başlangıcı
+tüzel kişilik tasfiyesi
+tüzel kişilik davaları
+kişilik davası
+kimlik tespiti
+medeni durum
+evlenme yaşı
+kamu düzeni
+nüfus kaydı düzeltme
+kişilik hakkının ihlali
+yargı kararı ile düzeltme
+sulh hukuk mahkemesi kararı
+nüfus müdürlüğü işlemi
+mahkeme kararı ile düzeltilen kayıt
+adın tescili
+isim değişikliği gerekçesi
+kişisel mağduriyet
+manevi zarar ispatı
+bilirkişi raporu
+psikolojik etki
+saldırı niteliği
+delil yetersizliği
+soybağı karinesi
+anne baba adı
+eşcinsel bireyin adı
+dini nedenlerle isim değişikliği
+cinsiyet geçişi sonrası ad
+toplum baskısı nedeniyle değişiklik
+kişisel onurun zedelenmesi
+toplumsal saygınlık
+velayet
+nüfus kayıt düzeltmesi
+kayıt iptali
+vesayet altına alınma
+medeni haklardan yararlanma
+temsil ehliyeti
+ehliyetsizlik iddiası
+ehliyet davası
+vesayet dosyası
+vasilik davası
+isim uyuşmazlığı
+özel hayata müdahale
+kamuoyuna açıklama
+manevi değerler
+aile içi onur
+özel yaşamın gizliliği
+kişilik değerlerine saldırı
+yanlış isimle dava açılması
+isme zarar verme
+sahte kimlik
+kayıt değişikliği
+mahkeme kararıyla tescil
+kişisel dokunulmazlık
+kişilik bütünlüğü
+itibarı zedeleyen yayın
+kişisel itibar
+gaiplik kararı
+ölüm ilamı
+adli sicil kaydı
+soyad uyuşmazlığı
+kütük değişikliği
+mahkemeden izin alınması
+adla özdeşleşme
+ad değiştirme kararı
+açık kimlik bilgileri
+kimlik bilgisi ifşası
+küçük için ad değişikliği
+cinsiyet değiştirme sonrası isim
+onur kırıcı yayın
+fotoğrafın izinsiz paylaşımı
+sosyal medya ifşası
+kişisel mahremiyet
+dava konusu isim
+isimle özdeşleşen sanatçı
+adla ticari marka uyuşmazlığı
+tüzel kişilik adına açılan dava
+kimlik kartı uyuşmazlığı
+kimlik belgesi değişikliği
+nüfus müdürlüğü işlemi
+ehliyetsiz işlem
+kişilik hakkı ihlali nedeniyle tazminat
+
+[Aile Hukuku]
+evlenme
+evlenme yaşı
+evlenme engeli
+evlenme ehliyeti
+evlenme yasağı
+resmi nikah
+imam nikahı
+nişanlanma
+nişanın bozulması
+nişan hediyesi
+nişan tazminatı
+evlilik birliği
+evlenme iradesi
+zorlama ile evlilik
+geçersiz evlilik
+butlan davası
+mutlak butlan
+nispi butlan
+yok hükmünde evlilik
+evlilik iptali
+evlilik cüzdanı
+evlilik tarihinin tespiti
+evlilik öncesi mal bildirimi
+evlilik dışı ilişki
+evlenme işlemi
+evlenme kararı
+akrabalık derecesi
+evlilik yaş farkı
+muvazaa evliliği
+evlenme yasası
+boşanma
+anlaşmalı boşanma
+çekişmeli boşanma
+boşanma davası
+boşanma gerekçesi
+boşanma protokolü
+boşanma sonrası mal paylaşımı
+zina
+hayata kast
+kötü muamele
+terk
+akıl hastalığı
+geçimsizlik
+evlilik birliğinin sarsılması
+kusur oranı
+boşanma tazminatı
+maddi tazminat
+manevi tazminat
+boşanma kararı
+boşanma ilamı
+boşanma kesinleşme şerhi
+boşanma sonrası soyadı
+boşanma davasında tanık
+boşanma sebeplerinin ispatı
+boşanma süresi
+boşanma şartları
+boşanma başvurusu
+boşanma davasında hak düşürücü süre
+boşanma ile ilgili bilirkişi raporu
+boşanma sonrası adres
+velayet
+ortak velayet
+velayetin değiştirilmesi
+velayet hakkı
+velayet davası
+velayet kararı
+çocuğun üstün yararı
+velayetin anneye verilmesi
+velayetin babaya verilmesi
+çocuk teslimi
+çocuk teslim emri
+çocukla kişisel ilişki
+kişisel ilişki kurulması
+kişisel ilişkinin sınırlandırılması
+velayet hakkının kötüye kullanılması
+velayetin kaldırılması
+çocuk psikolojisi
+pedagog raporu
+çocuk tesliminde icra
+uzman görüşü
+nafaka
+yoksulluk nafakası
+iştirak nafakası
+tedbir nafakası
+yardım nafakası
+nafaka davası
+nafaka artırım davası
+nafaka azaltım davası
+nafaka iptali
+nafaka ödememe
+nafaka borcu
+nafaka yükümlüsü
+nafaka hesaplaması
+nafaka bağlanması
+nafaka kararı
+nafaka tahsilatı
+nafaka icrası
+nafaka faizi
+nafaka ödeme planı
+nafaka affı
+mal rejimi
+edinilmiş mallara katılma
+mal ayrılığı
+mal ortaklığı
+mal paylaşımı
+mal rejimi sözleşmesi
+evlilik sonrası mal paylaşımı
+mal rejimi tasfiyesi
+katkı payı alacağı
+değer artış payı
+kişisel mal
+edinilmiş mal
+evlilik malları
+ziynet eşyası
+düğün takıları
+eşya paylaşımı
+taşınmaz paylaşımı
+mal rejimi davası
+mal rejiminin sona ermesi
+tasfiye alacağı
+soybağı
+babalık davası
+soybağının reddi
+babalığın tespiti
+nesep
+tanıma
+tanımanın iptali
+soybağı davası
+soybağının kurulması
+nesebin düzeltilmesi
+evlilik dışı çocuk
+biyolojik baba
+DNA testi
+soybağının reddi davası
+anne baba belirleme
+çocukla soybağı ilişkisi
+soybağı kararı
+soybağı uyuşmazlığı
+soybağı belgesi
+soybağı kayıt düzeltmesi
+evlat edinme
+tek taraflı evlat edinme
+eşlerce birlikte evlat edinme
+evlat edinme izni
+evlat edinme şartları
+evlat edinme davası
+evlatlık kararı
+evlat edinme sözleşmesi
+evlat edinmede yaş farkı
+evlat edinmede rıza
+küçüğün evlat edinilmesi
+reşit evlat edinme
+evlat edinme kararı
+evlatlık ilişkisi
+evlatlık kaydı
+evlat edinme iptali
+evlat edinme işlemi
+evlat edinmede mahkeme kararı
+evlat edinilenin hakları
+evlatlık ilişkisi sona ermesi
+koruyucu aile
+koruma altına alma
+çocuk esirgeme kurumu
+çocuk hakları
+çocuk mahkemesi
+çocuk refahı
+çocuğun meşru menfaati
+çocuğun menfaati
+kamu düzeni
+aile mahkemesi
+aile danışmanlığı
+aile içi iletişim
+aile bütünlüğü
+aile içi şiddet
+uzaklaştırma kararı
+aile koruma kararı
+kadın sığınma evi
+aile mahkemesi kararı
+aile hukuku davası
+aile bütünlüğünün bozulması
+aile terapisi
+eşlerin karşılıklı yükümlülükleri
+çocuk eğitimi
+çocuğun eğitimi
+okul seçimi
+dini eğitim uyuşmazlığı
+çocuğun yurtdışına çıkarılması
+çocuğun soyadı
+anneyle kalma
+babayla kalma
+eşlerin sorumluluğu
+aile konutu
+aile konutu şerhi
+ortak yaşam alanı
+evlilik içi şiddet
+boşanma sonrası düzenlemeler
+çocukla görüşme düzeni
+icra marifetiyle çocuk teslimi
+çocuğun yüksek yararı
+anneye verilmesi
+babaya verilmesi
+
+[Miras Hukuku]
+yasal mirasçı
+zümre sistemi
+birinci zümre mirasçılar
+ikinci zümre mirasçılar
+üçüncü zümre mirasçılar
+altsoy
+üstsoy
+sağ kalan eş
+evlatlık
+evlatlığın mirasçılığı
+evlilik dışı çocuk
+miras hakkı
+kardeş mirasçılığı
+yeğen mirasçılığı
+torun mirasçılığı
+mirasçılık sırası
+mirasçı sıfatı
+kamu mirasçılığı
+devlete kalan miras
+zümre dışı mirasçılık
+atanmış mirasçı
+vasiyetname
+resmi vasiyetname
+el yazılı vasiyetname
+sözlü vasiyetname
+vasiyetnamenin açılması
+vasiyetnamenin iptali
+vasiyetnamenin geçerliliği
+vasiyetnamenin iptali davası
+miras sözleşmesi
+miras sözleşmesinin iptali
+vasiyet alacaklısı
+vasiyet edilen mal
+vasiyetin yerine getirilmesi
+vasiyetnamede mirasçı atama
+vasiyetnamede mal bırakma
+vasiyetin şekil şartı
+miras sözleşmesiyle mal devri
+vasiyetnamenin yokluğu
+vasiyetnamenin sahteciliği
+tereke
+terekenin tespiti
+terekenin yönetimi
+tereke davası
+tereke defteri
+terekenin paylaşımı
+terekenin tespiti davası
+tereke temsilcisi
+mirasın açılması
+mirasın kazanılması
+mirasın geçmesi
+mirasın geçiş tarihi
+ölümle mirasın geçmesi
+terekenin korunması
+tereke mal varlığı
+tereke alacakları
+tereke borçları
+tereke defter tutumu
+mirasın hükmen intikali
+mirasın fiilen intikali
+reddi miras
+mirası reddetme
+mirasın hükmen reddi
+süresi içinde reddi miras
+mirası reddetme beyanı
+mirası kabul etmeme
+miras reddi kararı
+mirası reddetme süresi
+mirasın zımni reddi
+ret kararı
+mirasın reddi tutanağı
+miras borçlarından kaçınma
+ret süresinin kaçırılması
+reddi miras sonrası sorumluluk
+mirası reddeden mirasçı
+mirasın otomatik reddi
+mirası kabul sayılacak davranış
+reddin geçerliliği
+miras borçlarından sorumluluk
+miras alacaklılarına karşı ret
+saklı pay
+saklı paylı mirasçı
+saklı payın ihlali
+saklı pay oranı
+tenkis davası
+tenkis istemi
+saklı pay koruması
+bağışlamaların tenkisi
+vasiyetin tenkisi
+miras sözleşmesinin tenkisi
+bağışın iptali
+saklı payın hesaplanması
+saklı payın aşılması
+malvarlığı devri ve tenkis
+tenkis süresi
+tenkis davası zamanaşımı
+saklı payın korunması
+aşırı kazandırma
+mirastan mal kaçırma
+muvazaalı devir
+mirastan çıkarma
+mirastan feragat
+mirastan yoksunluk
+yoksunluk sebepleri
+ıskat davası
+miras hakkından mahrumiyet
+hak düşürücü fiil
+mirasçının miras bırakana saldırısı
+evlatlıktan çıkarma
+ahlaka aykırı davranış
+aile içi şiddet
+mirası hak etmeme
+kötü muamele nedeniyle ıskat
+cezai yoksunluk
+ıskat kararı
+ıskat şartı
+ıskat beyanı
+vasiyetle ıskat
+fiilen mirastan yoksunluk
+ölümle birlikte yoksunluk
+miras paylaşımı
+paylaşım davası
+ortaklığın giderilmesi
+izale-i şuyu
+miras taksimi
+mal paylaşımı
+hisseli mülkiyet
+müşterek mülkiyet
+iştirak halinde mülkiyet
+ortaklığın sona erdirilmesi
+taşınmaz paylaşımı
+taşınır paylaşımı
+paylaşım anlaşması
+paylaşım planı
+paylaşım uyuşmazlığı
+değer tespiti
+bilirkişi raporu
+satış suretiyle ortaklık sona erdirme
+miras malının satışı
+pay oranı belirleme
+veraset ilamı
+mirasçılık belgesi
+resmi mirasçılık belgesi
+noter veraset ilamı
+mahkeme veraset ilamı
+veraset ve intikal vergisi
+intikal vergisi beyanı
+tapu intikali
+vergi dairesi işlemi
+mirasın tapuya tescili
+ölüm kaydı
+nüfus kaydının düzeltilmesi
+nüfustan düşme
+terekede mal beyanı
+mal beyanı cezası
+mirasın yazılması
+resmi bildirim süreci
+kamu kurumlarına bildirim
+mahkeme kararıyla tescil
+tescil işlemi
+muris
+murisin ölümü
+muris muvazaası
+muvazaa davası
+gizli vasiyetname
+mirasın devri
+mirasın paylaşılmadan satışı
+miras yoluyla intikal
+mirasçının icrası
+miras kalan borç
+muris alacakları
+miras kalan alacak
+tereke temsilcisi
+tereke yöneticisi
+miras bırakanın borcu
+miras bırakanın vasiyeti
+ölüm belgesi
+ölüm ilanı
+borçlu tereke
+borçsuz tereke
+murisin bankadaki parası
+mirasçılık ilişkisi
+eşin pay oranı
+çocuğun payı
+ölenin vasiyeti
+sağ kalan eşin hakları
+tapu devri
+menkul mal paylaşımı
+ortak malın satışı
+taşınmaz üzerindeki haklar
+ipotekli tereke
+hissedarlar arası dava
+terekede ipotek
+iptal davası
+ecri misil talebi
+tahliye davası
+murisin borçlarının ödenmesi
+mirasçının pay devri
+aile konutu miras paylaşımı
+terekede ziynet eşyası
+
+[Esya Hukuku]
+mülkiyet hakkı
+taşınmaz mülkiyeti
+taşınır mülkiyeti
+mülkiyetin devri
+mülkiyetin kazanılması
+mülkiyetin kaybı
+zilyetlik
+zilyetlik türleri
+dolaylı zilyetlik
+doğrudan zilyetlik
+zilyetlik davası
+haksız zilyet
+yasal zilyet
+el koyma
+zilyetlik karinesi
+haksız el atma
+el atmanın önlenmesi
+taşkın yapı
+müdahalenin men’i
+eşyaya müdahale
+tapu kaydı
+tapu iptali
+tescil
+tapu iptal ve tescil
+tapuda sahtecilik
+yolsuz tescil
+tapu sicili
+tapu tahsisi
+tapuda beyanlar hanesi
+tapu sicil müdürlüğü
+kadastro
+kadastro tespiti
+tapu senedi
+tapu müdürlüğü işlemleri
+malik
+paydaş
+hisse devri
+pay devri
+tapu kaydının düzeltilmesi
+taşınmazın sınır ihtilafı
+müşterek mülkiyet
+iştirak halinde mülkiyet
+paylı mülkiyet
+elbirliği mülkiyeti
+ortaklığın giderilmesi
+izale-i şuyu
+ortak mal
+hissedar
+hissedar uyuşmazlığı
+ortaklık tasfiyesi
+müşterek malik
+paylaşma davası
+ortak mülkiyette yönetim
+ortak mülkiyette tasarruf
+ortak karar
+müşterek malik izni
+ortaklığın satış yoluyla sona ermesi
+fiili taksim
+yazılı taksim sözleşmesi
+iradi taksim
+ayni hak
+sınırlı ayni hak
+irtifak hakkı
+intifa hakkı
+üst hakkı
+kaynak hakkı
+geçit hakkı
+geçit irtifakı
+şufa hakkı
+işgal
+işgal tazminatı
+ecrimisil
+ecrimisil davası
+yasal şufa hakkı
+sözleşmesel şufa hakkı
+önalım hakkı
+ortaklığın sona erdirilmesi
+ayni hakka tecavüz
+ayni hakka müdahale
+ayni hakkın tespiti
+taşınır mal
+taşınır zilyetliği
+taşınır rehni
+taşınır devri
+el değiştirme
+taşınır mallar listesi
+teslimle mülkiyet devri
+sembolik teslim
+zilyetliğin nakli
+kaybolmuş eşya
+terkedilmiş eşya
+taşınır ihtiyati haciz
+taşınır tespiti
+taşınırda haksız el koyma
+taşınırda istihkak
+ipotek
+ipotekli borç senedi
+iradi ipotek
+kanuni ipotek
+ipotek alacağı
+ipotek tesisi
+ipoteğin paraya çevrilmesi
+ipoteğin fekki
+rehin
+taşınmaz rehni
+teminat ipoteği
+tapuya şerh
+şerh verilmesi
+haciz şerhi
+ihtiyati tedbir şerhi
+tapuya haciz konulması
+ipotek derecesi
+ipotek sırası
+ipotekli satış
+tapu ipoteği
+taşkın yapı
+komşuluk hukuku
+sınır ihlali
+sınır ihtilafı
+yapı ruhsatı
+yapı kayıt belgesi
+yapı kullanma izni
+izinsiz inşaat
+yapı malikinin sorumluluğu
+ortak duvar
+ortak tesis
+komşuya zarar
+gürültü sınırı
+duman çıkışı
+koku yayılması
+ışık kesilmesi
+manzara hakkı
+hava hakkı
+su hakkı
+sınır tespiti
+taşkın yapı tazminatı
+kaçak yapı
+gecekondu tahliyesi
+inşaatın durdurulması
+yapı yıkım kararı
+kamulaştırma
+kamulaştırma bedeli
+kamu yararı
+idari kamulaştırma
+acele kamulaştırma
+kamulaştırmasız el atma
+el atma davası
+kamulaştırma işlemi
+kamulaştırma kararı
+bedel tespiti
+bilirkişi incelemesi
+idareye karşı tazminat
+kamulaştırmanın iptali
+kamulaştırma süreci
+taşınmazın değeri
+bedel artırım davası
+idari el atma
+fiili el koyma
+taşınmazın kamulaştırılması
+kamu yararına yapılaşma
+malikin izni
+tasarruf yetkisi
+malik sıfatı
+tasarruf işlemi
+maliki belli olmayan taşınmaz
+sahipsiz eşya
+mülkiyetin korunması
+el koymaya karşı dava
+eşya hukuku davası
+ayni hak davası
+ayni tescil davası
+fiili kullanım
+malik olmayanın satışı
+iyiniyetli üçüncü kişi
+müktesep hak
+zilyedin korunması
+ayni hakka dayalı dava
+fiili mülkiyet
+tapuda tescil istemi
+mülkiyetin korunması davası
+taşınmazda istihkak
+taşınmazın geri verilmesi
+tecavüzün giderilmesi
+taşkın yapı sınırı
+malik olmayan zilyet
+inşaat halindeki bina
+kazandırıcı zamanaşımı
+mülkiyet hakkına tecavüz
+mülkiyetin tespiti
+ayni hakların kazanımı
+mülkiyet davası
+malik tespiti
+muvazaalı satış
+kayıt düzeltme
+istihkak davası
+şufa hakkı bildirimi
+eşya üzerinde tasarruf
+terkedilmiş taşınmaz
+taşınmaz devri
+eşyaya yapılan müdahale
+
+[Borclar Hukuku]
+borç
+borç ilişkisi
+borcun doğumu
+borcun ifası
+borcun sona ermesi
+borcun devri
+borcun temliki
+alacağın devri
+alacak hakkı
+alacaklı
+borçlu
+borç ilişkisi
+sözleşmeden doğan borç
+haksız fiilden doğan borç
+sebepsiz zenginleşme
+sebep yokluğu
+sebepsiz iktisap
+haksız iktisap
+tazminat borcu
+ikrah
+hata
+hile
+tehdit
+sözleşme serbestisi
+genel işlem şartları
+iyi niyet
+dürüstlük kuralı
+ahlaka aykırılık
+emredici hüküm
+hukuka aykırılık
+kanuna aykırılık
+ehliyet
+fiil ehliyeti
+temsil yetkisi
+vekalet
+vekaletsiz iş görme
+hak düşürücü süre
+zamanaşımı
+müruruzaman
+mücbir sebep
+kusur
+kast
+ihmal
+ağır kusur
+basit kusur
+kusursuz sorumluluk
+sözleşme
+sözleşme kurulması
+sözleşme şartları
+sözleşme feshi
+sözleşmenin sona ermesi
+sözleşmeye aykırılık
+sözleşmeye bağlılık
+sözleşmenin iptali
+hükümsüz sözleşme
+butlan
+iptal edilebilirlik
+geçersiz sözleşme
+geçerli sözleşme
+yazılı sözleşme
+sözlü sözleşme
+ön sözleşme
+niyet mektubu
+taahhütname
+tek taraflı borç
+iki taraflı sözleşme
+örf ve adet
+temerrüt
+alacaklının temerrüdü
+borçlunun temerrüdü
+ifaya davet
+ihtarla temerrüt
+cezai şart
+tazminat
+doğrudan zarar
+dolaylı zarar
+beklenen zarar
+kar kaybı
+zararın hesaplanması
+zararın ispatı
+cezai şartın tenkisi
+sorumluluk sınırı
+aynen ifa
+ifa imkansızlığı
+objektif imkansızlık
+subjektif imkansızlık
+ifa engeli
+haklı neden
+öngörülemezlik
+aşırı ifa güçlüğü
+edim
+karşı edim
+eksik ifa
+ayıplı ifa
+edim değişikliği
+edim zamanaşımı
+ifa yeri
+ifa zamanı
+ifa biçimi
+ifanın kabulü
+yenilik doğuran hak
+fesih bildirimi
+fesih süresi
+fesih hakkı
+dönme hakkı
+satım sözleşmesi
+taşınır satımı
+taşınmaz satımı
+gayrimenkul satışı
+mal satış sözleşmesi
+vadeli satış
+peşin satış
+teslim borcu
+bedel ödeme borcu
+ayıplı mal
+ayıp bildirimi
+ayıptan sorumluluk
+gizli ayıp
+açık ayıp
+bedel indirimi
+ayıplı ifa tazminatı
+geri verme hakkı
+sözleşmeden dönme
+hizmet sözleşmesi
+iş sözleşmesi
+eser sözleşmesi
+taşımacılık sözleşmesi
+vekâlet sözleşmesi
+kira sözleşmesi
+adi kira
+konut kira
+işyeri kirası
+tahliye
+kira bedeli
+kira artışı
+kira süresi
+tahliye taahhüdü
+hasar sorumluluğu
+kiracının yükümlülüğü
+mal sahibinin yükümlülüğü
+kullanma hakkı
+geri verme borcu
+ortak gider
+teminat bedeli
+ev sahibi kiracı uyuşmazlığı
+kira sözleşmesi feshi
+sözleşme uzatma
+şartlı kira
+alt kiralama
+haksız fiil
+hukuka aykırı eylem
+haksız fiil sorumluluğu
+haksız fiil tazminatı
+bedensel zarar
+manevi zarar
+ölüm tazminatı
+destekten yoksun kalma
+sakatlık tazminatı
+trafik kazası
+doktor hatası
+mesleki sorumluluk
+iş kazası
+zarar gören
+fail
+haksız fiil davası
+tazminat davası
+zararın tespiti
+zararın giderilmesi
+zararın kapsamı
+haksız fiil süresi
+kusursuz sorumluluk
+tehlike sorumluluğu
+hayvan sahibinin sorumluluğu
+bina sahibinin sorumluluğu
+motorlu araç işletenin sorumluluğu
+adam çalıştıranın sorumluluğu
+yardımcı kişinin sorumluluğu
+müteselsil sorumluluk
+ortak sorumluluk
+sigorta sorumluluğu
+zararın paylaşımı
+zarar görenin kusuru
+zararın azaltılması
+zararın karşılanması
+tazminat miktarı
+tazminat hesaplama
+hakimin takdiri
+şikayet süresi
+dava açma süresi
+hak düşürücü süre
+sigorta şirketine başvuru
+önceki dava kararı
+adli tıp raporu
+bilirkişi raporu
+psikolojik zarar
+şeref ve haysiyet zararı
+kişilik hakkı ihlali
+intihara yönlendirme
+gürültü zararı
+koku zararı
+çevre zararı
+zarar sigortası
+
+[is Hukuku]
+iş sözleşmesi
+belirsiz süreli iş sözleşmesi
+belirli süreli iş sözleşmesi
+deneme süreli iş sözleşmesi
+kısmi süreli iş sözleşmesi
+tam süreli iş sözleşmesi
+çağrı üzerine çalışma
+uzaktan çalışma
+evden çalışma
+mevsimlik işçi
+geçici iş ilişkisi
+hizmet sözleşmesi
+hizmet akdi
+işveren
+işveren vekili
+işçi
+bağımlılık unsuru
+ücret
+iş görme edimi
+emir ve talimat
+iş ilişkisinin kurulması
+asgari ücret
+deneme süresi
+çalışma süresi
+günlük çalışma süresi
+haftalık çalışma süresi
+fazla çalışma
+fazla mesai ücreti
+hafta tatili
+resmi tatil
+bayram ücreti
+gece çalışması
+vardiyalı çalışma
+esnek çalışma
+mobil çalışma
+toplu iş sözleşmesi
+sendika
+grev
+lokavt
+toplu iş uyuşmazlığı
+arabuluculuk
+çalışma koşullarının değiştirilmesi
+işyeri yönetmeliği
+disiplin cezası
+ihtar
+savunma alınması
+uyarı
+işe iade
+iş güvencesi
+işverenin fesih hakkı
+haklı nedenle fesih
+geçerli nedenle fesih
+ihbar tazminatı
+kıdem tazminatı
+kötü niyet tazminatı
+eşit işlem ilkesi
+işe başlatmama tazminatı
+iş akdinin sona ermesi
+iş akdinin feshi
+fesih bildirimi
+sözlü fesih
+yazılı fesih
+emeklilik nedeniyle fesih
+askerlik nedeniyle fesih
+evlilik nedeniyle fesih
+mobbing
+psikolojik taciz
+cinsel taciz
+şiddet
+hakaret
+ahlak ve iyi niyet kuralları
+derhal fesih
+derhal fesih hakkı
+fesih süresi
+ihbar süresi
+ihbar öneli
+ihbar yükümlülüğü
+geçerli fesih sebepleri
+geçersiz fesih sebepleri
+fesih usulü
+çalışma belgesi
+işten ayrılma bildirimi
+yıllık izin
+ücretli izin
+ücretsiz izin
+doğum izni
+süt izni
+analık izni
+babalık izni
+mazeret izni
+evlilik izni
+ölüm izni
+izin ücretleri
+izin süresi
+izin hakkı
+izin ücretinin ödenmesi
+izin planlaması
+izin defteri
+izin kullandırmama
+izin hakkı ihlali
+iş kazası
+iş kazası bildirimi
+iş kazası tazminatı
+meslek hastalığı
+iş sağlığı
+iş güvenliği
+risk değerlendirmesi
+iş güvenliği uzmanı
+işyeri hekimi
+kaza raporu
+iş güvenliği eğitimi
+tehlikeli iş
+az tehlikeli iş
+çok tehlikeli iş
+SGK bildirimi
+çalışma gücü kaybı
+maluliyet oranı
+geçici iş göremezlik
+sürekli iş göremezlik
+ölüm geliri
+destekten yoksun kalma
+hatalı işveren
+işyerinin devri
+işyeri bildirimi
+çalışma koşullarının korunması
+iş sağlığı yükümlülüğü
+sigorta yükümlülüğü
+ücret ödeme yükümlülüğü
+eşit davranma borcu
+işçinin kişilik haklarına saygı
+işçinin korunması
+ayrımcılık yasağı
+işyeri kayıtları
+çalışan bilgisi gizliliği
+önlem alma yükümlülüğü
+hizmet sözleşmesi
+vekâlet sözleşmesi
+taşeronluk
+alt işverenlik
+muvazaa
+geçici iş ilişkisi
+işe başlatmama
+görev tanımı
+yıllık ücretli izin
+ihbar öneli verilmeden fesih
+çalışma koşullarının tek taraflı değiştirilmesi
+fazla çalışma karşılığı izin
+hafta tatili kullandırmama
+fazla mesai tahakkuku
+eksik ücret ödeme
+eksik prim bildirimi
+bordro tahrifatı
+gizli çalıştırma
+sigortasız çalıştırma
+kayıt dışı işçilik
+haftalık çalışma süresinin aşılması
+günlük dinlenme süresi
+haftalık dinlenme süresi
+işe geç başlama
+işe gelmeme
+devamsızlık
+özürsüz devamsızlık
+disiplin kurulu
+hak düşürücü süre
+iş mahkemesi
+arabuluculuk şartı
+dava açma süresi
+yargıtay kararı
+temyiz süreci
+bilirkişi raporu
+işe dönüş
+ücret bordrosu
+çalışma belgesi
+çalışma süresi
+sosyal haklar
+işe alınmama
+işe son verme
+tazminat hakkı
+çalışma özgürlüğü
+kişisel verilerin korunması
+gizlilik sözleşmesi
+rekabet yasağı
+çıkış kodu
+kod 29
+kod 8
+kod 4
+SGK çıkış kodu
+çalışma barışı
+toplu iş hukuku
+bireysel iş hukuku
+işçi sendikası
+toplu iş sözleşmesi yetkisi
+grev hakkı
+lokavt hakkı
+toplu sözleşme uyuşmazlığı
+sendikal ayrımcılık
+sendika üyeliği
+sendika özgürlüğü
+sendika üyeliği nedeniyle fesih
+
+[Sosyal Guvenlik Hukuku]
+sosyal güvenlik
+SGK
+sosyal güvenlik hakkı
+sigortalı
+sigortasız çalışma
+sosyal güvenlik sözleşmesi
+prim
+prim günü
+prim borcu
+prim affı
+prim tahakkuku
+prim teşviki
+prim indirimi
+prim ödeme süresi
+zorunlu sigortalılık
+isteğe bağlı sigortalılık
+bağ-kur
+emekli sandığı
+SSK
+4A
+4B
+4C
+kurum görüşü
+kurum kararı
+sigorta kolu
+hizmet dökümü
+hizmet tespiti
+hizmet süresi
+hizmet birleştirme
+çakışan hizmet süresi
+fiili hizmet süresi
+borçlanma
+doğum borçlanması
+askerlik borçlanması
+yurtdışı borçlanması
+borçlanma süresi
+borçlanma başvurusu
+borçlanma hakkı
+kısmi süreli çalışma borçlanması
+emeklilik
+emeklilik yaşı
+emeklilik şartları
+emeklilik başvurusu
+emekli aylığı
+yaşlılık aylığı
+malullük aylığı
+dul aylığı
+yetim aylığı
+ölüm aylığı
+emekli maaşı
+emekli ikramiyesi
+emeklilik talebi
+erken emeklilik
+EYT
+kademeli emeklilik
+malulen emeklilik
+yaş haddinden emeklilik
+süreyle emeklilik
+emeklilik dilekçesi
+emeklilik işlemleri
+emeklilik tespiti
+emekli aylığı kesintisi
+emekli aylığı bağlanması
+iş kazası
+meslek hastalığı
+iş kazası bildirimi
+meslek hastalığı bildirimi
+iş kazası geçirme
+geçici iş göremezlik
+sürekli iş göremezlik
+geçici iş göremezlik ödeneği
+iş göremezlik raporu
+sürekli iş göremezlik geliri
+iş kazası tazminatı
+iş kazası sorumluluğu
+kazanın mesai sırasında olması
+meslek hastalığı tespiti
+iş kazası sonrası dava
+ölüm geliri
+cenaze yardımı
+tedavi giderleri
+genel sağlık sigortası
+GSS
+yeşil kart
+GSS borcu
+GSS primi
+sağlık hizmeti
+muayene katılım payı
+ilaç katılım payı
+tedavi hakkı
+reçete bedeli
+sağlık raporu
+engelli raporu
+muhtaçlık kararı
+gelir testi
+gelir testi sonucu
+sağlık aktivasyonu
+provizyon
+medula
+sağlık harcaması
+ölüm aylığı
+geride kalan hak sahipleri
+dul aylığı
+yetim aylığı
+ölüm yardımı
+cenaze yardımı
+ölüm geliri
+ölüm tarihi
+ölüm tespiti
+sigortalının ölümü
+ölüm sonrası aylık başvurusu
+ölüm halinde hak sahipliği
+eşin ölümünden doğan aylık
+çocuğa ölüm aylığı
+ölüm aylığı oranı
+ölüm aylığı kesilmesi
+ölüm aylığı bağlanması
+ölüm geliri başvurusu
+SGK kararı
+SGK işlemi
+SGK idari para cezası
+SGK denetimi
+müfettiş raporu
+yoklama işlemi
+resen tescil
+idari para cezası
+itiraz süresi
+itiraz dilekçesi
+itiraz komisyonu
+kurum zararı
+hizmet süresi uyuşmazlığı
+sigortalılık başlangıcı
+sigortalılık süresi
+sigorta bildirimi
+sigorta bildirimi yapılmaması
+eksik gün
+eksik prim
+prim teşvikinden yararlanma
+geriye dönük tescil
+sigortalılık statüsü
+yasa değişikliği
+SGK genelgesi
+mahkeme kararı ile tescil
+analık ödeneği
+doğum parası
+emzirme ödeneği
+gebelik izni
+iş göremezlik ödeneği
+çocuk yardımı
+sosyal yardım
+şartlı sağlık yardımı
+şartlı eğitim yardımı
+engelli maaşı
+65 yaş maaşı
+sosyal destek
+aile yardımı
+doğum izni parası
+rapor parası
+geçici iş göremezlik parası
+özürlü raporu
+bakım maaşı
+engelliye evde bakım
+sigorta primi desteği
+kısa çalışma ödeneği
+nakdi ücret desteği
+işsizlik sigortası
+işsizlik ödeneği
+işsizlik maaşı
+işsizlik başvurusu
+işten çıkarma yasağı
+kod 29
+çıkış kodu
+sigorta çıkış kodu
+
+[Ticari isletme]
+ticari işletme
+işletme devri
+işletme rehni
+ticaret unvanı
+işletme adı
+ticari işletme tanımı
+tacir
+tacir olmanın sonuçları
+esnaf
+esnaf ve tacir ayrımı
+ticaret hukuku
+ticaret sicili
+ticari iş
+ticari örf ve adet
+ticari iş karinesi
+basiretli tacir
+işletmenin merkezi
+şube
+işletme merkez adresi
+işletme organizasyonu
+şube bildirimi
+şube kaydı
+işletme faaliyet konusu
+ticari iş bölgesi
+ticari iş sözleşmeleri
+tacir temsilcisi
+ticari temsil yetkisi
+ticaret sicili
+ticaret siciline tescil
+ticaret siciline bildirim
+ticaret sicil kaydı
+ticaret sicil gazetesi
+ticaret sicil müdürlüğü
+ticaret siciline başvuru
+sicil tescil işlemi
+sicil değişiklik bildirimi
+sicil iptali
+sicil kayıt düzeltme
+hatalı sicil kaydı
+sicil incelemesi
+tapu siciliyle ilişkisi
+tescilin etkisi
+şirket kuruluş tescili
+faaliyet belgesi
+sicil belgeleri
+sicil numarası
+ticaret odası kaydı
+ticaret unvanı
+ticaret unvanı seçimi
+ticaret unvanı tescili
+ticaret unvanı devri
+ticaret unvanı koruması
+işletme adı
+işletme adının kullanımı
+işletme adının tescili
+haksız unvan kullanımı
+unvan hakkının ihlali
+unvanın benzerliği
+ayırt edici unvan
+unvan değişikliği
+unvanın hükümsüzlüğü
+unvanın iptali
+tacir
+tacir sıfatı
+tacir olmanın sonuçları
+tacirin defter tutma yükümlülüğü
+yevmiye defteri
+envanter defteri
+defterlerin ibrazı
+defterlerin tasdiki
+defterlerin delil niteliği
+ticari mektup
+ticari teyit mektubu
+tacir olmanın sonuçları
+tacirin sorumluluğu
+ayıplı ifa bildirimi
+ticari ihtar
+ticari dava
+ticari alacak
+temerrüt faizi
+ticari davalarda yetki
+ticari davalarda görevli mahkeme
+ticari temsilci
+temsil yetkisi
+temsil sınırları
+temsilci sorumluluğu
+temsilci bildirimi
+ticari vekil
+ticari vekaletname
+tacir yardımcıları
+bağımlı yardımcılar
+bağımsız yardımcılar
+acentelik
+acente sözleşmesi
+acentenin yetkisi
+acentenin tescili
+acentenin sona ermesi
+komisyoncu
+komisyon sözleşmesi
+pazarlamacı
+pazarlamacının yetkisi
+pazarlamacı bildirimi
+tek yetkili acente
+bayilik sözleşmesi
+bayi ağı
+işletme devri
+işletme devri sözleşmesi
+işletme devrinin sonuçları
+müşteri çevresi
+devralan tacir
+işletme unsurlarının devri
+marka devri
+ticaret unvanı devri
+stok devri
+araç gereç devri
+alacakların devri
+borçların devri
+devrin tescili
+işletme rehni
+rehin sözleşmesi
+rehin hakkı
+rehin sicili
+rehin kaydı
+rehin derecesi
+alacaklı korunması
+rehin hakkının sona ermesi
+işletme rehni iptali
+haksız rekabet
+dürüstlük kuralı
+ayırt edici işaret ihlali
+müşteri çevresinin bozulması
+marka taklidi
+benzerlik
+kötüleme
+işe engel olma
+meslek sırrı açıklama
+karışıklık yaratma
+internet üzerinden haksız rekabet
+fiyat aldatması
+indirim yalanı
+çalışan ayartma
+reklam ihlali
+haksız rekabet davası
+dava süresi
+haksız rekabetin önlenmesi
+tazminat talebi
+önlem alınması
+yayının durdurulması
+tebligat gönderimi
+ticari dava
+ticari uyuşmazlık
+ticaret mahkemesi
+ticaret mahkemesinin görev alanı
+delil tespiti
+ihtiyati tedbir
+ihtiyati haciz
+yargılama süresi
+bilirkişi atanması
+tanık dinlenmesi
+ispat yükü
+tacirin ispat yükü
+ticari defterlerle ispat
+karşı dava
+ticari tahkim
+tahkim şartı
+arabuluculuk zorunluluğu
+ticari alacak davası
+şikayet süresi
+sözleşmeye dayalı dava
+haksız fiil davası
+
+[Sirketler hukuku]
+şirketler hukuku
+şirket türleri
+ticaret şirketi
+şahıs şirketi
+sermaye şirketi
+kollektif şirket
+komandit şirket
+anonim şirket
+limited şirket
+kooperatif
+şirket sözleşmesi
+esas sözleşme
+sözleşme değişikliği
+şirket merkezi
+şirket şubesi
+şirketin kuruluşu
+kuruluş tescili
+kurucuların sorumluluğu
+ön şirket
+ön şirket işlemleri
+şirketin tüzel kişiliği
+şirketin unvanı
+şirketin süresi
+şirketin tescili
+şirketin sicil kaydı
+şirketin faaliyet konusu
+şirketin feshine karar
+anonim şirket
+pay
+pay senedi
+pay defteri
+pay devri
+pay devrinin sınırlandırılması
+payın iptali
+pay bedeli
+bedelsiz pay
+imtiyazlı pay
+kurucu intifa senedi
+pay sahipliği
+halka açık şirket
+genel kurul
+genel kurul kararı
+genel kurul toplantısı
+toplantı ve karar nisabı
+pay sahipleri listesi
+pay sahibinin oy hakkı
+azınlık hakkı
+sermaye artırımı
+sermaye azaltımı
+kar payı dağıtımı
+zarar karşılığı
+yönetim kurulu
+yönetim kurulu üyesi
+yönetim kurulunun görev ve yetkileri
+temsil ve ilzam yetkisi
+şirket temsilcisi
+şirket müdürü
+denetim kurulu
+bağımsız denetim
+iç denetim
+denetçi raporu
+anonim şirketin sona ermesi
+anonim şirket tasfiyesi
+tasfiye memuru
+fesih kararı
+tasfiye süreci
+anonim şirketin birleşmesi
+bölünme
+nev’i değişikliği
+hisse senedi çıkarılması
+limited şirket
+ortaklık yapısı
+sermaye taahhüdü
+sermaye ödemesi
+nakdi sermaye
+ayni sermaye
+ortaklar kurulu
+ortaklar kurulu kararı
+şirket müdürü
+müdürler kurulu
+müdürün görev ve yetkileri
+temsil yetkisi
+ortakların sorumluluğu
+şirket karı
+kar dağıtımı
+kar payı
+zarar ortaklığı
+hisse devri
+hissenin devri
+onay şartı
+hisse devrinin tescili
+ortaklıktan çıkarma
+şirketten çıkma hakkı
+çıkarma davası
+limited şirketin sona ermesi
+tasfiye süreci
+tasfiye memuru
+hisse devri anlaşması
+alacaklıların korunması
+hisse oranı
+nakit ödeme yükümlülüğü
+kooperatif
+kooperatif ortaklığı
+kooperatif tüzüğü
+ortaklık payı
+kooperatif yönetim kurulu
+kooperatif genel kurulu
+kooperatif denetçisi
+kooperatifin denetimi
+kooperatif kararı
+kooperatifin tasfiyesi
+kooperatifin sona ermesi
+kooperatif ortaklarının sorumluluğu
+ortaklık davası
+pay sahipliği davası
+kar payı davası
+genel kurul kararının iptali
+iptal davası
+butlan davası
+iptal süresi
+pay sahipliği ispatı
+yönetim kurulunun iptali
+yetkisiz temsil
+temsil yetkisinin aşılması
+hisse devri uyuşmazlığı
+ortaklıktan çıkarma davası
+şirket sıfatının tespiti
+tasfiye işlemi uyuşmazlığı
+kar dağıtım uyuşmazlığı
+şirketle rekabet yasağı
+sadakat borcu
+şirket zararı
+ortaklar arası ihtilaf
+şirket feshi
+muhalefet şerhi
+ihtiyati tedbir
+defter inceleme hakkı
+genel kurul çağrısı
+ortaklık kaydının silinmesi
+şirket merkezinin taşınması
+sermaye azaltımı itirazı
+sermaye artırımı iptali
+yetkisiz genel kurul
+sahte imza
+ticaret siciline karşı dava
+ticaret sicili
+ticaret siciline tescil
+sicil iptali
+sicil düzeltme
+ticaret unvanı
+şirketin unvanı
+marka devri
+şirket alacaklısı
+şirket borcu
+şirket sözleşmesinin tescili
+şirketin borçlandırılması
+ortaklık ilişkisi
+şirketlerin birleşmesi
+şirket devri
+bağlı şirket
+hakim şirket
+bağlı şirket ilişkisi
+şirket grup yapısı
+bağlı ortaklık
+grup şirketler
+şirket sırları
+rekabet yasağı
+sözleşme ihlali
+şirket kararı
+şirket sözleşmesine aykırılık
+pay sahibinin bilgi alma hakkı
+bilgi alma hakkının sınırı
+şirket bilgi ve belgeleri
+hisse oranına göre oy hakkı
+şirket hisse oranı
+şirketin faaliyet alanı
+ticaret unvanı hakkı
+
+[Kiymetli Evrak]
+kıymetli evrak
+senet
+emre yazılı senet
+nama yazılı senet
+hamiline yazılı senet
+ciro
+ciranta
+aval
+teminat
+ödeme
+borç
+alacak
+keşideci
+lehtar
+hamil
+muhatap
+tanzim tarihi
+vade
+protesto
+ödeme yasağı
+itiraz
+itiraz süresi
+ödeme emri
+senet metni
+senet iptali
+kambiyo senedi
+ticari senet
+kambiyo takibi
+itirazın iptali
+senet tahsili
+kıymetli evrakın ziyaı
+kıymetli evrakın iptali
+yitirilmiş senet
+iptal davası
+bedelsiz senet
+şarta bağlı senet
+çek
+çek düzenleme
+çek keşide tarihi
+çek vadesi
+çekin tahsili
+çek karşılığı
+karşılıksız çek
+çekin ibrazı
+çekin iptali
+çek defteri
+çek hesabı
+çek hesabı açılması
+çek yasağı
+çek yasağı kararı
+çekin süresinde ibrazı
+çek sorumluluğu
+çekin iptal edilmesi
+çek borcu
+çek alacağı
+çek düzenleme yasağı
+çekin protestosu
+çek takibi
+çekin ciro edilmesi
+çekin kaybolması
+çekin geçerliliği
+çekin tahsil süresi
+çekin ödeme süresi
+karşılıksız çek cezası
+çek tazminatı
+bono
+bono düzenleme
+bonoda imza
+bononun geçerliliği
+bonoda lehtar
+bonoda aval
+bono borcu
+bono alacağı
+bono takibi
+bononun iptali
+bononun vadesi
+bononun tanzimi
+bono davası
+bononun cirosu
+bononun protestosu
+bononun ödenmesi
+bono tahsilatı
+senet borcu
+senet tahsili
+bonoda ödeme emri
+bonoya itiraz
+bononun hükümsüzlüğü
+bono metni
+bono yükümlülüğü
+poliçe
+poliçede taraflar
+poliçede lehtar
+poliçe düzenleme
+poliçe ciro
+poliçede kabul
+poliçede muhatap
+poliçe tahsili
+poliçe davası
+poliçe protestosu
+poliçe bedeli
+poliçede vade
+poliçeye itiraz
+poliçede ödeme emri
+poliçe ödenmemesi
+poliçenin iptali
+poliçenin hükümsüzlüğü
+poliçe borcu
+poliçe alacağı
+senet iptal davası
+senet takibi
+senet tahsili
+kambiyo senedi iptali
+menfi tespit davası
+borca itiraz
+borcun ispatı
+senedin geçersizliği
+imzanın inkârı
+borç ikrarı
+icra takibi
+takip dayanağı senet
+imza incelemesi
+bilirkişi raporu
+senet üzerindeki imza
+itirazın kaldırılması
+senede dayalı icra
+teminat senedi
+gerçek alacak
+hukuki ilişkinin varlığı
+senetli borç
+senetsiz borç
+ihtiyati haciz
+senet tanzim tarihi
+senet iptal kararı
+kambiyo hukuku
+kambiyo mevzuatı
+senet sorumluluğu
+müşterek borç
+müteselsil sorumluluk
+kambiyo senetlerinde teminat
+senet yenileme
+takip talebi
+senet borcunun sona ermesi
+yetkisiz imza
+usulsüz ciro
+yetkisiz temsil
+özel şart
+senede bağlanmış borç
+ticari iş ilişkisi
+ticari defter
+senede karşı defter
+ispat yükü
+delil niteliği
+çekte imza sorumluluğu
+senette garanti
+şikayet süresi
+cezai şart
+senede dayalı işlem
+
+[Deniz Ticaret Hukuku]
+deniz ticaret hukuku
+Türk Ticaret Kanunu
+deniz ticareti
+gemi
+deniz aracı
+deniz yolu taşımacılığı
+taşıma hukuku
+deniz taşıması
+yük taşıması
+yolcu taşıması
+taşıyan
+gönderen
+alıcı
+taşıma senedi
+konşimento
+deniz konşimentosu
+taşıma sözleşmesi
+navlun
+navlun sözleşmesi
+taşıma ücreti
+gemi kira sözleşmesi
+çarter sözleşmesi
+zaman çarteri
+sefer çarteri
+taşıma sorumluluğu
+teslim
+gönderme
+yükleme
+boşaltma
+gecikme
+teslim süresi
+zıya
+hasar
+ayıplı teslim
+zarar tespiti
+teslim belgesi
+gemi acentesi
+broker
+gemi sicili
+gemi tescili
+gemi mülkiyeti
+gemi maliki
+gemi kaptanı
+gemi adamı
+donatan
+gemi siciline tescil
+geminin batması
+gemi ipoteği
+gemi rehni
+gemi ipoteği tesisi
+gemi ipoteği fekki
+gemi üzerine haciz
+denize elverişlilik
+bayrak çekme
+bayrak devleti
+gemiye el koyma
+gemi kazası
+gemi donatımı
+gemi sigortası
+gemi belgeleri
+denize elverişlilik belgesi
+gemi kira bedeli
+gemi kira süresi
+gemi teslim süresi
+gemi yükleme limanı
+boşaltma limanı
+liman masrafları
+liman yetkilisi
+donatan
+donatan yardımcısı
+donatanın sorumluluğu
+sınırlı sorumluluk
+sorumluluk sınırı
+zararın paylaşımı
+gemi kaptanı yetkisi
+kaptanın sorumluluğu
+kaptanın emir verme yetkisi
+deniz günlüğü
+mücbir sebep
+taşıma hatası
+kaptan ihmali
+gemi adamının hatası
+kaptanın emirlerinin bağlayıcılığı
+sorumluluk sigortası
+kaptanın raporu
+gemi kazası raporu
+deniz kazası
+deniz kazası
+çatma
+yardım
+kurtarma
+ortak avarya
+avarya katkısı
+avarya hesaplaması
+zarar gören taraf
+gemi zayiatı
+gemi yük zayiatı
+batık çıkarma
+deniz kazasında sorumluluk
+gemi hasar raporu
+kurtarma sözleşmesi
+kurtarma ücreti
+deniz hasarı
+gemi karaya oturma
+deniz yolu çarpışması
+çarpışmada kusur oranı
+çarpışma sorumluluğu
+deniz kazası tutanağı
+deniz kazası tazminatı
+konşimento
+deniz konşimentosu
+taşıma senedi
+yükleme belgesi
+taşıma irsaliyesi
+teslim belgesi
+konşimentonun devri
+konşimentonun iptali
+konşimento hamilinin hakları
+konşimento alacaklısı
+taşıyıcının sorumluluğu
+taşıma süresi
+teslimde gecikme
+teslimde ayıp
+yükleme emri
+yükleme sırası
+yükleme planı
+konşimento düzenleme
+konşimentoda hata
+muhatap
+yük sahibi
+yük sigortası
+yükün zarar görmesi
+deniz sigortası
+deniz tehlikeleri
+deniz riski
+yük sigortası
+gemi sigortası
+sorumluluk sigortası
+deniz kazası sigortası
+sigorta poliçesi
+sigorta tazminatı
+zarar ihbarı
+sigorta bedeli
+sigorta süresi
+sigorta ödemesi
+sigorta kapsamı
+sigorta şirketi
+sigortalı yük
+sigortalı gemi
+prim ödeme
+sigorta ettiren
+sigorta koruması
+sigorta teminatı
+sigorta sözleşmesi
+deniz ticaret mahkemesi
+deniz ticareti davası
+gemi ile ilgili dava
+konşimento davası
+taşıma sözleşmesi davası
+sigorta davası
+avarya davası
+kurtarma davası
+çatma davası
+kaptan sorumluluğu davası
+donatan davası
+teslim davası
+zarar tespiti davası
+tazminat davası
+delil tespiti
+bilirkişi incelemesi
+dava zamanaşımı
+deniz ticareti zamanaşımı
+dava süresi
+tespit davası
+teslim davası
+gemi mülkiyeti davası
+
+[Sigorta Hukuku]
+sigorta
+sigorta hukuku
+sigorta sözleşmesi
+sigorta poliçesi
+sigorta şirketi
+sigortalı
+sigorta ettiren
+teminat
+sigorta bedeli
+sigorta süresi
+prim
+prim ödeme
+sigorta türleri
+sigorta teminatı
+sigorta kapsamı
+sigorta koşulları
+sigorta poliçesi örneği
+sigorta primini ödeme
+sigorta poliçesinin geçerliliği
+sigorta alacağı
+sigorta anlaşmazlığı
+sigorta davası
+sigorta tazminatı
+sigorta zararı
+sigorta kapsamı dışı
+sigorta şirketi sorumluluğu
+sigorta teminatı dışı zarar
+sigorta poliçesinin feshi
+sigorta iptali
+sigorta priminin iadesi
+sigorta sözleşmesinin feshi
+hayat sigortası
+sağlık sigortası
+zorunlu trafik sigortası
+kasko sigortası
+depreme karşı sigorta
+ev sigortası
+yangın sigortası
+kredi sigortası
+işyeri sigortası
+ticaret sigortası
+yük sigortası
+gemi sigortası
+gemi kasko sigortası
+deniz sigortası
+trafik sigortası
+tarım sigortası
+nakliyat sigortası
+çalışan sigortası
+yolcu sigortası
+özel sigorta
+zorunlu sigorta
+yangın sigortası
+ev eşyası sigortası
+ekonomik sigorta
+başkasının sigortalanması
+grup sigortası
+kapsam dışı sigorta
+motorlu taşıt sigortası
+işçi sigortası
+sigorta poliçesi düzenleme
+poliçede sigorta teminatı
+sigorta poliçesi iptali
+sigorta poliçesi değişikliği
+sigorta poliçesinde şartlar
+sigorta poliçesi örneği
+sigorta poliçesi iptal davaları
+sigorta poliçesinin geçerliliği
+poliçe bedeli
+sigorta poliçesinin kapsamı
+sigorta poliçesindeki eksiklik
+poliçe düzenleme hataları
+poliçenin feshi
+sigorta sözleşmesi imzalama
+sigorta sözleşmesinin hükümleri
+sigorta sözleşmesi feshi
+sigorta sözleşmesinin süresi
+sigorta sözleşmesindeki maddeler
+sigorta sözleşmesi örneği
+sigorta sözleşmesinin geçerliliği
+sigorta sözleşmesinde teminat
+sigorta sözleşmesi maddeleri
+sigorta sözleşmesi tazminat hükümleri
+sigorta sözleşmesi şartları
+sigorta sözleşmesi davaları
+sigorta sözleşmesinin uygulanması
+sigorta sözleşmesinde teminat dışı riskler
+sigorta sözleşmesinde poliçe şartları
+sigorta tazminatı
+sigorta tazminatı alacağı
+sigorta tazminatı ödemesi
+sigorta tazminatı hesaplama
+sigorta tazminatına itiraz
+sigorta tazminatı davası
+sigorta tazminatı ödeme koşulları
+sigorta tazminatının teminat kapsamı
+sigorta tazminatının reddi
+sigorta tazminatı miktarı
+sigorta tazminatı davaları
+sigorta tazminatı ödeme süresi
+sigorta tazminatı ödeme yöntemleri
+sigorta tazminatının hesaplanması
+sigorta tazminatı gecikme faizi
+sigorta tazminatı dışı zarar
+sigorta tazminatının haksızlığı
+sigorta sözleşmesinin iptali
+sigorta sözleşmesinin feshi
+sigorta sözleşmesinin geçersizliği
+sigorta sözleşmesinin sona ermesi
+sigorta poliçesinin feshi
+sigorta sözleşmesinin iptaline ilişkin dava
+sigorta sözleşmesi iptal hükümleri
+sigorta iptali davası
+sigorta sözleşmesinin hükümsüzlüğü
+sigorta sözleşmesinin feshi davası
+sigorta sözleşmesinin iptaline ilişkin yargı kararı
+sigorta haksız fiil
+sigorta sorumluluğu
+sigorta şirketinin sorumluluğu
+sigorta şirketinin ihmal sorumluluğu
+sigorta şirketi zarar
+sigorta şirketi hatası
+sigorta şirketinin tazminat sorumluluğu
+sigorta tazminat sorumluluğu
+sigorta şirketinin yükümlülüğü
+sigorta sorumluluğu davaları
+sigorta haksız fiil davası
+sigorta şirketinin kusuru
+sigorta davası
+sigorta sözleşmesi davası
+sigorta prim davası
+sigorta alacak davası
+sigorta tazminat davası
+sigorta davaları
+sigorta davalarında zamanaşımı
+sigorta sigorta davası örneği
+sigorta sözleşmesi iptal davası
+sigorta tazminatına itiraz davası
+sigorta şirketine karşı dava
+sigorta prim ödeme davası
+sigorta tazminat ödeme davası
+sigorta şartlarına uyum
+sigorta sorumluluğu tazminat
+sigorta alacağı davası
+sigorta istisnaları
+sigorta teminatı dışı durum
+sigorta riskleri
+sigorta teminat dışı zarar
+sigorta istisnası
+sigorta iptaline yol açan sebepler
+sigorta istisnasına dayanarak ödeme yapılmaması
+sigorta kapsamı dışındaki durumlar
+sigorta şüpheli riskler
+sigorta şirketinin istisna hükümleri
+sigorta teminat dışı koşullar
+sigorta prim ödememe
+sigorta alacağı
+sigorta sigorta primi
+sigorta takibi
+sigorta talep formu
+sigorta ödemeleri
+sigorta bedelinin hesaplanması
+sigorta iptali davası
+sigorta geçerli
+sigorta primlerinin iadesi
+
+[icra Ve iflas Hukuku]
+icra hukuku
+iflas hukuku
+icra takibi
+ilamsız icra
+ilamlı icra
+takip talebi
+ödeme emri
+itiraz
+itirazın iptali
+itirazın kaldırılması
+icra mahkemesi
+takibin durdurulması
+takibin iptali
+kesinleşme
+icra emri
+icra dosyası
+takip dosyası
+borçlu
+alacaklı
+borcun tahsili
+icra müdürlüğü
+icra işlemleri
+borçlu beyanı
+icra tehiri
+ödeme taahhüdü
+taksitlendirme
+haciz
+taşınır haczi
+taşınmaz haczi
+üçüncü şahısta haciz
+haciz tutanağı
+haczedilebilir mal
+haczedilemez mal
+haczin kaldırılması
+haciz ihbarnamesi
+haciz işlemi
+haciz kararı
+menfi tespit davası
+istirdat davası
+haciz şikayeti
+haciz sırasında direnç
+hacze iştirak
+hacizli malın satışı
+haciz mahalli
+haciz ihlali
+haciz süresi
+haciz zamanaşımı
+haciz tarihi
+satış
+ihale
+icra ihalesi
+elektronik satış
+taşınır satış
+taşınmaz satış
+satış kararı
+satış talebi
+satış ilanı
+satış bedeli
+ihale bedeli
+satışa hazırlık
+satış günü
+teklif verme süresi
+satışın feshi
+satış sonrası tescil
+satış muamelesi
+alacak tahsili
+ihaleye fesat karıştırma
+satışa itiraz
+ihale şikayeti
+satış ilanına itiraz
+ilamlı icra
+mahkeme kararı ile takip
+tahliye
+kira tahliye
+tahliye emri
+tahliye kararı
+kira borcu
+tahliye taahhüdü
+tahliye davası
+tahliye işlemi
+tahliye süresi
+konut tahliyesi
+işyeri tahliyesi
+boşaltma kararı
+boşaltma işlemi
+iflas
+iflas kararı
+iflas davası
+iflas masası
+iflas idaresi
+iflasın açılması
+tasfiye
+alacak bildirimi
+alacaklılar kurulu
+rehinli alacak
+adli iflas
+ticari iflas
+şahsi iflas
+iflasın kaldırılması
+konkordato
+konkordato projesi
+konkordato talebi
+geçici mühlet
+kesin mühlet
+konkordato komiseri
+komiser raporu
+iflas ertelemesi
+iflas tasfiyesi
+iflas süreci
+iflas prosedürü
+borca batıklık
+borca batıklık davası
+iflasın ertelenmesi
+rehin hakkı
+rehinli alacak
+sıra cetveli
+alacak sıralaması
+alacak kaydı
+aciz belgesi
+sıra cetveline itiraz
+alacak tahsili
+sıraya girme
+borçlu ifadesi
+iflas idaresine beyan
+alacak tespiti
+alacak davası
+rehinle teminat
+rehin açığı
+rehinli malların satışı
+rehinli satış işlemi
+aciz hali
+aciz vesikası
+rehin hakkının korunması
+rehin hakkının sona ermesi
+icra suçu
+mal beyanında bulunmama
+yalan beyanda bulunma
+taahhüdü ihlal
+borçlunun mal kaçırması
+borçluya ulaşamama
+borç gizleme
+borçluya hakaret
+icra görevlisine direnme
+icrayı engelleme
+hacze engel olma
+haczedilen malı kaçırma
+yalan beyan cezası
+icra takibine engel suç
+ceza davası
+icra mahkemesi
+şikayet hakkı
+itiraz süresi
+delil sunma
+tanık dinlenmesi
+bilirkişi incelemesi
+ekspertiz raporu
+keşif kararı
+keşif tutanağı
+icra kararı
+temyiz süreci
+istinaf süreci
+kararın icrası
+takibin iptali
+ihtiyati haciz
+ihtiyati tedbir
+ihtiyati tedbir kararı
+
+[Vergi Hukuku]
+vergi hukuku
+vergi yükümlüsü
+vergi sorumlusu
+mükellef
+vergi dairesi
+vergi borcu
+vergi beyanı
+vergi matrahı
+vergi oranı
+vergi tahakkuku
+vergi tahsili
+vergi borçlusunun hakları
+vergi türleri
+gelir vergisi
+kurumlar vergisi
+katma değer vergisi
+KDV
+özel tüketim vergisi
+ÖTV
+damga vergisi
+emlak vergisi
+motorlu taşıtlar vergisi
+MTV
+veraset ve intikal vergisi
+çevre temizlik vergisi
+vergi kanunları
+vergi usul kanunu
+vergi dairesi işlemi
+vergi kanunu uygulaması
+vergi yükümlülüğü
+vergi beyannamesi
+muhtasar beyanname
+KDV beyannamesi
+gelir vergisi beyannamesi
+kurumlar vergisi beyannamesi
+vergi beyannamesi süresi
+vergi beyannamesi düzeltme
+vergi beyannamesi cezası
+vergi bildirim yükümlülüğü
+vergi bildirimi yapılmaması
+vergi kaçakçılığı
+vergi ziyaı
+vergi ziyaı cezası
+usulsüzlük
+usulsüzlük cezası
+vergi beyannamesinde eksiklik
+vergi beyannamesi geçersizliği
+vergi cezası
+vergi ziyaı cezası
+usulsüzlük cezası
+özel usulsüzlük cezası
+vergi kaçırma
+naylon fatura
+sahte belge düzenleme
+sahte belge kullanma
+vergi incelemesi
+vergi denetimi
+vergi müfettişi
+vergi suçu
+vergi cezasına itiraz
+vergi affı
+vergi yapılandırması
+vergi uzlaşması
+vergi barışı
+vergi affı kanunu
+vergi cezasında indirim
+vergi borcu silinmesi
+vergi alacağı
+vergi alacağının zamanaşımı
+vergi uzlaşma komisyonu
+vergi yargısı
+vergi mahkemesi
+bölge idare mahkemesi
+Danıştay
+vergi davası
+vergi iptal davası
+vergi düzeltme talebi
+vergi hatası
+vergi şikayet yolu
+vergi yargılaması usulü
+vergi uyuşmazlığı
+vergi ihtilafı
+vergiye itiraz
+vergi kararına itiraz
+vergi dava dilekçesi
+vergi davasında delil
+vergi davasında ispat
+vergi yargılamasında zamanaşımı
+vergi davasında savunma
+vergi inceleme raporu
+vergi tahakkuku
+vergi tahsili
+vergi tahsil zamanaşımı
+ödeme emri
+ödeme süresi
+ödeme planı
+vergi borcunun taksitlendirilmesi
+vergi borcunun ertelenmesi
+vergi borcu sorgulama
+vergi borcu silinmesi
+vergi yapılandırma başvurusu
+vergi ödeme
+vergi itfa
+vergi teminatı
+vergi haczi
+vergi tahsil usulleri
+vergi cebren tahsil
+vergi tecil
+vergi borcu erteleme
+vergi faiz indirimi
+vergi istisnası
+vergi muafiyeti
+vergi indirimi
+teşvik
+yatırım teşviki
+KDV istisnası
+gelir vergisi istisnası
+kurumlar vergisi istisnası
+serbest bölge muafiyeti
+yurt dışı istisnası
+ihracat istisnası
+engelli vergi indirimi
+genç girişimci istisnası
+basit usulde vergi
+stopaj muafiyeti
+vergi avantajı
+beyanname indirimi
+beyanname düzenleme indirimi
+mükellef kaydı
+vergi kimlik numarası
+elektronik beyanname
+e-fatura
+e-defter
+e-arşiv
+vergi sistemleri
+vergi kimlik doğrulama
+vergi mükellefiyet tesisi
+vergi mükellefiyetinin sona ermesi
+mükellefiyet değişikliği
+mükellefiyet terk
+vergi sicili
+gelir idaresi başkanlığı
+vergi mevzuatı
+vergi reformu
+vergi oranları
+vergilendirme dönemi
+vergilendirme yetkisi
+vergi danışmanlığı
+
+[kamu gorevlisi hukuku]
+kamu görevlisi
+devlet memuru
+sözleşmeli personel
+geçici personel
+memur statüsü
+657 sayılı kanun
+kamu hizmeti
+görev tanımı
+kamu görevlisi hakları
+kamu görevlisi yükümlülükleri
+görevden alma
+göreve iade
+memuriyete giriş
+atama kararı
+memur atanması
+memur atama işlemi
+ilk atama
+yeniden atama
+görev yeri değişikliği
+kademe ilerlemesi
+derece yükselmesi
+görevden uzaklaştırma
+açığa alma
+disiplin cezası
+uyarma cezası
+kınama cezası
+aylıktan kesme
+kademe ilerlemesinin durdurulması
+devlet memurluğundan çıkarma
+disiplin soruşturması
+disiplin kurulu
+disiplin cezası iptali
+disiplin cezası yargı denetimi
+disiplin cezası zamanaşımı
+disiplin suçları
+disiplin mevzuatı
+maaş
+ek gösterge
+ek ödeme
+ikramiye
+harcırah
+yolluk
+fazla mesai
+nöbet ücreti
+emekli ikramiyesi
+emeklilik işlemleri
+hizmet borçlanması
+kademe-derece hesaplaması
+ödenek
+görev tazminatı
+şartlı ödenek
+lojman tahsisi
+giyim yardımı
+görev gereği yer değiştirme tazminatı
+kurum içi nakil
+görevde yükselme sınavı
+unvan değişikliği sınavı
+terfi
+meslek içi eğitim
+hizmet içi eğitim
+sertifika programı
+aday memurluk
+asil memurluk
+adaylık kaldırma sınavı
+ihraç
+memuriyetten çıkarma
+emeklilik nedeniyle ilişik kesilme
+istifa
+memuriyetten istifa
+çekilme hakkı
+mazeret izni
+disiplin nedeniyle ilişik kesilme
+ceza soruşturması
+yıllık izin
+mazeret izni
+hastalık izni
+ücretsiz izin
+analık izni
+babalık izni
+ölüm izni
+doğum izni
+süt izni
+evlilik izni
+refakat izni
+görevli izin
+milli görev izni
+idari izin
+tarafsızlık ilkesi
+sadakat yükümlülüğü
+amir-memur ilişkisi
+gizlilik yükümlülüğü
+usulsüzlük
+görev ihmali
+yetki aşımı
+emre itaatsizlik
+kamu zararına neden olma
+etik davranış kuralları
+etik ihlal
+kamu görevlisi etik kurulu
+atama iptali
+disiplin cezası iptali
+göreve iade davası
+görevden alma davası
+idari yargı memur davaları
+kadro iptali
+kadrosuzluk nedeniyle emeklilik
+kamudan ihraç davası
+açığa alma iptali
+iade talebi
+personel daire başkanlığı
+idari işler
+üst kademe kamu yöneticisi
+bakanlık memuru
+mülki idare amiri
+kaymakam
+vali yardımcısı
+vali
+emniyet personeli
+polis memuru
+askeri personel
+jandarma memuru
+zabıt katibi
+adliye personeli
+öğretmen
+sağlık personeli
+hemşire
+doktor
+diyanet personeli
+657 sayılı devlet memurları kanunu
+idare hukuku
+danıştay
+idari yargı
+idari işlem
+hukuka aykırılık
+yürütmenin durdurulması
+iptal davası
+memur güvencesi
+personel rejimi
+hak arama hürriyeti
+insan hakları
+kanuni dayanak
+idarenin takdir yetkisi
+yargısal denetim
+anayasa
+kamusal yetki
+hak ihlali
+hukuka aykırı işlem
+eşitlik ilkesi
+liyakat ilkesi
+kariyer ilkesi
+yerindelik denetimi
+idari tasarruf
+kamu görevlisinin sorumluluğu
+memurun mali sorumluluğu
+memurun cezai sorumluluğu
+kişisel hak
+kişisel veri
+sicil
+sicil notu
+performans değerlendirme
+
+[kamu ihale hukuku]
+kamu ihale hukuku
+kamu ihalesi
+ihale
+ihale ilanı
+ihale süreci
+teklif
+teklif değerlendirme
+ihale dokümanı
+ihale komisyonu
+ihale onayı
+yaklaşık maliyet
+açık ihale usulü
+pazarlık usulü
+belli istekliler arasında ihale
+doğrudan temin
+ihale usulleri
+4734 sayılı kanun
+4735 sayılı sözleşme kanunu
+yapım işi ihalesi
+mal alımı ihalesi
+hizmet alımı ihalesi
+danışmanlık hizmet alımı
+çerçeve anlaşma
+elektronik ihale
+e-teklif
+e-ihale platformu
+çevrim içi ihale
+iptal edilen ihale
+yeterlik kriteri
+ekonomik ve mali yeterlik
+mesleki ve teknik yeterlik
+ortak girişim
+konsorsiyum
+aday
+istekli
+istekli olabilecek
+iş deneyim belgesi
+anahtar teknik personel
+iş bitirme belgesi
+yeterlik değerlendirmesi
+ihale dışı bırakılma
+yasaklılık
+ihaleye katılmaktan yasaklılık
+teklif mektubu
+geçici teminat
+kesin teminat
+aşırı düşük teklif
+teklif zarfı
+ihale zarfları açılması
+ekonomik açıdan en avantajlı teklif
+teknik şartname
+idari şartname
+teklif geçerlilik süresi
+tekliflerin değerlendirilmesi
+ihale kararı
+ihale sonucu
+itirazen şikayet
+şikayet başvurusu
+karar düzeltme
+sözleşmeye davet
+sözleşme öncesi işlemler
+ihale sözleşmesi
+sözleşme tasarısı
+sözleşmenin imzalanması
+sözleşmenin yürürlüğe girmesi
+yer teslimi
+sözleşmenin uygulanması
+sözleşme devri
+sözleşmenin feshi
+sözleşmeye aykırılık
+cezai şart
+teminat iadesi
+hakediş
+gecikme cezası
+sözleşmenin süre uzatımı
+ilave iş
+iş artışı
+kesin hesap raporu
+kamu ihale kurumu
+kamu ihale kurulu
+şikayet süreci
+itirazen şikayet
+ihale kararı iptal davası
+yürütmenin durdurulması
+danıştay kararı
+iptal davası
+ihale işlemine karşı dava
+yargı denetimi
+idari yargı
+idari işlem
+hukuka aykırılık
+yerindelik denetimi
+yasak fiil
+yasak davranış
+etik dışı teklif
+ihaleye fesat karıştırma
+çıkar çatışması
+menfaat temini
+yolsuzluk
+rüşvet
+etik ihlal
+etik kurallar
+etik komisyon
+kamusal denetim
+ekap
+elektronik ihale
+e-teklif
+e-imza
+çevrimiçi ihale
+dijital başvuru
+otomatik değerlendirme
+e-şikayet başvurusu
+e-şartname
+e-zarf
+e-sözleşme
+kamu bilgi sistemi
+altyapı yatırımları
+karayolu ihalesi
+bina yapım ihalesi
+hastane yapımı
+okul inşaatı
+gıda alım ihalesi
+taşımacılık hizmeti ihalesi
+temizlik hizmeti
+güvenlik hizmet alımı
+yemek hizmet alımı
+yakıt alım ihalesi
+teknolojik cihaz alımı
+ulaşım ihalesi
+kamu yatırımı
+kamu projesi
+müteahhit
+taşeron
+kontrol teşkilatı
+yer teslim tutanağı
+ihale yönetmeliği
+kamu ihale genel tebliği
+cezai hükümler
+ihale yasası
+kanun hükümleri
+geçici madde
+uygulama yönetmeliği
+alt yüklenici
+bağlayıcı belge
+sözleşmeye davet süresi
+
+[cevre hukuku]
+çevre hukuku
+çevre koruma
+çevre kanunu
+2872 sayılı çevre kanunu
+çevre hakkı
+ekosistem
+doğa koruma
+biyolojik çeşitlilik
+iklim değişikliği
+çevresel etki
+çevre etiği
+çevresel zarar
+çevre düzeni planı
+çevre kirliliği
+çevre davası
+çevresel sorumluluk
+çevre izni
+çevre lisansı
+çevresel denetim
+çevre mevzuatı
+çevresel yükümlülük
+çevresel etki değerlendirmesi
+çed yönetmeliği
+çed
+çed gerekli değildir kararı
+çed olumlu kararı
+çed iptali
+çed davası
+çed süreci
+çed başvurusu
+çed kapsam dışı
+çed başvuru dosyası
+çed raporu
+çed yönetmeliği
+çed denetimi
+korunan alan
+doğal sit alanı
+özel çevre koruma bölgesi
+biyosfer rezervi
+orman hukuku
+orman kadastrosu
+milli park
+tabiat parkı
+tabiat anıtı
+doğal miras
+ekolojik denge
+çevresel hassasiyet
+çevresel değer
+tarım arazisi
+mera alanı
+koruma kararı
+çevresel sınırlama
+atık yönetimi
+katı atık
+tehlikeli atık
+tıbbi atık
+evsel atık
+sanayi atığı
+atık bertaraf
+geri dönüşüm
+sıfır atık
+atık su
+hava kirliliği
+su kirliliği
+toprak kirliliği
+deniz kirliliği
+gürültü kirliliği
+radyoaktif kirlilik
+emisyon
+deşarj izni
+emisyon izni
+koku kirliliği
+çevre cezası
+çevre ihlali
+çevre tazminatı
+çevre zararı giderimi
+termik santral
+hidroelektrik santral
+nükleer santral
+güneş enerjisi
+rüzgar enerjisi
+yenilenebilir enerji
+jeotermal kaynak
+enerji yatırımları
+enerji lisansı
+çevre izni
+çevresel denge
+enerji projelerinde çed
+enerji üretiminde çevre etkisi
+çevre ruhsatı
+işletme ruhsatı
+faaliyet izni
+çevre izin lisans belgesi
+tesis açma izni
+çevre uygunluk belgesi
+yapı ruhsatı
+ruhsat iptali
+faaliyet durdurma
+çevresel standartlar
+çevre limit değerleri
+idari yaptırım
+faaliyet yasağı
+çevre izin denetimi
+çevre ve şehircilik bakanlığı
+çevre denetçisi
+idari para cezası
+yürütmenin durdurulması
+iptal davası
+danıştay çevre kararları
+çevre mahkemesi
+çevreye zarar davası
+idari yargı çevre davaları
+çevre ihlallerine karşı dava
+çevre koruma derneği
+çevre sivil toplum kuruluşu
+paris iklim anlaşması
+kyoto protokolü
+çevre sözleşmeleri
+uluslararası çevre hukuku
+çevre hakkı
+birleşmiş milletler çevre programı
+sürdürülebilir kalkınma
+çevresel sorumluluk ilkesi
+ortak fakat farklı sorumluluk
+uluslararası çevre yükümlülüğü
+sınır ötesi çevre zararları
+iklim adaleti
+yeşil mutabakat
+karbon ayak izi
+karbon emisyonu
+karbon salımı
+sera gazı emisyonu
+emisyon ticareti
+karbon vergisi
+çevresel performans
+doğa tahribatı
+çevre bilinci
+çevre eğitimi
+çevre etiketi
+doğa dostu yaklaşım
+ekolojik hukuk
+çevresel sürdürülebilirlik
+ekosistem hizmetleri
+iklim yasası
+çevresel uyum
+iklim planı
+çevre politikası
+çevre mevzuat ihlali
+çevresel sorumluluk ilkesi
+çevresel etki azaltımı
+doğa tazminatı
+çevre şikayet hattı
+
+[belediye hukuku]
+belediye hukuku
+yerel yönetimler
+mahalli idareler
+belediye başkanı
+belediye meclisi
+belediye encümeni
+belediye teşkilatı
+il özel idaresi
+köy idaresi
+muhtarlık
+5393 sayılı belediye kanunu
+5302 sayılı il özel idaresi kanunu
+köy kanunu
+büyükşehir belediyesi
+5216 sayılı büyükşehir belediyesi kanunu
+yerel idare personeli
+belediye zabıtası
+belediye hizmeti
+yerinden yönetim
+mahalli müşterek ihtiyaç
+belediye kararı
+encümen kararı
+meclis kararı
+belediye başkanlığı işlemleri
+belediye hizmet birimleri
+belediye birimi kurulması
+yetki devri
+meclis toplantısı
+encümen toplantısı
+belediye bütçesi
+belediye harcamaları
+belediye borçlanması
+belediye gelirleri
+belediye vergileri
+belediye harcı
+imar harcı
+eğlence vergisi
+temizlik hizmeti
+çevre düzenlemesi
+alt yapı hizmeti
+yol bakım onarım
+içme suyu temini
+atık su arıtma
+çöp toplama
+sosyal hizmet
+mezarlık hizmetleri
+itfaiye hizmeti
+zabıta hizmeti
+ulaşım hizmetleri
+park ve bahçe düzenlemesi
+halk ekmek işletmesi
+kültür merkezi
+belediye sosyal tesisi
+kentsel dönüşüm
+belediye sağlık hizmeti
+spor tesisi yapımı
+belediye kreşi
+aşevi hizmeti
+kamuoyu bilgilendirme
+belediye memuru
+sözleşmeli personel
+belediye işçisi
+personel ataması
+görev yeri değişikliği
+disiplin işlemi
+belediye çalışanına ceza
+belediye personeli tayin
+belediye iç denetçi
+görevden uzaklaştırma
+belediye başkan yardımcısı
+belediye müdürü
+şube müdürlüğü
+imar planı
+nazım imar planı
+uygulama imar planı
+imar uygulaması
+imar affı
+imar değişikliği
+imar durumu belgesi
+yapı ruhsatı
+iskan ruhsatı
+kaçak yapı
+yıkım kararı
+yapı kayıt belgesi
+imar yolu
+kamulaştırma
+kamu hizmetine ayırma
+belediye denetimi
+iç denetim
+sayıştay denetimi
+idari denetim
+vali denetimi
+belediye meclis kararı iptali
+belediye işlemi iptali
+idari yargı
+danıştay
+iptal davası
+yürütmenin durdurulması
+belediye işlemine karşı dava
+yetki gaspı
+yerindelik denetimi
+hukuka aykırılık
+belediye sorumluluğu
+kamu zararı
+yerel seçim
+belediye başkanı seçimi
+belediye meclisi üyeliği
+il genel meclisi
+muhtar seçimi
+seçim kanunu
+seçim çevresi
+sandık kurulu
+belediye seçimleri iptali
+yüksek seçim kurulu
+seçilme yeterliliği
+seçilmişin görevden alınması
+belediye kayyumu
+belediye başkanının görevden alınması
+belediye şirketi
+belediye iştirakleri
+anonim şirket
+iktisadi teşebbüs
+sermaye artırımı
+şirket yönetimi
+halk ekmek A.Ş.
+ulaşım A.Ş.
+belediye otobüs işletmesi
+kültür A.Ş.
+temizlik A.Ş.
+şirket personeli
+belediye şirketi denetimi
+belediye yardımı
+sosyal yardım
+ihtiyaç sahibi desteği
+kira yardımı
+eğitim yardımı
+engelli hizmetleri
+kadın dayanışma merkezi
+yaşlı bakım hizmeti
+öğrenci bursu
+barınma hizmeti
+afet yardımı
+doğal afet yönetimi
+belediye afet planı
+
+[kamulastirma hukuku]
+kamulaştırma
+2942 sayılı kamulaştırma kanunu
+acele kamulaştırma
+kamu yararı
+kamulaştırma kararı
+kamulaştırma işlemi
+kamulaştırmasız el atma
+idari işlem
+kamu hizmeti amacı
+kamulaştırma bedeli
+kamulaştırma iptali
+kamulaştırma davası
+kamulaştırma kararı iptali
+bedel tespiti davası
+bedel artırımı
+idare hukuku
+taşınmaz
+mülkiyet hakkı
+hukuki el atma
+fiili el atma
+taşınmazın değer tespiti
+emsal değer
+bilirkişi raporu
+ekspertiz raporu
+kamulaştırma raporu
+taşınmaz kıymet takdiri
+idarenin teklif bedeli
+bilirkişi incelemesi
+bedel tespit ve tescil davası
+kamulaştırma süreci
+ön inceleme
+kamu yararı kararı
+tebliğ
+pazarlık
+satın alma usulü
+anlaşmalı kamulaştırma
+bedel anlaşması
+kamulaştırma bedeli ödenmesi
+tescil kararı
+idari karar
+kamulaştırma belgesi
+taşınmaz mal sahibi
+resmi senet
+kıymet takdiri
+mahkeme kararı
+istimlak işlemi
+kamulaştırma evrakı
+bedel ödeme belgesi
+tescil işlemi
+irtifak hakkı
+kamu yararı kararı iptali
+mülkiyet devri
+resen tescil
+tespit ve tescil kararı
+acele el koyma
+acele kamulaştırma kararı
+acele kamulaştırma davası
+acele tahliye
+mahkeme izni
+kolluk eliyle tahliye
+acele el atma
+ön ödeme
+acele bedel tespiti
+acele uygulama
+kamulaştırmasız el atma
+el atma tazminatı
+fiili kullanım
+idarenin fiili davranışı
+yıkım kararı
+taşınmaza müdahale
+süreklilik arz eden el atma
+geçici el atma
+tazminat davası
+geriye dönük tazminat
+mülkiyet hakkı ihlali
+anayasa madde 35
+hak ihlali
+idarenin haksız müdahalesi
+kamu hizmeti niteliği
+bedel tespiti
+bedelin artırılması
+tespit ve tescil davası
+mahkeme tespiti
+hakkın tespiti
+mahkeme tescil kararı
+taşınmazın tapuya tescili
+tescil kararı verilmesi
+mülkiyetin geçişi
+tespit davası
+tescil işlemi
+taşınmaz sicili
+resen tescil kararı
+taşınmazın boşaltılması
+el koyma kararı
+bedel ödemesi
+bedelin tahsili
+mülkiyet devri
+kamuya geçiş
+irtifak hakkı tesisi
+bedelin yatırılması
+kamulaştırma belgesinin tapuya sunulması
+satın alma teklif yazısı
+kabul yazısı
+taşınmazın teslimi
+kamulaştırma haritası
+yürütmenin durdurulması
+iptal davası
+tescil davası
+tazminat davası
+kamulaştırma mahkemesi
+idare mahkemesi
+bölge idare mahkemesi
+danıştay
+hukuka aykırı işlem
+mahkeme kararı
+bilirkişi ataması
+bilirkişi raporuna itiraz
+tanık beyanı
+bedel belirleme usulü
+mülkiyet hakkı
+anayasa madde 35
+kanuni dayanak
+hak arama özgürlüğü
+idarenin sorumluluğu
+tazminat hakkı
+kanunilik ilkesi
+eşitlik ilkesi
+ölçülülük ilkesi
+yerindelik denetimi
+müdahale yasağı
+zorunluluk ilkesi
+kamusal yarar
+anayasa mahkemesi içtihadı
+kamulaştırma mevzuatı
+kamulaştırma yönetmeliği
+köy tüzel kişiliği
+belediye kamulaştırması
+karayolları kamulaştırması
+devlet su işleri kamulaştırması
+hazine kamulaştırması
+çevre ve şehircilik bakanlığı
+ulaştırma bakanlığı
+enerji bakanlığı
+kamu kurumu
+idare
+kamulaştırma yetkisi
+kamulaştırma planı
+imar planı
+imar uygulaması
+
+[danistay vergi]
+vergi hukuku
+vergi yükümlüsü
+mükellef
+vergi borcu
+vergi tahakkuku
+vergi tahsili
+vergi alacağı
+vergi ziyaı
+vergi kaçakçılığı
+vergi usulsüzlüğü
+vergi incelemesi
+vergi denetimi
+vergi sorumlusu
+vergi mahremiyeti
+vergi inceleme raporu
+vergi cezası
+vergi ceza ihbarnamesi
+vergi suçu
+vergi affı
+vergi affı düzenlemesi
+vergi indirimi
+vergi istisnası
+vergi muafiyeti
+gelir vergisi
+kurumlar vergisi
+katma değer vergisi
+kdv
+özel tüketim vergisi
+ötv
+veraset ve intikal vergisi
+motorlu taşıtlar vergisi
+damga vergisi
+emlak vergisi
+çevre temizlik vergisi
+harçlar
+banka ve sigorta muameleleri vergisi
+geçici vergi
+stopaj
+ücret vergisi
+basit usul vergilendirme
+vergi beyannamesi
+vergi beyannamesi verilmemesi
+elektronik beyanname
+vergi ödeme
+vergi ödememe
+vergi yapılandırması
+vergi erteleme
+vergi borcu silinmesi
+vergi taksitlendirme
+vergi borç sorgulama
+vergi ödeme süresi
+vergi tebligatı
+vergi tahakkuk fişi
+vergi matrahı
+matrah artırımı
+vergi ziyaı cezası
+usulsüzlük cezası
+özel usulsüzlük cezası
+kaçakçılık suçu
+kaçakçılık cezası
+tecil faizi
+vergi ceza indirimi
+vergi cezası iptali
+idari para cezası
+vergi mahkemesi cezası
+mükerrer ceza
+yargı kararı ile iptal
+cezanın kaldırılması
+vergi cezalarında indirim
+vergi incelemesi
+vergi denetmeni
+inceleme yetkisi
+vergi denetim elemanı
+vergi dairesi başkanlığı
+vergi dairesi müdürlüğü
+vergi tarhı
+re'sen tarh
+ikmalen tarh
+idarece tarh
+vergi tevkifatı
+vergi yargısı
+idari başvuru
+dava açma süresi
+vergi uyuşmazlığı
+vergiyle ilgili idari işlem
+vergi mahkemesi
+bölge idare mahkemesi
+danıştay vergi dava dairesi
+yürütmenin durdurulması
+iptal davası
+tam yargı davası
+ihbarnamenin iptali
+vergi ceza ihbarnamesi iptali
+vergi dairesi işleminin iptali
+vergi davası
+yargı denetimi
+hukuka aykırılık
+gerekçeli karar
+213 sayılı vergi usul kanunu
+vergi usul kanunu
+5520 sayılı kurumlar vergisi kanunu
+193 sayılı gelir vergisi kanunu
+3065 sayılı kdv kanunu
+4760 sayılı öt kanunu
+vergi kanunları
+maliye bakanlığı genelgesi
+gelir idaresi başkanlığı
+maliye politikası
+idari görüş
+özelge
+mukteza
+genel tebliğ
+vergi sirküleri
+taslak tebliğ
+ödeme emri
+haciz
+vergi tahsil dairesi
+vergi alacağının tahsili
+menkul haczi
+gayrimenkul haczi
+e-haciz
+e-tahsilat
+vergi tahsil zamanaşımı
+takibat işlemi
+icra takibi
+ödeme emrine itiraz
+yürütmenin durdurulması talebi
+ödeme süresinin uzatılması
+tahsil işlemi iptali
+terkin işlemi
+adil vergi yükü
+vergide eşitlik
+vergide adalet
+dolaylı vergi
+doğrudan vergi
+vergi bilinci
+vergi ahlakı
+vergi kaçağı
+vergi denetimi
+vergi kayıt dışılığı
+vergi barışı
+vergi reformu
+elektronik vergi denetimi
+vergi sisteminde değişiklik
+vergi ile sosyal politika
+mali disiplin
+
+[yuksekogretim hukuku]
+eğitim hukuku
+yükseköğretim hukuku
+2547 sayılı kanun
+1739 sayılı milli eğitim temel kanunu
+milli eğitim bakanlığı
+eğitim hakkı
+anayasa madde 42
+eğitimde eşitlik
+kamusal eğitim hakkı
+zorunlu eğitim
+ilköğretim
+ortaöğretim
+lisans eğitimi
+ön lisans
+yüksek lisans
+doktora
+örgün eğitim
+açık öğretim
+uzaktan eğitim
+karma eğitim
+özel okul
+resmi okul
+devlet üniversitesi
+vakıf üniversitesi
+yabancı üniversite
+dil hazırlık sınıfı
+mezuniyet hakkı
+öğrenci hakları
+öğrenci disiplin cezası
+uzaklaştırma cezası
+kınama cezası
+uyarma cezası
+okuldan atılma
+sınıf tekrarı
+mezuniyet şartları
+sınav iptali
+ders geçme sistemi
+harç iadesi
+öğrenci belgesi
+öğrenci kimliği
+öğrenci bilgi sistemi
+obs erişimi
+devamsızlık
+mazeret sınavı
+öğrenci başvurusu
+öğrenci itirazı
+üniversiteye geçiş
+kurumlar arası geçiş
+ders intibakı
+çift anadal
+yan dal
+staj hakkı
+öğretim görevlisi
+araştırma görevlisi
+profesör
+doçent
+doktor öğretim üyesi
+akademik atama
+akademik yükseltme
+jüri raporu
+doçentlik başvurusu
+akademik kadro ilanı
+göreve başlatmama
+akademik disiplin cezası
+bilimsel yayın şartı
+tez savunması
+yayın kriteri
+intihal soruşturması
+etik kurul
+bilimsel etik ihlali
+akademik özgürlük
+öğretim üyesi görevden alma
+akademisyen hakları
+akademik teşvik
+yabancı dil şartı
+yükseköğretim kurulu
+yök
+üniversite senatosu
+üniversite yönetim kurulu
+dekanlık
+rektörlük
+rektör
+fakülte yönetimi
+enstitü
+yüksekokul
+yök disiplin yönergesi
+yök kararları
+yök genelgesi
+yök mevzuatı
+akademik kurul
+idari kurul
+üniversite özerkliği
+idari işlem
+iptal davası
+öğrenci disiplin cezası iptali
+üniversite kararı iptali
+akademik atama iptali
+mahkeme kararı
+yürütmenin durdurulması
+bölge idare mahkemesi
+danıştay
+yükseköğretim mevzuatına aykırılık
+hukuka aykırı işlem
+idari yargı denetimi
+ösym
+ygs
+lys
+tyt
+ayt
+ales
+yökdil
+yabancı öğrenci sınavı
+yös
+öğrenci yerleştirme
+kontenjanlar
+ek yerleştirme
+özel yetenek sınavı
+yatay geçiş
+dikey geçiş
+çift anadal yerleştirme
+üniversite tercihi
+tercih iptali
+puan hesaplama
+başarı sırası
+denklik
+yök denklik
+uluslararası diploma denklik
+uluslararası öğrenci
+erasmus
+farabi
+mevlana
+öğrenci değişim programı
+transkript denklik
+akademik tanınırlık
+ikili anlaşma
+avrupa kredi transfer sistemi
+ects
+uluslararası ortak diploma programı
+çift diploma
+yabancı öğrenci kabulü
+kredi ve yurtlar kurumu
+kyk
+burs başvurusu
+geri ödemeli burs
+karşılıksız burs
+yurt tahsisi
+yurt disiplini
+psikolojik danışmanlık merkezi
+kariyer merkezi
+mezun bilgi sistemi
+öğrenci kulübü
+topluluk etkinliği
+mezuniyet töreni
+öğrenci temsilciliği
+öğrenci konseyi
+üniversite iç tüzüğü
+
+[danistay sgk]
+sağlık hukuku
+sosyal güvenlik hukuku
+5510 sayılı kanun
+657 sayılı devlet memurları kanunu
+sağlık hizmetleri
+sağlık hakkı
+hasta hakları
+sağlık hizmetine erişim
+acil sağlık hizmeti
+birinci basamak sağlık hizmeti
+ikinci basamak hastane
+üniversite hastanesi
+aile hekimi
+kamu hastaneleri
+özel hastane
+sağlık çalışanı
+doktor
+hemşire
+ebe
+acil tıp teknisyeni
+sosyal güvenlik kurumu
+sgk
+bağkur
+emekli sandığı
+prim ödeme
+prim gün sayısı
+sigortalılık süresi
+emeklilik
+emeklilik hakkı
+malulen emeklilik
+erken emeklilik
+prim borcu
+hizmet süresi
+hizmet birleştirme
+sigorta başlangıcı
+sigortalılık hali
+gss
+genel sağlık sigortası
+sigorta iptali
+sigorta tescil
+sağlık personeli disiplin cezası
+görevden uzaklaştırma
+açığa alma
+sağlık memuru
+aile sağlığı elemanı
+sözleşmeli sağlık personeli
+sağlık personeli ataması
+atama iptali
+nöbet ücreti
+ek ödeme
+sağlık personeli görevlendirme
+özlük hakları
+istifa
+göreve iade
+kadro iptali
+tayin davası
+kurumlar arası geçiş
+uzmanlık eğitimi
+asistan hekim
+sağlık çalışanı güvenliği
+zorunlu hizmet
+reçete
+ilaç raporu
+ilaç temini
+ilaç bedeli
+ilaç katkı payı
+tedavi gideri
+özel tedavi
+yurt dışı tedavi
+geri ödeme listesi
+muayene katılım payı
+özel hastane fark ücreti
+tedavi masrafı
+tıbbi malzeme
+medikal cihaz ödemesi
+maluliyet
+malulen emeklilik
+maluliyet oranı
+engel oranı
+engelli raporu
+engelli memur
+engel nedeniyle emeklilik
+hastalık nedeniyle emeklilik
+engel durumu
+erken yaşlanma
+çalışamaz raporu
+çalışma gücü kaybı
+engelli istihdamı
+evde bakım hizmeti
+sosyal yardım
+yeşil kart
+gss prim desteği
+doğum yardımı
+emzirme yardımı
+hastalık yardımı
+ölüm yardımı
+cenaze yardımı
+yol yardımı
+tedavi destek ödeneği
+yakınını kaybedene yardım
+sosyal hizmet merkezi
+sosyal yardımlaşma vakfı
+iptal davası
+idari işlem
+yürütmenin durdurulması
+danıştay
+bölge idare mahkemesi
+idare mahkemesi
+hak ihlali
+sosyal güvenlik kararı iptali
+rapor iptali
+kadro işlemi iptali
+atama işlemi iptali
+emeklilik işlemi iptali
+ek ödeme iptali
+sigortalılık reddi
+malullük reddi
+idari başvuru
+hizmet tespiti
+yargı yolu
+sosyal güvenlik mevzuatı
+sgk genelgesi
+emeklilik şartları
+gss mevzuatı
+sağlık bakanlığı genelgesi
+tıbbi hata
+hasta şikayeti
+performansa dayalı ek ödeme
+asgari hizmet standardı
+kurum görüşü
+il sağlık müdürlüğü
+toplum sağlığı merkezi
+aile sağlığı merkezi
+tedavi hizmetleri genel müdürlüğü
+yataklı tedavi kurumu
+hastane yönetmeliği
+kamu hastaneleri genel müdürlüğü
+
+[idare hukuku]
+idare hukuku
+idare
+idari işlem
+idari sözleşme
+idari tasarruf
+kamu hizmeti
+kamu yararı
+kamu düzeni
+yetki
+yetki tecavüzü
+yetki gasbı
+görev
+idarenin takdir yetkisi
+idarenin sorumluluğu
+hizmet kusuru
+kusursuz sorumluluk
+sebep-sonuç ilişkisi
+zararın tazmini
+tazminat davası
+idari yaptırım
+idari ceza
+idari para cezası
+disiplin cezası
+disiplin işlemi
+iptal davası
+tam yargı davası
+idari yargı
+bölge idare mahkemesi
+idare mahkemesi
+danıştay
+idari eylem
+yargı yolu
+yargı denetimi
+yürütmenin durdurulması
+yargı kararlarının uygulanması
+kanunilik ilkesi
+hukuka uygunluk
+hukuka aykırılık
+yerindelik denetimi
+yetki-denetim ayrımı
+idari yargılama usulü
+itiraz
+temyiz
+duruşma yapılması
+mahkeme kararı
+gerekçeli karar
+kararın düzeltilmesi
+kararın icrası
+zaman aşımı
+dava açma süresi
+ön inceleme
+reddi hakim
+bireysel işlem
+düzenleyici işlem
+genelge
+yönerge
+yönetmelik
+tüzük
+kararname
+emir
+talimat
+izin
+ruhsat
+yasaklama
+ret
+izin iptali
+kamulaştırma
+kamulaştırma kararı
+ihale kararı
+atama kararı
+görevden alma
+yetki devri
+işlem iptali
+işlem düzeltilmesi
+işlem geri alınması
+işlem kaldırılması
+hak doğuran işlem
+yükümlülük doğuran işlem
+memur
+kamu görevlisi
+657 sayılı dmk
+göreve atama
+görev yeri değişikliği
+terfi
+kademe ilerlemesi
+derece yükselmesi
+disiplin cezası
+görevden uzaklaştırma
+açığa alma
+istifa
+görevden alma
+emeklilik
+aday memur
+kurumlar arası geçiş
+sözleşmeli personel
+özlük hakları
+idari itiraz
+memur davası
+atama iptali
+göreve iade
+devamlılık
+değişkenlik
+tarafsızlık
+eşitlik
+kamu yararı
+yerindelik
+kamu hizmetine erişim
+hizmetten yararlanma
+kamu hizmeti kusuru
+gecikme
+eksik hizmet
+kötü yönetim
+ihmal
+idari hizmet aksaması
+idari hata
+haksız işlem
+vatandaş başvurusu
+idari şikayet
+dilekçe hakkı
+tam yargı
+tazminat
+doğrudan zarar
+dolaylı zarar
+fiili zarar
+manevi zarar
+malvarlığı zararı
+hukuka aykırılık tespiti
+zararın ispatı
+idari sorumluluk
+ihmal sorumluluğu
+kusur ilkesi
+ağır hizmet kusuru
+kusursuz sorumluluk ilkesi
+tehlike sorumluluğu
+sosyal risk ilkesi
+zorunlu hizmet
+görev zararı
+anayasaya aykırılık
+idare hukuku mevzuatı
+anayasa
+2577 sayılı idari yargılama usul kanunu
+kanun
+tüzük
+yönetmelik
+genelge
+idari işlem teorisi
+idare hukuku öğretisi
+danıştay kararları
+anayasa mahkemesi kararları
+idari yargı içtihatları
+kamu denetçiliği kurumu
+ombudsman
+sayıştay
+mahalli idareler
+kamu tüzel kişiliği
+idari vesayet
+yetki genişliği
+merkezi yönetim
+mahalli müşterek ihtiyaç
+görev bölüşümü
+idari teşkilat
+
+[yabancilar ve vatandaslik]
+yabancılar hukuku
+vatandaşlık hukuku
+yabancı
+vatandaş
+vatandaşlık başvurusu
+vatandaşlık kazanımı
+vatandaşlık kaybı
+vatandaşlıktan çıkarma
+vatandaşlıktan çıkma
+vatandaşlık iptali
+çifte vatandaşlık
+vatansızlık
+mülteci
+sığınmacı
+geçici koruma
+uluslararası koruma
+ikamet izni
+çalışma izni
+oturma izni
+vize
+vize muafiyeti
+giriş yasağı
+sınır dışı
+deport
+gözetim kararı
+idari gözetim
+yabancılar geri gönderme merkezi
+vatandaşlık başvurusu reddi
+istisnai vatandaşlık
+genel yolla vatandaşlık
+Türk soylu yabancı
+vatandaşlığa kabul
+Türk vatandaşlığının iptali
+resen vatandaşlık kaybı
+evlenme yoluyla vatandaşlık
+doğumla vatandaşlık
+Türk vatandaşlığının korunması
+mavi kart
+yabancı uyruklu kişi
+milliyet tespiti
+nüfus müdürlüğü işlemi
+vatandaşlık belgesi
+nüfus kayıt örneği
+yabancı kimlik numarası
+idari işlem
+iptal davası
+tam yargı davası
+danıştay kararı
+yürütmenin durdurulması
+yabancılar genel müdürlüğü
+göç idaresi
+göç idaresi genel müdürlüğü
+idari gözetim kararı
+idari işlem iptali
+idare mahkemesi
+bölge idare mahkemesi
+başvuru reddi
+başvuru süresi
+itiraz hakkı
+dava açma süresi
+tebligat
+gerekçeli karar
+göçmen
+göçmen hukuku
+ikamet izinleri
+ikamet süresi
+ikamet izin türleri
+kısa dönem ikamet
+aile ikameti
+öğrenci ikameti
+uzun dönem ikamet
+insani ikamet izni
+ikamet izni iptali
+ikamet izni reddi
+çalışma izni iptali
+ikamet uzatma
+ikamet başvurusu
+e-ikamet sistemi
+adres kayıt sistemi
+sınır dışı kararı
+sınır dışı etme
+deport kararı
+deport iptali
+geri gönderme yasağı
+geri gönderme merkezi
+iltica
+ülkesine gönderilme
+geri dönüş programı
+avrupa insan hakları sözleşmesi
+geri gönderme yasağı kararı
+uluslararası koruma kararı
+zorla geri gönderme
+sığınma hakkı
+eğitim hakkı
+çalışma hakkı
+sosyal güvenlik hakkı
+miras hakkı
+gayrimenkul edinme
+mülkiyet hakkı
+barınma hakkı
+seyahat özgürlüğü
+sosyal yardım hakkı
+vergi yükümlülüğü
+yargı yolu hakkı
+hukuki eşitlik
+dil öğrenme hakkı
+hizmetlere erişim hakkı
+5901 sayılı türk vatandaşlığı kanunu
+6458 sayılı yabancılar ve uluslararası koruma kanunu
+yabancılar yönetmeliği
+göç yönetmeliği
+nüfus hizmetleri kanunu
+uluslararası sözleşmeler
+avrupa insan hakları mahkemesi
+bm mülteciler sözleşmesi
+avrupa birliği vatandaşlık kriterleri
+eşdeğerlik belgesi
+resmi belge doğrulama
+uluslararası anlaşmalar
+geçici koruma yönetmeliği
+mülteci statüsü
+şartlı mülteci
+ikincil koruma
+uluslararası öğrenci
+ikamet belgesi
+uluslararası aile birleşimi
+turkuaz kart
+çalışma izni değerlendirme komisyonu
+göç politikası
+yabancı yatırımcı
+
+[enerji maden]
+enerji hukuku
+maden hukuku
+enerji piyasası
+enerji üretimi
+elektrik üretimi
+elektrik dağıtımı
+elektrik iletimi
+doğalgaz piyasası
+petrol piyasası
+nükleer enerji
+yenilenebilir enerji
+güneş enerjisi
+rüzgar enerjisi
+hidroelektrik santral
+jeotermal enerji
+biyokütle enerjisi
+enerji lisansı
+üretim lisansı
+iletim lisansı
+dağıtım lisansı
+tüketici hakları enerji
+epdk
+enerji piyasası düzenleme kurumu
+enerji yatırımı
+epdk kararı
+epdk cezası
+enerji verimliliği
+enerji performansı
+enerji kimlik belgesi
+çevre izinleri
+maden ruhsatı
+arama ruhsatı
+işletme ruhsatı
+maden işletme izni
+maden arama faaliyeti
+madencilik faaliyeti
+maden işletme sahası
+maden sahası devri
+maden izni
+ruhsat iptali
+ruhsat yenileme
+maden kanunu
+3213 sayılı maden kanunu
+maden işletme projesi
+maden arama projesi
+enerji ve tabii kaynaklar bakanlığı
+maden işleri genel müdürlüğü
+mta
+doğal kaynak yönetimi
+idari işlem
+iptal davası
+tam yargı davası
+idare mahkemesi
+bölge idare mahkemesi
+danıştay
+yürütmenin durdurulması
+ruhsat iptali davası
+çevresel etki değerlendirmesi
+çed iptali
+kamulaştırma
+acele kamulaştırma
+enerji projesi iptali
+lisans iptali
+epdk işlemine itiraz
+enerji projesine karşı dava
+maden faaliyeti durdurma
+idari yaptırım
+epdk para cezası
+izin iptali
+süre uzatımı
+saha kapatma kararı
+çevre ihlali
+çed gerekli değildir kararı
+enerji yatırımcısı
+özel sektör enerji şirketi
+devlet katkısı
+yatırım teşviki
+yerli kaynak kullanımı
+elektrik üretim şirketi
+maden şirketi
+tüketici
+lisans sahibi
+dağıtım şirketi
+iletim şirketi
+botaş
+teiaş
+tedaş
+eti maden
+tkı
+tpaO
+epdk kurul kararı
+ikincil mevzuat
+enerji satış sözleşmesi
+ikili anlaşma
+ptf
+yeka
+iletim bağlantı anlaşması
+dağıtım bağlantı anlaşması
+epdk onayı
+geçici kabul
+nihai tüketici sözleşmesi
+yük alma-verme
+maden sahası kira sözleşmesi
+ortak yatırım
+devlet katkı payı
+royalty sistemi
+teknik nezaretçilik
+yer altı işletmesi
+açık işletme
+rezerv tespiti
+jeolojik etüt
+çalışma izni
+çevresel etki
+çevre duyarlılığı
+çevre düzeni planı
+tarım dışı arazi kullanımı
+mera izni
+tapusuz arazi kullanımı
+imar planına uygunluk
+çevresel sınırlama
+çevresel uyum
+kamulaştırma bedeli
+zorunlu kamulaştırma
+çevresel şikayet
+enerji ile ilgili vergiler
+epdk denetimi
+maden faaliyetlerinin denetimi
+çevre cezaları
+çed raporu
+geçici faaliyet belgesi
+maden atığı
+atık yönetimi
+rehabilitasyon planı
+doğa tahribatı
+enerji güvenliği
+enerji arz güvenliği
+
+
+
+
+
+
+

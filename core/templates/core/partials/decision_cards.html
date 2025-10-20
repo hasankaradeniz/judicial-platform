@@ -1,0 +1,22 @@
+{% for decision in decisions %}
+<div class="decision-card">
+    <div class="decision-header">
+        <h3 class="decision-title">
+            <a href="{% url 'judicial_detail' decision.id %}">
+                {{ decision.karar_turu }} - {{ decision.karar_veren_mahkeme }}
+            </a>
+        </h3>
+        <div class="decision-meta">
+            <span class="decision-number">{{ decision.esas_numarasi }}</span>
+            <span class="decision-date">{{ decision.karar_tarihi|date:"d.m.Y" }}</span>
+        </div>
+    </div>
+    <div class="decision-content">
+        <p class="decision-summary">{{ decision.karar_ozeti|truncatewords:50 }}</p>
+    </div>
+</div>
+{% empty %}
+<div class="no-results">
+    <p>Aradığınız kriterlere uygun karar bulunamadı.</p>
+</div>
+{% endfor %}

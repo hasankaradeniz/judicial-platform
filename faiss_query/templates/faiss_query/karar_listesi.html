@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_styles %}
+<style>
+.relevance-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+.relevance-high { background: linear-gradient(45deg, #28a745, #20c997); }
+.relevance-medium { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+.relevance-low { background: linear-gradient(45deg, #6c757d, #495057); }
+
+.keyword-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 2px;
+    display: inline-block;
+}
+
+.debug-panel {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.result-card {
+    border-left: 4px solid #007bff;
+    transition: all 0.2s ease;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.high-relevance { border-left-color: #28a745; }
+.medium-relevance { border-left-color: #ffc107; }
+.low-relevance { border-left-color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">📘 Genel Hukuki Açıklama</h2>
+    <div class="alert alert-info" role="alert">
+        {{ hukuki_aciklama|safe }}
+    </div>
+    
+    <!-- Anahtar Kelimeler ve Debug Bilgisi -->
+    {% if legal_keywords %}
+    <div class="debug-panel">
+        <div class="row">
+            <div class="col-md-8">
+                <strong>🔑 Çıkarılan Hukuki Anahtar Kelimeler:</strong><br>
+                {% for keyword in legal_keywords %}
+                    <span class="keyword-tag">{{ keyword }}</span>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <strong>📊 Sonuç İstatistikleri:</strong><br>
+                <small>
+                    Toplam: {{ debug_info.total_results }} sonuç<br>
+                    Skor aralığı: {{ debug_info.min_score }}-{{ debug_info.max_score }}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <h2 class="mt-4 mb-4">🔎 İlgili Yargı Kararları (Alakalılık Sırasına Göre)</h2>
+
+    {% if page_obj.object_list %}
+        <div class="list-group">
+            {% for combined_score, idx, karar, alan, relevance_score in page_obj %}
+                {% if relevance_score >= 70 %}
+                    <div class="list-group-item mb-3 result-card high-relevance">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-1">{{ karar.mahkeme }}</h5>
+                            <div>
+                                <span class="relevance-badge relevance-high">
+                                    Yüksek Alakalılık ({{ relevance_score }}/100)
+                                </span>
+                            </div>
+                        </div>
+                {% elif relevance_score >= 40 %}
+                    <div class="list-group-item mb-3 result-card medium-relevance">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-1">{{ karar.mahkeme }}</h5>
+                            <div>
+                                <span class="relevance-badge relevance-medium">
+                                    Orta Alakalılık ({{ relevance_score }}/100)
+                                </span>
+                            </div>
+                        </div>
+                {% else %}
+                    <div class="list-group-item mb-3 result-card low-relevance">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-1">{{ karar.mahkeme }}</h5>
+                            <div>
+                                <span class="relevance-badge relevance-low">
+                                    Düşük Alakalılık ({{ relevance_score }}/100)
+                                </span>
+                            </div>
+                        </div>
+                {% endif %}
+                
+                        <p class="mb-1 text-muted">
+                            <strong>Esas No:</strong> {{ karar.esas_no|default:"N/A" }} |
+                            <strong>Karar No:</strong> {{ karar.karar_no|default:"N/A" }} |
+                            <strong>Tarih:</strong> {{ karar.tarih|default:"N/A" }}
+                        </p>
+                        
+                        <p class="mb-3"><strong>Özet:</strong> {{ karar.ozet }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'faiss_query:karar_detay' alan=alan index=idx %}?page={{ page_obj.number }}" 
+                               class="btn btn-sm btn-primary">
+                                📜 Profesyonel Detay Görünümü
+                            </a>
+                            <small class="text-muted">
+                                Kombinasyon Skoru: {{ combined_score|floatformat:3 }}
+                            </small>
+                        </div>
+                    </div>
+            {% endfor %}
+        </div>
+
+        <nav aria-label="Karar Sayfalama">
+            <ul class="pagination justify-content-center mt-4">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Önceki</a>
+                    </li>
+                {% endif %}
+                <li class="page-item disabled">
+                    <a class="page-link">Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</a>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Sonraki</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            <h5>⚠️ İlgili karar bulunamadı</h5>
+            <p class="mb-2">Girdiğiniz olay için minimum alakalılık eşiğini (25/100) aşan karar bulunamadı.</p>
+            <p class="mb-0">
+                <strong>Öneri:</strong> Olayınızı daha detaylı veya farklı kelimelerle tanımlamayı deneyin.
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+<script>
+// Save scroll position before leaving page
+window.addEventListener('beforeunload', function() {
+  sessionStorage.setItem('faissListScrollPos', window.scrollY);
+  sessionStorage.setItem('faissListPageUrl', window.location.href);
+});
+
+// Restore scroll position when returning
+window.addEventListener('load', function() {
+  // Check if we're coming back from detail page
+  const scrollPos = sessionStorage.getItem('faissListScrollPos');
+  const pageUrl = sessionStorage.getItem('faissListPageUrl');
+  
+  if (scrollPos && pageUrl === window.location.href) {
+    setTimeout(() => {
+      window.scrollTo(0, parseInt(scrollPos));
+    }, 100);
+  }
+});
+
+// Mark that results are cached to avoid showing loading indicator
+if (document.querySelector('.alert-info')) {
+  sessionStorage.setItem('faissResultsCached', 'true');
+}
+</script>

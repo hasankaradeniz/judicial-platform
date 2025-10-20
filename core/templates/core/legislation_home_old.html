@@ -1,0 +1,305 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Mevzuat - Lexatech{% endblock %}
+
+{% block content %}
+<style>
+  /* Hero Section Overlay ve Metin Gölgesi */
+  .hero-section {
+    position: relative; /* Overlay ekleyebilmek için gerekli */
+    color: #fff; /* Metin rengini beyaz yapıyoruz */
+    overflow: hidden; /* Olası taşmaları gizlemek için */
+  }
+
+  /* Yarı saydam overlay: arka planı koyulaştırır */
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4); /* Koyuluk oranı. 0.4 yerine 0.3-0.6 arası değişebilirsiniz. */
+    z-index: 1;
+  }
+
+  /* İçerik, overlay'in üstünde görünsün diye z-index 2 veriyoruz */
+  .hero-section .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Metin gölgesi: yazıyı daha belirgin kılar */
+  .hero-section h1,
+  .hero-section p.lead {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+</style>
+
+<div class="container mt-5">
+  {% if not query %}
+    <!-- Hero / Banner Bölümü -->
+    <div class="hero-section"
+         style="background: url('{% static 'core/images/mevzuat_bg.jpg' %}') no-repeat center center;
+                background-size: cover;
+                padding: 60px 0;">
+      <div class="container text-center">
+        <h1 class="mb-4" style="font-weight: 700;">GELİŞMİŞ MEVZUAT SİSTEMİ</h1>
+        <p class="lead mb-2" style="font-weight: 400;">{{ total_mevzuat|default:0 }} Mevzuat • {{ total_madde|default:0 }} Madde</p>
+        <p class="lead mb-4" style="font-weight: 400;">Kapsamlı mevzuat araması için kelime veya cümle giriniz.</p>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <!-- Basit arama formu: sadece kelime/cümle bazlı -->
+            <form method="get" action="{% url 'legislation_results' %}">
+              <div class="input-group">
+                <input type="text" class="form-control" name="q" placeholder="Mevzuat başlığı, konusu veya anahtar kelime..." required>
+                <select name="mevzuat_turu" class="form-select" style="max-width: 200px;">
+                  <option value="">Tüm Türler</option>
+                  {% for turu in mevzuat_turu_stats %}
+                    <option value="{{ turu.mevzuat_turu__kategori }}">{{ turu.mevzuat_turu__ad }} ({{ turu.count }})</option>
+                  {% endfor %}
+                </select>
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="submit">🔍 Ara</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mevzuat Türleri ve İstatistikler -->
+    <div class="container my-5">
+      <h3 class="text-center mb-4">📊 Mevzuat Türlerine Göre Dağılım</h3>
+      
+      <!-- İstatistik Kartları -->
+      <div class="row mb-5">
+        {% for turu in mevzuat_turu_stats %}
+        <div class="col-md-3 mb-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+              <div class="display-4 mb-3">
+                {% if turu.mevzuat_turu__kategori == 'kanun' %}📜
+                {% elif turu.mevzuat_turu__kategori == 'cumhurbaskanligi_kararnamesi' %}📋
+                {% elif turu.mevzuat_turu__kategori == 'yonetmelik' %}📑
+                {% elif turu.mevzuat_turu__kategori == 'tuzuk' %}📄
+                {% elif turu.mevzuat_turu__kategori == 'genelge' %}📝
+                {% else %}📰{% endif %}
+              </div>
+              <h6 class="card-title">{{ turu.mevzuat_turu__ad }}</h6>
+              <h4 class="text-primary mb-3">{{ turu.count }}</h4>
+              <a href="{% url 'legislation_results' %}?mevzuat_turu={{ turu.mevzuat_turu__kategori }}" 
+                 class="btn btn-outline-primary btn-sm">
+                Görüntüle
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Son Eklenen Mevzuatlar -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <h4 class="mb-4">📅 Son Eklenen Mevzuatlar</h4>
+          <div class="row">
+            {% for mevzuat in son_mevzuatlar %}
+            <div class="col-md-6 mb-3">
+              <div class="card border-left-primary shadow-sm">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        {{ mevzuat.mevzuat_turu.ad }}
+                      </div>
+                      <div class="h6 mb-0 font-weight-bold text-gray-800">
+                        <a href="{% url 'legislation_detail' mevzuat.pk %}" class="text-decoration-none">
+                          {{ mevzuat.baslik|truncatechars:60 }}
+                        </a>
+                      </div>
+                      <div class="text-xs text-muted mt-1">
+                        {% if mevzuat.mevzuat_numarasi %}No: {{ mevzuat.mevzuat_numarasi }} • {% endif %}
+                        {{ mevzuat.yayin_tarihi|date:"d.m.Y"|default:"Tarih belirtilmemiş" }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <div class="text-muted">
+                        <small>{{ mevzuat.kayit_tarihi|timesince }} önce</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center text-muted">
+                <p>Henüz mevzuat bulunmuyor.</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+        <!-- Genelgeler -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=genelge" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/genelge_icon.png' %}" alt="Genelgeler" style="height:100px;">
+            <h5 class="mt-2">Genelgeler</h5>
+          </a>
+        </div>
+        <!-- Tüzükler -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=tuzuk" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/tuzuk_icon.png' %}" alt="Tüzükler" style="height:100px;">
+            <h5 class="mt-2">Tüzükler</h5>
+          </a>
+        </div>
+      </div>
+      <div class="row text-center">
+        <!-- Yönetmelikler -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=yonetmelik" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/yonetmelik_icon.png' %}" alt="Yönetmelikler" style="height:100px;">
+            <h5 class="mt-2">Yönetmelikler</h5>
+          </a>
+        </div>
+        <!-- Tebliğler -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=teblig" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/teblig_icon.png' %}" alt="Tebliğler" style="height:100px;">
+            <h5 class="mt-2">Tebliğler</h5>
+          </a>
+        </div>
+        <!-- Kararlar -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=karar" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/kararname_icon.png' %}" alt="Kararlar" style="height:100px;">
+            <h5 class="mt-2">Cumhurbaşkanlığı Kararları</h5>
+          </a>
+        </div>
+        <!-- Diğer -->
+        <div class="col-md-3 mb-4">
+          <a href="{% url 'legislation_results' %}?mevzuat_turu=diger" class="text-decoration-none text-dark">
+            <img src="{% static 'core/images/diger_icon.png' %}" alt="Diğer" style="height:100px;">
+            <h5 class="mt-2">Diğer</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if query %}
+    <!-- Arama sonuçları bölümü -->
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Mevzuat Kayıtları</h2>
+      {% if legislations %}
+        <div class="row">
+          {% for leg in legislations %}
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                {% if leg.dosya %}
+                  <img src="{{ leg.dosya.url }}" class="card-img-top" alt="{{ leg.baslik }}">
+                {% endif %}
+                <div class="card-body">
+                  <h5 class="card-title">{{ leg.baslik }}</h5>
+                  <p class="card-text">
+                    <strong>Tür:</strong> {{ leg.get_mevzuat_turu_display }}<br>
+                    {% if leg.mevzuat_numarasi %}<strong>Numara:</strong> {{ leg.mevzuat_numarasi }}<br>{% endif %}
+                    {% if leg.yayin_tarihi %}<strong>Yayın Tarihi:</strong> {{ leg.yayin_tarihi }}<br>{% endif %}
+                    {% if leg.yurutulme_tarihi %}<strong>Yürürlük Tarihi:</strong> {{ leg.yurutulme_tarihi }}<br>{% endif %}
+                    {% if leg.resmigazete_tarihi %}<strong>Resmi Gazete Tarihi:</strong> {{ leg.resmigazete_tarihi }}{% endif %}
+                  </p>
+                  <p class="card-text">{{ leg.ozet|truncatewords:30 }}</p>
+                  <a href="{% url 'legislation_detail' leg.id %}" class="btn btn-outline-primary">Detay</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center">
+          {% if legislations.has_other_pages %}
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                {% if legislations.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ legislations.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.mevzuat_turu %}&mevzuat_turu={{ request.GET.mevzuat_turu }}{% endif %}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for num in legislations.paginator.page_range %}
+                  <li class="page-item {% if legislations.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.mevzuat_turu %}&mevzuat_turu={{ request.GET.mevzuat_turu }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% endfor %}
+                {% if legislations.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ legislations.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.mevzuat_turu %}&mevzuat_turu={{ request.GET.mevzuat_turu }}{% endif %}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+        </div>
+      {% else %}
+        <p class="text-center">Arama kriterlerine uygun mevzuat kaydı bulunamadı.</p>
+      {% endif %}
+
+      <!-- Trend Grafiği (isteğe bağlı) -->
+      <hr class="my-5">
+      <h3 class="text-center mb-3">Mevzuat Türü Dağılımı</h3>
+      <div class="text-center">
+        <canvas id="courtCountsChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Yeni Arama Yap Butonu (her iki durumda da) -->
+  <div class="text-center mt-4">
+    <a href="{% url 'legislation_results' %}" class="btn btn-secondary">Yeni Arama Yap</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('courtCountsChart').getContext('2d');
+  const chartData = {
+    labels: Object.keys({{ court_counts|safe }}),
+    datasets: [{
+      label: 'Mevzuat Sayısı',
+      data: Object.values({{ court_counts|safe }}),
+      backgroundColor: 'rgba(40, 167, 69, 0.2)',
+      borderColor: 'rgba(40, 167, 69, 1)',
+      borderWidth: 2
+    }]
+  };
+  const courtCountsChart = new Chart(ctx, {
+    type: 'bar',
+    data: chartData,
+    options: {
+      responsive: true,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            precision: 0
+          }
+        }]
+      },
+      title: {
+        display: true,
+        text: 'Toplam Mevzuat Sayısı ve Tür Dağılımı'
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

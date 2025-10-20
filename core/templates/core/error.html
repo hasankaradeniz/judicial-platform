@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+
+{% block page_title %}Hata - Lexatech{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 80px 20px; max-width: 600px; margin: 0 auto;">
+    <div style="font-size: 4rem; color: #dc2626; margin-bottom: 20px;">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    
+    <h1 style="font-size: 2rem; color: #2d3748; margin-bottom: 16px;">
+        Bir Hata Oluştu
+    </h1>
+    
+    <p style="color: #718096; margin-bottom: 32px; font-size: 1.1rem; line-height: 1.6;">
+        {{ error|default:"Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin." }}
+    </p>
+    
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="javascript:history.back()" 
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left"></i>
+            <span>Geri Dön</span>
+        </a>
+        
+        <a href="{% url 'legislation_home' %}" 
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #e2e8f0; color: #2d3748; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+            <i class="fas fa-home"></i>
+            <span>Ana Sayfa</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

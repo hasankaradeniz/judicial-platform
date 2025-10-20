@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Abonelik Başarılı - Lexatech{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+  <h1>Teşekkürler!</h1>
+  <p>Aboneliğiniz başarıyla tamamlandı.</p>
+  <a href="{% url 'home' %}" class="btn btn-primary">Ana Sayfaya Dön</a>
+</div>
+{% endblock %}

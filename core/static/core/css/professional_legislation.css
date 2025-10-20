@@ -1,0 +1,614 @@
+/* Profesyonel Mevzuat Görüntüleme CSS */
+
+/* ========================
+   GENEL MEVZUAT STİLLERİ
+======================== */
+
+.legislation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.legislation-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    border-bottom: 3px solid #2c3e50;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.legislation-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #2c3e50;
+}
+
+.legislation-subtitle {
+    font-size: 20px;
+    margin: 10px 0;
+    color: #495057;
+}
+
+.legislation-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 2px solid #dee2e6;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.info-item strong {
+    color: #2c3e50;
+}
+
+/* ========================
+   MEVZUAT TİPİ ROZETLERİ
+======================== */
+
+.legislation-type-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 5px 0;
+    letter-spacing: 0.5px;
+}
+
+.type-kanun { background: #dc3545; color: white; }
+.type-yonetmelik { background: #007bff; color: white; }
+.type-teblig { background: #28a745; color: white; }
+.type-genelge { background: #ffc107; color: #212529; }
+.type-cumhurbaskanligi { background: #6f42c1; color: white; }
+.type-karar { background: #fd7e14; color: white; }
+
+/* ========================
+   MADDE STİLLERİ
+======================== */
+
+.article-container {
+    margin: 30px 0;
+    padding: 25px;
+    border: 1px solid #dee2e6;
+    border-left: 5px solid #007bff;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.article-container:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border-left-color: #0056b3;
+}
+
+.article-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.article-number {
+    background: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 20px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.article-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+}
+
+.article-content {
+    font-size: 16px;
+    line-height: 1.8;
+    text-align: justify;
+    margin: 0;
+    color: #495057;
+}
+
+/* Fıkra stilleri */
+.paragraph {
+    margin: 15px 0;
+    padding-left: 30px;
+    position: relative;
+}
+
+.paragraph-number {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #6c757d;
+    font-weight: bold;
+}
+
+/* Bent stilleri */
+.subitem {
+    margin: 10px 0;
+    padding-left: 50px;
+    position: relative;
+}
+
+.subitem-letter {
+    position: absolute;
+    left: 30px;
+    top: 0;
+    color: #6c757d;
+    font-weight: bold;
+}
+
+/* ========================
+   KISIM/BÖLÜM STİLLERİ
+======================== */
+
+.legislation-part {
+    margin: 50px 0 30px 0;
+    text-align: center;
+    page-break-before: auto;
+}
+
+.part-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #2c3e50;
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #2c3e50;
+    background: #f8f9fa;
+    letter-spacing: 1px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #495057;
+    margin: 30px 0 20px 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chapter-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #6c757d;
+    margin: 25px 0 15px 0;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* ========================
+   ARAMA VE FİLTRELEME
+======================== */
+
+.search-container {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid #dee2e6;
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+    min-width: 300px;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-button {
+    padding: 12px 30px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-button:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    padding: 8px 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.filter-tab.active,
+.filter-tab:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* ========================
+   SONUÇ LİSTESİ
+======================== */
+
+.results-container {
+    margin-top: 30px;
+}
+
+.result-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.result-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #007bff;
+}
+
+.result-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.result-number {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.result-title {
+    flex: 1;
+}
+
+.result-title h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.result-title h3 a {
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+.result-title h3 a:hover {
+    color: #007bff;
+}
+
+.result-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #6c757d;
+    flex-wrap: wrap;
+}
+
+.result-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    padding: 6px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.action-primary {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.action-secondary {
+    background: white;
+    color: #6c757d;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+}
+
+/* ========================
+   SAYFALAMA
+======================== */
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.page-link {
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.page-link:hover,
+.page-link.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* ========================
+   RESPONSİVE TASARIM
+======================== */
+
+@media (max-width: 768px) {
+    .legislation-container {
+        padding: 15px;
+    }
+    
+    .legislation-title {
+        font-size: 22px;
+    }
+    
+    .legislation-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .article-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .article-number {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-input {
+        min-width: auto;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .result-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+@media print {
+    .search-container,
+    .pagination-container,
+    .result-actions {
+        display: none;
+    }
+    
+    .article-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+    
+    .legislation-container {
+        max-width: none;
+    }
+}
+
+/* ========================
+   YÜKLEME ANIMASYONLARİ
+======================== */
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================
+   VURGULAMA (HIGHLIGHT)
+======================== */
+
+.highlight {
+    background: linear-gradient(120deg, #ffeaa7 0%, #fdcb6e 100%);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+    color: #2d3436;
+}
+
+.search-highlight {
+    background: linear-gradient(120deg, #00cec9 0%, #55a3ff 100%);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* ========================
+   DURUM ROZETLERİ
+======================== */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active { background: #28a745; color: white; }
+.status-repealed { background: #dc3545; color: white; }
+.status-amended { background: #ffc107; color: #212529; }
+.status-suspended { background: #6c757d; color: white; }
+
+/* ========================
+   ÖZEL BAĞLANTILAR
+======================== */
+
+.related-links {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+}
+
+.related-links h4 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.related-links ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.related-links li {
+    margin-bottom: 8px;
+}
+
+.related-links a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.related-links a:hover {
+    text-decoration: underline;
+}
+
+/* ========================
+   TOOLTIP STİLLERİ
+======================== */
+
+.tooltip-trigger {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted #6c757d;
+}
+
+.tooltip-content {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.tooltip-trigger:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}

@@ -1,0 +1,159 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ madde.madde_basligi }} - {{ mevzuat.baslik }}{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .madde-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .madde-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    border: none;
+    padding: 2rem;
+  }
+  
+  .madde-content {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.8;
+    color: #2c3e50;
+    text-align: justify;
+    font-size: 1.1rem;
+  }
+  
+  .navigation-buttons .btn {
+    border-radius: 25px;
+    padding: 0.7rem 1.5rem;
+    font-weight: 500;
+    margin: 0.2rem;
+    transition: all 0.3s ease;
+  }
+  
+  .breadcrumb-custom {
+    background: rgba(255,255,255,0.9);
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-custom mb-4">
+      <li class="breadcrumb-item"><a href="{% url 'legislation_home' %}"><i class="fas fa-home"></i> Mevzuat</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'legislation_detail' mevzuat.pk %}">{{ mevzuat.baslik|truncatechars:30 }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Madde {{ madde.madde_no }}</li>
+    </ol>
+  </nav>
+
+  <!-- Header Section -->
+  <div class="madde-header text-center">
+    <div class="container">
+      <h1 class="display-4 font-weight-bold mb-3">Madde {{ madde.madde_no }}</h1>
+      <p class="lead mb-0">
+        <i class="fas fa-paragraph mr-2"></i>{{ madde.madde_basligi|default:"Madde Başlığı" }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Madde İçeriği -->
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card madde-card">
+        <div class="card-body">
+          <h5 class="text-muted mb-3">
+            <i class="fas fa-book mr-2"></i>{{ mevzuat.baslik }}
+          </h5>
+          
+          {% if madde.madde_basligi %}
+          <h3 class="mb-4 text-primary">{{ madde.madde_basligi }}</h3>
+          {% endif %}
+          
+          <div class="madde-content">
+            {% if madde.metin %}
+              {{ madde.metin|linebreaks }}
+            {% else %}
+              <div class="text-center text-muted py-5">
+                <i class="fas fa-file-alt fa-3x mb-3"></i>
+                <p>Bu madde için metin henüz eklenmemiştir.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-10">
+      <div class="navigation-buttons text-center">
+        {% if onceki_madde %}
+          <a href="{% url 'mevzuat_madde_detail' mevzuat.pk onceki_madde.pk %}" 
+             class="btn btn-outline-primary">
+            <i class="fas fa-chevron-left mr-2"></i>Önceki Madde ({{ onceki_madde.madde_no }})
+          </a>
+        {% endif %}
+        
+        <a href="{% url 'legislation_detail' mevzuat.pk %}" 
+           class="btn btn-primary mx-2">
+          <i class="fas fa-arrow-up mr-2"></i>Mevzuat Detayına Dön
+        </a>
+        
+        {% if sonraki_madde %}
+          <a href="{% url 'mevzuat_madde_detail' mevzuat.pk sonraki_madde.pk %}" 
+             class="btn btn-outline-primary">
+            Sonraki Madde ({{ sonraki_madde.madde_no }})<i class="fas fa-chevron-right ml-2"></i>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Tüm Maddeler -->
+  {% if diger_maddeler %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-10">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title mb-3">
+            <i class="fas fa-list mr-2"></i>Diğer Maddeler
+          </h6>
+          <div class="row">
+            {% for m in diger_maddeler %}
+            <div class="col-md-2 col-sm-3 col-4 mb-2">
+              {% if m.pk == madde.pk %}
+                <span class="btn btn-primary btn-sm btn-block">
+                  {{ m.madde_no }}
+                </span>
+              {% else %}
+                <a href="{% url 'mevzuat_madde_detail' mevzuat.pk m.pk %}" 
+                   class="btn btn-outline-secondary btn-sm btn-block">
+                  {{ m.madde_no }}
+                </a>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

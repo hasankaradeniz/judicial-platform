@@ -1,0 +1,392 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}PDF Mevzuat Yükleme{% endblock %}
+
+{% block extrastyle %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    .upload-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .upload-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .drop-zone {
+        border: 3px dashed #007bff;
+        border-radius: 12px;
+        padding: 60px 20px;
+        text-align: center;
+        background: #f8f9ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: #0056b3;
+        background: #e3f2fd;
+        transform: translateY(-2px);
+    }
+    
+    .drop-zone.has-files {
+        border-color: #28a745;
+        background: #f0fff4;
+    }
+    
+    .file-list {
+        margin-top: 20px;
+    }
+    
+    .file-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .file-item.success {
+        border-left-color: #28a745;
+        background: #f0fff4;
+    }
+    
+    .file-item.error {
+        border-left-color: #dc3545;
+        background: #fff5f5;
+    }
+    
+    .file-icon {
+        font-size: 24px;
+        margin-right: 15px;
+        color: #007bff;
+    }
+    
+    .file-info {
+        flex: 1;
+    }
+    
+    .file-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .file-size {
+        font-size: 12px;
+        color: #6c757d;
+    }
+    
+    .file-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-waiting {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-processing {
+        background: #cce5ff;
+        color: #0056b3;
+    }
+    
+    .status-success {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-error {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #28a745);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    
+    .type-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .type-option {
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .type-option:hover {
+        border-color: #007bff;
+        background: #f8f9ff;
+    }
+    
+    .type-option.selected {
+        border-color: #007bff;
+        background: #007bff;
+        color: white;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .upload-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    }
+    
+    .upload-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <!-- Başlık -->
+    <div class="upload-card">
+        <h1 class="h2 mb-3">
+            <i class="fas fa-upload text-primary"></i>
+            PDF Mevzuat Yükleme
+        </h1>
+        <p class="text-muted">
+            Bilgisayarınızdaki kanun PDF dosyalarını sisteme yükleyerek veritabanına ekleyin.
+            Sadece adminler bu işlemi yapabilir.
+        </p>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_mevzuat }}</div>
+            <div class="stat-label">Toplam Mevzuat</div>
+        </div>
+        {% for type_name, count in stats.by_type.items %}
+        <div class="stat-card">
+            <div class="stat-number">{{ count }}</div>
+            <div class="stat-label">{{ type_name }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Upload Formu -->
+    <div class="upload-card">
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Mevzuat Türü Seçimi -->
+            <h4 class="mb-3">
+                <i class="fas fa-tags"></i> Mevzuat Türü
+            </h4>
+            <div class="type-selector">
+                {% for type_code, type_name in mevzuat_types %}
+                <div class="type-option" data-type="{{ type_code }}">
+                    <i class="fas fa-gavel mb-2"></i>
+                    <div>{{ type_name }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="mevzuat_type" id="selectedType" value="kanun">
+
+            <!-- Dosya Seçimi -->
+            <h4 class="mb-3 mt-4">
+                <i class="fas fa-file-pdf"></i> PDF Dosyaları
+            </h4>
+            
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-content">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                    <h5>PDF Dosyalarını Buraya Sürükleyin</h5>
+                    <p class="text-muted">veya <strong>tıklayarak seçin</strong></p>
+                    <small class="text-muted">Maksimum dosya boyutu: 50MB</small>
+                </div>
+            </div>
+            
+            <input type="file" id="fileInput" name="pdf_files" multiple accept=".pdf" style="display: none;">
+            
+            <!-- Dosya Listesi -->
+            <div class="file-list" id="fileList" style="display: none;">
+                <h5 class="mb-3">Seçilen Dosyalar</h5>
+                <div id="fileItems"></div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+                    <i class="fas fa-upload"></i> Dosyaları Yükle ve İşle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const fileItems = document.getElementById('fileItems');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const selectedType = document.getElementById('selectedType');
+    const typeOptions = document.querySelectorAll('.type-option');
+    
+    let selectedFiles = [];
+    
+    // Mevzuat türü seçimi
+    typeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            typeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedType.value = this.dataset.type;
+        });
+    });
+    
+    // İlk seçeneği aktif yap
+    typeOptions[0].classList.add('selected');
+    
+    // Drop zone events
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+        selectedFiles = Array.from(files).filter(file => 
+            file.type === 'application/pdf' && file.size <= 50 * 1024 * 1024
+        );
+        
+        if (selectedFiles.length > 0) {
+            displayFiles();
+            fileList.style.display = 'block';
+            dropZone.classList.add('has-files');
+            uploadBtn.disabled = false;
+        }
+    }
+    
+    function displayFiles() {
+        fileItems.innerHTML = '';
+        
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <i class="fas fa-file-pdf file-icon"></i>
+                <div class="file-info">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                </div>
+                <div class="file-status status-waiting">Bekliyor</div>
+            `;
+            fileItems.appendChild(fileItem);
+        });
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Form submit
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (selectedFiles.length === 0) {
+            alert('Lütfen en az bir PDF dosyası seçin.');
+            return;
+        }
+        
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+        
+        // Normal form submit ile devam et
+        this.submit();
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,644 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}Makale Görüntüleyici - {{ article.title|default:"Makale" }}{% endblock %}
+
+{% block extra_styles %}
+<style>
+.article-viewer-container {
+  max-width: 100%;
+  margin: 20px auto;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.article-header {
+  background: linear-gradient(135deg, #1a365d 0%, #2c5aa0 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 12px 12px 0 0;
+}
+
+.article-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.article-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 0.9rem;
+  opacity: 0.95;
+  flex-wrap: wrap;
+}
+
+.article-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pdf-options {
+  background: white;
+  padding: 25px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.pdf-options h3 {
+  color: #1a365d;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.pdf-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pdf-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.pdf-link:hover {
+  border-color: #1a365d;
+  box-shadow: 0 2px 8px rgba(26, 54, 93, 0.1);
+}
+
+.pdf-link.high-quality {
+  border-color: #28a745;
+  background: #f8fff9;
+}
+
+.pdf-link.medium-quality {
+  border-color: #ffc107;
+  background: #fffef8;
+}
+
+.pdf-info {
+  flex: 1;
+}
+
+.pdf-source {
+  font-weight: 600;
+  color: #1a365d;
+  margin-bottom: 4px;
+}
+
+.pdf-type {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.pdf-quality {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.quality-high {
+  background: #d4edda;
+  color: #155724;
+}
+
+.quality-medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.pdf-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-pdf-view {
+  padding: 8px 16px;
+  background: #1a365d;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-pdf-view:hover {
+  background: #2c5aa0;
+  color: white;
+  text-decoration: none;
+}
+
+.btn-pdf-download {
+  padding: 8px 16px;
+  background: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-pdf-download:hover {
+  background: #218838;
+  color: white;
+  text-decoration: none;
+}
+
+.no-pdf {
+  text-align: center;
+  padding: 30px;
+  color: #6c757d;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.alternative-access {
+  background: white;
+  padding: 25px;
+  border-top: 1px solid #dee2e6;
+}
+
+.alternative-access h4 {
+  color: #1a365d;
+  margin-bottom: 15px;
+}
+
+.access-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-access {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-doi {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-doi:hover {
+  background: #e0a800;
+  color: #212529;
+  text-decoration: none;
+}
+
+.btn-search {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-search:hover {
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+}
+
+.back-to-search {
+  margin-bottom: 20px;
+}
+
+.back-to-search a {
+  color: #1a365d;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.back-to-search a:hover {
+  background: rgba(26, 54, 93, 0.1);
+  color: #1a365d;
+}
+
+.pdf-viewer-embed {
+  background: white;
+  padding: 0;
+  border-radius: 0 0 12px 12px;
+  min-height: 600px;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 600px;
+  border: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.iframe-container {
+  position: relative;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+
+.iframe-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.pdf-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #6c757d;
+}
+
+.pdf-error {
+  display: none;
+  text-align: center;
+  padding: 30px;
+  color: #dc3545;
+  background: #f8d7da;
+  border-radius: 8px;
+  margin: 20px;
+}
+
+.pdf-alternative {
+  background: #e9ecef;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px;
+  text-align: center;
+}
+
+.pdf-alternative h4 {
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+.pdf-alternative .btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .article-header {
+    padding: 20px;
+  }
+  
+  .article-title {
+    font-size: 1.3rem;
+  }
+  
+  .article-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pdf-link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .pdf-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .pdf-actions a,
+  .pdf-actions button {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .access-buttons {
+    flex-direction: column;
+  }
+  
+  .btn-access {
+    justify-content: center;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="back-to-search">
+    <a href="{% url 'article_search_results' %}?q={{ query|urlencode }}">
+      <i class="fas fa-arrow-left"></i>
+      Arama Sonuçlarına Dön
+    </a>
+  </div>
+
+  <div class="article-viewer-container">
+    <div class="article-header">
+      <h1 class="article-title">{{ article.title|default:"Makale Başlığı" }}</h1>
+      <div class="article-meta">
+        {% if article.authors %}
+        <span><i class="fas fa-user"></i> {{ article.authors }}</span>
+        {% endif %}
+        {% if article.journal %}
+        <span><i class="fas fa-book"></i> {{ article.journal }}</span>
+        {% endif %}
+        {% if article.year %}
+        <span><i class="fas fa-calendar"></i> {{ article.year }}</span>
+        {% endif %}
+        {% if article.source %}
+        <span><i class="fas fa-database"></i> {{ article.source }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if pdf_results.has_pdf %}
+    <div class="pdf-options">
+      <h3><i class="fas fa-file-pdf"></i> PDF Seçenekleri</h3>
+      <div class="pdf-links">
+        {% for pdf_link in pdf_results.pdf_links %}
+        <div class="pdf-link {{ pdf_link.quality }}-quality">
+          <div class="pdf-info">
+            <div class="pdf-source">
+              <i class="fas fa-file-pdf"></i>
+              {{ pdf_link.source }}
+              <span class="pdf-quality quality-{{ pdf_link.quality }}">{{ pdf_link.quality|title }}</span>
+            </div>
+            <div class="pdf-type">{{ pdf_link.type|title }} - Tam Metin PDF</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn-pdf-view" onclick="loadPDF('{{ pdf_link.url }}', '{{ pdf_link.source }}')">
+              <i class="fas fa-eye"></i> Görüntüle
+            </button>
+            <a href="{{ pdf_link.url }}" target="_blank" class="btn-pdf-download">
+              <i class="fas fa-download"></i> İndir
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Direct PDF Viewer with Fallback -->
+    <div class="pdf-viewer-embed" id="pdf-viewer-container" style="display: none;">
+      <div class="iframe-container">
+        <div class="iframe-overlay" id="pdf-source-info">
+          <i class="fas fa-file-pdf"></i> PDF Yükleniyor...
+        </div>
+        
+        <!-- Primary iframe for PDF display -->
+        <iframe id="pdf-frame" class="pdf-frame" title="PDF Görüntüleyici" style="display: none;">
+          <p>Tarayıcınız PDF görüntülemeyi desteklemiyor.</p>
+        </iframe>
+        
+        <!-- Loading indicator -->
+        <div class="pdf-loading" id="pdf-loading">
+          <div>
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <div>PDF yükleniyor...</div>
+          </div>
+        </div>
+        
+        <!-- Error message -->
+        <div class="pdf-error" id="pdf-error">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+          <div>PDF iframe'de görüntülenemiyor.</div>
+          <div style="margin-top: 10px; font-size: 0.9rem;">Lütfen aşağıdaki alternatif yöntemleri kullanın.</div>
+        </div>
+        
+        <!-- Alternative viewing methods -->
+        <div class="pdf-alternative" id="pdf-alternative" style="display: none;">
+          <h4><i class="fas fa-file-pdf"></i> PDF Görüntüleme Alternatifleri</h4>
+          <p>DergiPark güvenlik ayarları nedeniyle PDF doğrudan görüntülenemiyor.</p>
+          <div class="btn-group">
+            <a id="pdf-new-tab" href="#" target="_blank" class="btn-pdf-view">
+              <i class="fas fa-external-link-alt"></i> Yeni Sekmede Aç
+            </a>
+            <a id="pdf-download-alt" href="#" download class="btn-pdf-download">
+              <i class="fas fa-download"></i> PDF'i İndir
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {% else %}
+    <div class="pdf-options">
+      <div class="no-pdf">
+        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+        <h4>PDF Bulunamadı</h4>
+        <p>Bu makale için doğrudan PDF erişimi bulunamadı.<br>
+           Alternatif erişim yöntemlerini kullanabilirsiniz.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="alternative-access">
+      <h4><i class="fas fa-link"></i> Alternatif Erişim</h4>
+      <div class="access-buttons">
+        {% if pdf_results.doi_url %}
+        <a href="{{ pdf_results.doi_url }}" target="_blank" class="btn-access btn-doi">
+          <i class="fas fa-external-link-alt"></i>
+          Orijinal Makale Sayfası
+        </a>
+        {% endif %}
+        
+        {% if pdf_results.original_url %}
+        <a href="{{ pdf_results.original_url }}" target="_blank" class="btn-access btn-doi">
+          <i class="fas fa-globe"></i>
+          Yayıncı Sitesi
+        </a>
+        {% endif %}
+        
+        <a href="https://scholar.google.com/scholar?q={{ article.title|urlencode }}" target="_blank" class="btn-access btn-search">
+          <i class="fab fa-google"></i>
+          Google Scholar'da Ara
+        </a>
+        
+        <a href="https://www.researchgate.net/search/publication?q={{ article.title|urlencode }}" target="_blank" class="btn-access btn-search">
+          <i class="fab fa-researchgate"></i>
+          ResearchGate'de Ara
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPdfUrl = null;
+
+function loadPDF(pdfUrl, source) {
+    console.log('Loading PDF:', pdfUrl, 'from:', source);
+    currentPdfUrl = pdfUrl;
+    
+    // Show viewer container
+    const viewerContainer = document.getElementById('pdf-viewer-container');
+    const pdfFrame = document.getElementById('pdf-frame');
+    const loadingDiv = document.getElementById('pdf-loading');
+    const errorDiv = document.getElementById('pdf-error');
+    const alternativeDiv = document.getElementById('pdf-alternative');
+    const sourceInfo = document.getElementById('pdf-source-info');
+    
+    viewerContainer.style.display = 'block';
+    loadingDiv.style.display = 'flex';
+    errorDiv.style.display = 'none';
+    pdfFrame.style.display = 'none';
+    alternativeDiv.style.display = 'none';
+    
+    // Update source info
+    sourceInfo.innerHTML = `<i class="fas fa-file-pdf"></i> ${source}`;
+    
+    // Smooth scroll to viewer
+    viewerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // For DergiPark and other external PDFs, use proxy
+    let finalUrl;
+    if (pdfUrl.includes('dergipark.org.tr') || 
+        pdfUrl.includes('doi.org') || 
+        !pdfUrl.startsWith('http://localhost') && !pdfUrl.startsWith('https://lexatech.ai')) {
+        finalUrl = `/article/proxy-pdf/?url=${encodeURIComponent(pdfUrl)}`;
+        console.log('Using proxy URL:', finalUrl);
+    } else {
+        finalUrl = pdfUrl;
+        console.log('Using direct URL:', finalUrl);
+    }
+    
+    // Test if URL is accessible via fetch first
+    fetch(finalUrl, { method: 'HEAD' })
+        .then(response => {
+            console.log('PDF HEAD response:', response.status, response.headers.get('content-type'));
+            
+            if (response.ok) {
+                // Try loading in iframe
+                pdfFrame.src = finalUrl;
+                
+                // Set up iframe load handlers
+                pdfFrame.onload = function() {
+                    console.log('PDF iframe loaded');
+                    
+                    // Check if iframe actually loaded PDF or error page
+                    try {
+                        // This will throw if cross-origin
+                        const iframeDoc = pdfFrame.contentDocument || pdfFrame.contentWindow.document;
+                        
+                        // If we can access it, check if it's an error
+                        if (iframeDoc && iframeDoc.body && iframeDoc.body.textContent.includes('X-Frame-Options')) {
+                            throw new Error('X-Frame-Options error detected');
+                        }
+                        
+                        // Success
+                        loadingDiv.style.display = 'none';
+                        pdfFrame.style.display = 'block';
+                        
+                    } catch (e) {
+                        console.log('iframe access error (expected for PDFs):', e.message);
+                        // This is actually normal for PDFs - they're cross-origin
+                        // But if it's really blocked, we'll detect it with timeout
+                        
+                        // Give it a moment to see if PDF actually loads
+                        setTimeout(() => {
+                            // If still loading, assume success
+                            if (loadingDiv.style.display !== 'none') {
+                                loadingDiv.style.display = 'none';
+                                pdfFrame.style.display = 'block';
+                            }
+                        }, 2000);
+                    }
+                };
+                
+                pdfFrame.onerror = function(e) {
+                    console.log('PDF iframe error:', e);
+                    showPDFAlternatives();
+                };
+                
+                // Timeout for loading - if X-Frame-Options blocks it
+                setTimeout(() => {
+                    if (loadingDiv.style.display !== 'none') {
+                        console.log('PDF load timeout - showing alternatives');
+                        showPDFAlternatives();
+                    }
+                }, 5000); // 5 second timeout
+                
+            } else {
+                console.log('PDF URL not accessible:', response.status);
+                showPDFAlternatives();
+            }
+        })
+        .catch(error => {
+            console.log('PDF URL test failed:', error);
+            showPDFAlternatives();
+        });
+}
+
+function showPDFAlternatives() {
+    const loadingDiv = document.getElementById('pdf-loading');
+    const errorDiv = document.getElementById('pdf-error');
+    const pdfFrame = document.getElementById('pdf-frame');
+    const alternativeDiv = document.getElementById('pdf-alternative');
+    
+    loadingDiv.style.display = 'none';
+    pdfFrame.style.display = 'none';
+    errorDiv.style.display = 'block';
+    alternativeDiv.style.display = 'block';
+    
+    // Set alternative links
+    const proxyUrl = `/article/proxy-pdf/?url=${encodeURIComponent(currentPdfUrl)}`;
+    document.getElementById('pdf-new-tab').href = proxyUrl;
+    document.getElementById('pdf-download-alt').href = currentPdfUrl;
+}
+
+// Auto-load first PDF if available
+document.addEventListener('DOMContentLoaded', function() {
+    {% if pdf_results.has_pdf and pdf_results.pdf_links %}
+    {% with first_pdf=pdf_results.pdf_links.0 %}
+    // Automatically load the first high-quality PDF
+    {% if first_pdf.quality == 'high' %}
+    setTimeout(() => {
+        loadPDF('{{ first_pdf.url }}', '{{ first_pdf.source }}');
+    }, 1000);
+    {% endif %}
+    {% endwith %}
+    {% endif %}
+});
+
+// Listen for X-Frame-Options errors in console
+window.addEventListener('message', function(e) {
+    console.log('Window message:', e);
+}, false);
+</script>
+{% endblock %}

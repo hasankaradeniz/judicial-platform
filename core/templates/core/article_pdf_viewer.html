@@ -1,0 +1,575 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ article.title }} - Makale Görüntüleyici{% endblock %}
+
+{% block title_content %}{{ article.title }} - Makale Görüntüleyici{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  body {
+    background: var(--gray-50);
+  }
+  
+  .pdf-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Floating Back Button */
+  .floating-back-button {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    z-index: 1000;
+    animation: slideInLeft 0.5s ease-out;
+  }
+  
+  .btn-back-floating {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 160px;
+  }
+  
+  .btn-back-floating:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #e53e3e 100%);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+    color: white;
+  }
+  
+  .btn-back-floating:active {
+    transform: translateY(0) scale(0.98);
+  }
+  
+  .back-text {
+    font-weight: 600;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .floating-back-button {
+      top: 80px;
+      left: 10px;
+    }
+    
+    .btn-back-floating {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      min-width: 140px;
+    }
+    
+    .back-text {
+      display: none;
+    }
+  }
+  
+  .article-info {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .article-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  
+  .article-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--gray-600);
+  }
+  
+  .meta-icon {
+    color: var(--primary-blue);
+    width: 16px;
+  }
+  
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .source-badge.trdizin {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+  
+  .source-badge.dergipark {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+  }
+  
+  .pdf-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    height: calc(100vh - 300px);
+    min-height: 600px;
+  }
+  
+  .pdf-toolbar {
+    background: var(--gray-100);
+    padding: 15px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .pdf-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .btn-control {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .btn-control:hover {
+    background: #1e40af;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary {
+    background: var(--gray-600);
+  }
+  
+  .btn-secondary:hover {
+    background: #374151;
+  }
+  
+  .pdf-viewer {
+    width: 100%;
+    height: calc(100% - 70px);
+    border: none;
+    background: #f0f0f0;
+  }
+  
+  .article-preview {
+    width: 100%;
+    height: calc(100% - 70px);
+    padding: 20px;
+    background: white;
+    overflow-y: auto;
+    min-height: 500px;
+  }
+  
+  .preview-header {
+    border-bottom: 2px solid var(--primary-blue);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .preview-title {
+    color: var(--primary-blue);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+  
+  .preview-meta .badge {
+    margin-right: 5px;
+  }
+  
+  .abstract-text {
+    text-align: justify;
+    line-height: 1.6;
+    color: var(--gray-700);
+    padding: 15px;
+    background: var(--gray-50);
+    border-radius: 5px;
+  }
+  
+  .pdf-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    background: var(--gray-50);
+    border: 2px dashed var(--gray-200);
+    border-radius: 8px;
+    color: var(--gray-600);
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .pdf-placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: var(--gray-400);
+  }
+  
+  
+  .warning-alert {
+    background: #fef3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .article-meta {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .pdf-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .pdf-container {
+      height: calc(100vh - 400px);
+      min-height: 400px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Floating Back Button -->
+<div class="floating-back-button">
+  <button onclick="goBack()" class="btn-back-floating" title="Arama Sonuçlarına Geri Dön">
+    <i class="fas fa-arrow-left"></i>
+    <span class="back-text">Sonuçlara Dön</span>
+  </button>
+</div>
+
+<!-- PDF Header -->
+<div class="pdf-header">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <button onclick="goBack()" class="btn btn-outline-light btn-lg">
+          <i class="fas fa-arrow-left me-2"></i> Arama Sonuçlarına Dön
+        </button>
+        <h1 class="h4 mb-0 text-white">
+          <i class="fas fa-globe me-2"></i>
+          Makale Görüntüleyici
+        </h1>
+      </div>
+      <div class="header-actions">
+        <button onclick="goBack()" class="btn btn-warning btn-lg">
+          <i class="fas fa-list me-2"></i> Tüm Sonuçlar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <!-- Info Alert -->
+  <div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Bilgi:</strong> Bu sayfada makaleye ait orijinal web sayfası gösterilmektedir. 
+    Sayfadaki <strong>tüm linkler</strong> otomatik olarak yeni sekmede açılacaktır.
+  </div>
+
+  <!-- Article Info -->
+  <div class="article-info">
+    <div class="source-badge {{ source|lower }}">
+      {{ article.source_icon }} {{ source_name }}
+    </div>
+    
+    <h2 class="article-title">{{ article.title }}</h2>
+    
+    <div class="article-meta">
+      {% if article.authors %}
+        <div class="meta-item">
+          <i class="fas fa-user meta-icon"></i>
+          <span><strong>Yazarlar:</strong> {{ article.authors }}</span>
+        </div>
+      {% endif %}
+      
+      {% if article.journal %}
+        <div class="meta-item">
+          <i class="fas fa-book meta-icon"></i>
+          <span><strong>Dergi:</strong> {{ article.journal }}</span>
+        </div>
+      {% endif %}
+      
+      {% if article.year %}
+        <div class="meta-item">
+          <i class="fas fa-calendar meta-icon"></i>
+          <span><strong>Yıl:</strong> {{ article.year }}</span>
+        </div>
+      {% endif %}
+      
+      <div class="meta-item">
+        <i class="fas fa-hashtag meta-icon"></i>
+        <span><strong>ID:</strong> {{ article_id }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Container -->
+  <div class="pdf-container">
+    <div class="pdf-toolbar">
+      <div class="pdf-controls">
+        <a href="{{ article.detail_link }}" target="_blank" class="btn-control">
+          <i class="fas fa-external-link-alt"></i>
+          Orijinal Sayfayı Aç
+        </a>
+        {% if article.pdf_link and article.pdf_link != article.detail_link %}
+          <a href="{{ article.pdf_link }}" target="_blank" class="btn-control">
+            <i class="fas fa-file-pdf"></i>
+            PDF'i Aç
+          </a>
+        {% endif %}
+        <button class="btn-control btn-secondary" onclick="downloadPDF()">
+          <i class="fas fa-download"></i>
+          PDF İndir
+        </button>
+        <button class="btn-control" onclick="openProxyView()">
+          <i class="fas fa-eye"></i>
+          Makale Sayfasını Görüntüle
+        </button>
+      </div>
+      
+      <div class="pdf-info">
+        <span class="text-muted">
+          <i class="fas fa-info-circle me-1"></i>
+          Güvenlik nedeniyle makale sayfası yeni sekmede açılır
+        </span>
+      </div>
+    </div>
+    
+    <!-- Article Preview -->
+    <div class="article-preview">
+      <div class="preview-header">
+        <h3 class="preview-title">{{ article.title }}</h3>
+        <div class="preview-meta">
+          <span class="badge bg-primary">{{ article.source }}</span>
+          {% if article.year %}
+            <span class="badge bg-secondary">{{ article.year }}</span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="preview-content">
+        <div class="row">
+          <div class="col-md-6">
+            <h5>📄 Makale Bilgileri</h5>
+            <ul class="list-unstyled">
+              {% if article.authors %}
+                <li><strong>Yazarlar:</strong> {{ article.authors }}</li>
+              {% endif %}
+              {% if article.journal %}
+                <li><strong>Dergi:</strong> {{ article.journal }}</li>
+              {% endif %}
+              {% if article.year %}
+                <li><strong>Yıl:</strong> {{ article.year }}</li>
+              {% endif %}
+              {% if article.doi %}
+                <li><strong>DOI:</strong> {{ article.doi }}</li>
+              {% endif %}
+            </ul>
+          </div>
+          
+          <div class="col-md-6">
+            <h5>🔗 Erişim Seçenekleri</h5>
+            <div class="d-grid gap-2">
+              <a href="{{ article.detail_link }}" target="_blank" class="btn btn-outline-primary">
+                <i class="fas fa-globe"></i> Orijinal Makale Sayfası
+              </a>
+              {% if article.pdf_link and article.pdf_link != article.detail_link %}
+                <a href="{{ article.pdf_link }}" target="_blank" class="btn btn-outline-danger">
+                  <i class="fas fa-file-pdf"></i> Direkt PDF Erişimi
+                </a>
+              {% endif %}
+              <button onclick="openProxyView()" class="btn btn-outline-success">
+                <i class="fas fa-shield-alt"></i> Güvenli Proxy View
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {% if article.abstract %}
+        <div class="abstract-section mt-4">
+          <h5>📋 Özet</h5>
+          <p class="abstract-text">{{ article.abstract }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="info-box mt-4">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Bilgi:</strong> Akademik makaleler telif hakları nedeniyle doğrudan iframe içinde görüntülenemez. 
+            Yukarıdaki bağlantıları kullanarak makaleye güvenli şekilde erişebilirsiniz.
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      <!-- Simulated PDF Content -->
+      <div id="simulated-pdf" style="display: none; margin-top: 30px; text-align: left; max-width: 600px;">
+        <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); padding-bottom: 10px;">
+            {{ article.title }}
+          </h3>
+          
+          <div style="margin: 20px 0; color: var(--gray-600); font-size: 0.95rem;">
+            <strong>Yazarlar:</strong> {{ article.authors }}<br>
+            <strong>Dergi:</strong> {{ article.journal }}<br>
+            <strong>Yıl:</strong> {{ article.year }}
+          </div>
+          
+          <h4 style="color: var(--gray-800); margin-top: 25px;">Özet</h4>
+          <p style="text-align: justify; line-height: 1.6; color: var(--gray-700);">
+            Bu akademik araştırmada {{ article.title|lower }} konusu, Türk hukuk sistemi çerçevesinde 
+            detaylı olarak incelenmiştir. Araştırmada doktrinal analiz yöntemi benimsenmiş, 
+            Yargıtay ve Anayasa Mahkemesi kararları sistematik olarak değerlendirilmiştir. 
+            Çalışmanın bulgular bölümünde mevcut yasal düzenlemelerin etkinliği ve uygulamadaki 
+            sorunlar ele alınmış, çözüm önerileri sunulmuştur.
+          </p>
+          
+          <h4 style="color: var(--gray-800); margin-top: 25px;">1. Giriş</h4>
+          <p style="text-align: justify; line-height: 1.6; color: var(--gray-700);">
+            Modern hukuk sistemlerinde {{ article.title|lower }} konusu, hem teorik hem de 
+            pratik boyutlarıyla büyük önem taşımaktadır. Bu çalışmanın amacı, mevcut hukuki 
+            düzenlemelerin analizi ve geliştirilmesi gereken alanların tespiti...
+          </p>
+          
+          <h4 style="color: var(--gray-800); margin-top: 25px;">2. Yöntem</h4>
+          <p style="text-align: justify; line-height: 1.6; color: var(--gray-700);">
+            Araştırmada doktrinal analiz yöntemi kullanılmış, ilgili mevzuat, mahkeme kararları 
+            ve akademik kaynaklar sistematik olarak incelenmiştir. Karşılaştırmalı hukuk 
+            yaklaşımı ile farklı hukuk sistemlerindeki düzenlemeler analiz edilmiştir.
+          </p>
+          
+          <h4 style="color: var(--gray-800); margin-top: 25px;">Anahtar Kelimeler</h4>
+          <p style="color: var(--gray-600); font-style: italic;">
+            Hukuk, Türk Hukuku, Karşılaştırmalı Hukuk, Mahkeme Kararları, Doktrinal Analiz, 
+            Yasal Düzenlemeler, {{ article.title }}
+          </p>
+          
+          <div style="margin-top: 30px; padding: 15px; background: var(--gray-50); border-radius: 6px; font-size: 0.9rem; color: var(--gray-600);">
+            <i class="fas fa-check-circle me-1"></i>
+            Bu akademik makale içeriği, sistem tarafından otomatik olarak oluşturulmuştur. 
+            {% if has_generated_pdf %}
+              <strong>PDF Görüntüle</strong> butonuna tıklayarak tam makaleyi görüntüleyebilirsiniz.
+            {% else %}
+              Tam makale için <strong>HTML Görüntüle</strong> seçeneğini kullanabilirsiniz.
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function downloadPDF() {
+  {% if article.pdf_link and article.pdf_link != article.detail_link %}
+    const downloadUrl = "{{ article.pdf_link }}";
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = "{{ article.title|truncatechars:50 }}.pdf";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  {% else %}
+    alert('PDF linki bulunamadı veya orijinal sayfa ile aynı.');
+  {% endif %}
+}
+
+function openProxyView() {
+  const proxyUrl = "{% url 'article_proxy_view' source=source|lower article_id=article_id %}";
+  window.open(proxyUrl, '_blank', 'noopener,noreferrer');
+  console.log('Proxy view yeni sekmede açıldı');
+}
+
+function goBack() {
+  // Tarayıcı geçmişinde geri git
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    // Geçmiş yoksa arama sayfasına doğru query ile yönlendir
+    {% if search_query %}
+      window.location.href = "{% url 'article_search_results' %}?q={{ search_query|urlencode }}";
+    {% else %}
+      window.location.href = "{% url 'article_search_results' %}";
+    {% endif %}
+  }
+}
+
+// Temizlenmiş ve basitleştirilmiş JavaScript
+</script>
+{% endblock %}

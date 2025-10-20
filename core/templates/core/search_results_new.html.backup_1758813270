@@ -1,0 +1,388 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Arama Sonuçları - {{ query }}{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .search-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255,255,255,0.2);
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s;
+        margin-bottom: 1rem;
+    }
+    
+    .back-btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .search-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .results-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .decision-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .decision-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .decision-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .decision-title {
+        font-weight: 600;
+        color: #1e3a8a;
+        text-decoration: none;
+        font-size: 1.1rem;
+    }
+    
+    .decision-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        flex-wrap: wrap;
+    }
+    
+    .decision-content {
+        color: #4b5563;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    .decision-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .sort-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .sort-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .sort-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+    
+    .sort-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0 0 0;
+    }
+    
+    .page-item {
+        margin: 0;
+    }
+    
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .page-link:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        color: #3b82f6;
+    }
+    
+    .page-item.active .page-link {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    .page-item.disabled .page-link {
+        color: #9ca3af;
+        cursor: not-allowed;
+        background: #f3f4f6;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+    
+    .highlight {
+        background-color: #fef3c7;
+        padding: 0 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-header">
+    <div class="container">
+        <a href="/judicial-decisions/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Yeni Arama Yap
+        </a>
+        
+        <div class="search-info">
+            <div>
+                <h1 style="font-size: 1.75rem; margin: 0;">
+                    {% if query %}
+                        "{{ query }}" için arama sonuçları
+                    {% else %}
+                        Arama Sonuçları
+                    {% endif %}
+                </h1>
+                {% if words_searched %}
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">
+                    Aranan kelimeler: {% for word in words_searched %}<span class="highlight">{{ word }}</span>{% if not forloop.last %}, {% endif %}{% endfor %}
+                </p>
+                {% endif %}
+            </div>
+            
+            {% if total_count > 0 %}
+            <div style="background: rgba(255,255,255,0.2); padding: 0.75rem 1.5rem; border-radius: 2rem;">
+                <i class="fas fa-balance-scale"></i>
+                {{ total_count }} karar bulundu
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if query %}
+        {% if decisions %}
+        <div class="results-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <h2 style="margin: 0; font-size: 1.5rem;">Sonuçlar</h2>
+                <div class="sort-buttons">
+                    <a href="?q={{ query|urlencode }}&sort=relevance" 
+                       class="sort-btn {% if sort_order == 'relevance' %}active{% endif %}">
+                        <i class="fas fa-star"></i> İlgililik
+                    </a>
+                    <a href="?q={{ query|urlencode }}&sort=date" 
+                       class="sort-btn {% if sort_order == 'date' %}active{% endif %}">
+                        <i class="fas fa-calendar"></i> Tarih
+                    </a>
+                </div>
+            </div>
+            
+            {% for decision in decisions %}
+            <div class="decision-card">
+                <div class="decision-header">
+                    <a href="/judicial/{{ decision.id }}/" class="decision-title">
+                        {{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}
+                    </a>
+                    <div class="decision-meta">
+                        <span><i class="fas fa-gavel"></i> {{ decision.karar_turu }}</span>
+                        {% if decision.karar_tarihi %}
+                        <span><i class="fas fa-calendar"></i> {{ decision.karar_tarihi|date:"d.m.Y" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="decision-content">
+                    {{ decision.karar_ozeti|truncatewords:50|linebreaksbr }}
+                </div>
+                
+                <div class="decision-footer">
+                    <span style="font-size: 0.9rem; color: #6b7280;">
+                        {% if decision.esas_numarasi %}
+                        Esas No: {{ decision.esas_numarasi }}
+                        {% endif %}
+                    </span>
+                    <a href="/judicial/{{ decision.id }}/" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye"></i>
+                        Detayları Görüntüle
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query|urlencode }}&page=1&sort={{ sort_order }}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}&sort={{ sort_order }}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-left"></i></span>
+                    </li>
+                    {% endif %}
+                    
+                    {% with current=page_obj.number total=page_obj.paginator.num_pages %}
+                        {% if current > 3 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?q={{ query|urlencode }}&page=1&sort={{ sort_order }}">1</a>
+                            </li>
+                            {% if current > 4 %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if num >= current|add:"-2" and num <= current|add:"2" %}
+                                <li class="page-item {% if num == current %}active{% endif %}">
+                                    {% if num == current %}
+                                        <span class="page-link">{{ num }}</span>
+                                    {% else %}
+                                        <a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}&sort={{ sort_order }}">{{ num }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if current < total|add:"-2" %}
+                            {% if current < total|add:"-3" %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                            <li class="page-item">
+                                <a class="page-link" href="?q={{ query|urlencode }}&page={{ total }}&sort={{ sort_order }}">{{ total }}</a>
+                            </li>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}&sort={{ sort_order }}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.paginator.num_pages }}&sort={{ sort_order }}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-right"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="results-container">
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Sonuç Bulunamadı</h3>
+                <p>"{{ query }}" için arama yaptık ancak eşleşen karar bulunamadı.</p>
+                <p>Farklı kelimeler kullanarak tekrar deneyebilirsiniz.</p>
+                <a href="/judicial-decisions/" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-search"></i> Yeni Arama Yap
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="results-container">
+        <div class="empty-state">
+            <i class="fas fa-balance-scale"></i>
+            <h3>Arama Yapın</h3>
+            <p>Yargı kararlarında arama yapmak için arama sayfasını kullanın.</p>
+            <a href="/judicial-decisions/" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-search"></i> Arama Sayfasına Git
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

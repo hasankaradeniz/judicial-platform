@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Giriş Yap | Lexatech{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">Giriş Yap</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <div class="form-group row">
+              <label for="{{ form.login.id_for_label }}" class="col-sm-3 col-form-label">{{ form.login.label }}</label>
+              <div class="col-sm-9">
+                {{ form.login }}
+                {% if form.login.errors %}
+                  <div class="text-danger">{{ form.login.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="{{ form.password.id_for_label }}" class="col-sm-3 col-form-label">{{ form.password.label }}</label>
+              <div class="col-sm-9">
+                {{ form.password }}
+                {% if form.password.errors %}
+                  <div class="text-danger">{{ form.password.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Giriş Yap</button>
+          </form>
+        </div>
+        <div class="card-footer text-center">
+          Henüz üye değil misiniz? <a href="{% url 'account_signup' %}">Üye Olun</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

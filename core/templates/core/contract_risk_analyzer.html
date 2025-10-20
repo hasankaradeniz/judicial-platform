@@ -1,0 +1,841 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}Sözleşme Risk Analizi - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+  --primary-blue: #1a365d;
+  --primary-blue-light: #2c5aa0;
+  --success-green: #059669;
+  --warning-yellow: #d97706;
+  --danger-red: #dc2626;
+  --gray-light: #f9fafb;
+  --gray-medium: #6b7280;
+}
+
+.analyzer-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
+  color: white;
+  padding: 60px 0;
+  text-align: center;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.upload-section {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.upload-zone {
+  border: 3px dashed #d1d5db;
+  border-radius: 15px;
+  padding: 60px 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--gray-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--primary-blue);
+  background: rgba(26, 54, 93, 0.05);
+  transform: translateY(-2px);
+}
+
+.upload-icon {
+  font-size: 4rem;
+  color: var(--primary-blue);
+  margin-bottom: 20px;
+}
+
+.upload-text {
+  font-size: 1.25rem;
+  color: #374151;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.upload-subtext {
+  color: var(--gray-medium);
+  font-size: 0.95rem;
+}
+
+.contract-types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.contract-type-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.contract-type-card:hover {
+  border-color: var(--primary-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(26, 54, 93, 0.1);
+}
+
+.contract-type-card.selected {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+
+.contract-type-card i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.analyze-button {
+  background: linear-gradient(135deg, var(--success-green) 0%, #10b981 100%);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px auto 0;
+}
+
+.analyze-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+}
+
+.analyze-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.file-info {
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  display: none;
+}
+
+.file-info.active {
+  display: block;
+}
+
+.file-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remove-file {
+  color: var(--danger-red);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.remove-file:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Analiz Sonuçları */
+.results-section {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+.results-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.risk-summary {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.risk-score-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.risk-score {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.risk-score.low { background: linear-gradient(135deg, var(--success-green) 0%, #10b981 100%); }
+.risk-score.medium { background: linear-gradient(135deg, var(--warning-yellow) 0%, #f59e0b 100%); }
+.risk-score.high { background: linear-gradient(135deg, var(--danger-red) 0%, #ef4444 100%); }
+
+.risk-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 15px;
+  color: #374151;
+}
+
+.risk-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.risk-indicator {
+  background: var(--gray-light);
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 4px solid;
+}
+
+.risk-indicator.low { border-color: var(--success-green); }
+.risk-indicator.medium { border-color: var(--warning-yellow); }
+.risk-indicator.high { border-color: var(--danger-red); }
+
+.risk-indicator h4 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.risk-indicator p {
+  color: var(--gray-medium);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.clause-analysis {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.clause-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 20px 0;
+}
+
+.clause-item:last-child {
+  border-bottom: none;
+}
+
+.clause-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.clause-title {
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.risk-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.risk-badge.low { background: var(--success-green); }
+.risk-badge.medium { background: var(--warning-yellow); }
+.risk-badge.high { background: var(--danger-red); }
+
+.clause-content {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.clause-recommendation {
+  background: #fef3c7;
+  border-left: 4px solid var(--warning-yellow);
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.clause-recommendation p {
+  margin: 0;
+  color: #92400e;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-button.primary {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.action-button.primary:hover {
+  background: var(--primary-blue-light);
+  transform: translateY(-1px);
+}
+
+.action-button.secondary {
+  background: white;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+}
+
+.action-button.secondary:hover {
+  background: var(--primary-blue);
+  color: white;
+}
+
+/* Loading State */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-overlay.active {
+  display: flex;
+}
+
+.loading-content {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  color: var(--primary-blue);
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+.loading-subtext {
+  color: var(--gray-medium);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 2rem; }
+  .contract-types { grid-template-columns: repeat(2, 1fr); }
+  .risk-indicators { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analyzer-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <h1 class="hero-title">
+      <i class="fas fa-shield-alt"></i> Sözleşme Risk Analizi
+    </h1>
+    <p class="hero-subtitle">
+      Yapay zeka destekli sözleşme analizi ile hukuki riskleri önceden tespit edin
+    </p>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="upload-section">
+    <h2 style="margin-bottom: 30px; color: #1f2937;">
+      <i class="fas fa-file-upload"></i> Sözleşme Yükle
+    </h2>
+    
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="contractFile" accept=".pdf,.doc,.docx" style="display: none;">
+      <div class="upload-icon">
+        <i class="fas fa-cloud-upload-alt"></i>
+      </div>
+      <p class="upload-text">Sözleşmenizi Buraya Sürükleyin</p>
+      <p class="upload-subtext">veya tıklayarak dosya seçin</p>
+      <p class="upload-subtext" style="margin-top: 10px;">
+        <small>Desteklenen formatlar: PDF, DOC, DOCX (Max: 10MB)</small>
+      </p>
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <div class="file-details">
+        <div class="file-name">
+          <i class="fas fa-file-alt"></i>
+          <span id="fileName"></span>
+        </div>
+        <i class="fas fa-times remove-file" onclick="removeFile()"></i>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 40px; margin-bottom: 20px; color: #1f2937;">
+      Sözleşme Türü Seçin (Opsiyonel)
+    </h3>
+    
+    <div class="contract-types">
+      <div class="contract-type-card" data-type="employment">
+        <i class="fas fa-briefcase"></i>
+        <div>İş Sözleşmesi</div>
+      </div>
+      <div class="contract-type-card" data-type="rental">
+        <i class="fas fa-home"></i>
+        <div>Kira Sözleşmesi</div>
+      </div>
+      <div class="contract-type-card" data-type="sales">
+        <i class="fas fa-shopping-cart"></i>
+        <div>Satış Sözleşmesi</div>
+      </div>
+      <div class="contract-type-card" data-type="service">
+        <i class="fas fa-handshake"></i>
+        <div>Hizmet Sözleşmesi</div>
+      </div>
+      <div class="contract-type-card" data-type="nda">
+        <i class="fas fa-user-secret"></i>
+        <div>Gizlilik Sözleşmesi</div>
+      </div>
+      <div class="contract-type-card" data-type="other">
+        <i class="fas fa-file-contract"></i>
+        <div>Diğer</div>
+      </div>
+    </div>
+
+    <button class="analyze-button" id="analyzeButton" disabled>
+      <i class="fas fa-search"></i>
+      Riski Analiz Et
+    </button>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section" id="resultsSection">
+    <!-- Risk Summary -->
+    <div class="risk-summary">
+      <h2 style="margin-bottom: 30px; text-align: center; color: #1f2937;">
+        Risk Analiz Özeti
+      </h2>
+      
+      <div class="risk-score-container">
+        <div class="risk-score" id="riskScore">
+          <span id="riskScoreValue">0</span>
+        </div>
+        <div class="risk-label" id="riskLabel">Risk Hesaplanıyor...</div>
+      </div>
+
+      <div class="risk-indicators" id="riskIndicators">
+        <!-- Dinamik olarak doldurulacak -->
+      </div>
+    </div>
+
+    <!-- Clause Analysis -->
+    <div class="clause-analysis">
+      <h2 style="margin-bottom: 30px; color: #1f2937;">
+        <i class="fas fa-list-check"></i> Madde Bazlı Analiz
+      </h2>
+      
+      <div id="clauseAnalysis">
+        <!-- Dinamik olarak doldurulacak -->
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="action-button primary" onclick="downloadReport()">
+        <i class="fas fa-download"></i>
+        Raporu İndir
+      </button>
+      <button class="action-button secondary" onclick="printReport()">
+        <i class="fas fa-print"></i>
+        Yazdır
+      </button>
+      <button class="action-button secondary" onclick="newAnalysis()">
+        <i class="fas fa-plus"></i>
+        Yeni Analiz
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner"></i>
+    </div>
+    <p class="loading-text">Sözleşme Analiz Ediliyor...</p>
+    <p class="loading-subtext">Bu işlem birkaç dakika sürebilir</p>
+  </div>
+</div>
+
+<script>
+let uploadedFile = null;
+let selectedContractType = null;
+let analysisResult = null;
+
+// DOM Ready
+document.addEventListener('DOMContentLoaded', function() {
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('contractFile');
+  
+  // Click to upload
+  uploadZone.addEventListener('click', () => fileInput.click());
+  
+  // File input change
+  fileInput.addEventListener('change', handleFileSelect);
+  
+  // Drag and drop
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+  });
+  
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+  });
+  
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFile(files[0]);
+    }
+  });
+  
+  // Contract type selection
+  document.querySelectorAll('.contract-type-card').forEach(card => {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.contract-type-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedContractType = this.dataset.type;
+    });
+  });
+  
+  // Analyze button
+  document.getElementById('analyzeButton').addEventListener('click', analyzeContract);
+});
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) {
+    handleFile(file);
+  }
+}
+
+function handleFile(file) {
+  // Validate file
+  const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  
+  if (!validTypes.includes(file.type)) {
+    alert('Lütfen PDF veya Word formatında bir dosya yükleyin.');
+    return;
+  }
+  
+  if (file.size > 10 * 1024 * 1024) {
+    alert('Dosya boyutu 10MB\'dan büyük olamaz.');
+    return;
+  }
+  
+  uploadedFile = file;
+  displayFileInfo(file);
+  document.getElementById('analyzeButton').disabled = false;
+}
+
+function displayFileInfo(file) {
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileInfo').classList.add('active');
+}
+
+function removeFile() {
+  uploadedFile = null;
+  document.getElementById('fileInfo').classList.remove('active');
+  document.getElementById('contractFile').value = '';
+  document.getElementById('analyzeButton').disabled = true;
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function analyzeContract() {
+  if (!uploadedFile) return;
+  
+  const formData = new FormData();
+  formData.append('contract_file', uploadedFile);
+  if (selectedContractType) {
+    formData.append('contract_type', selectedContractType);
+  }
+  
+  document.getElementById('loadingOverlay').classList.add('active');
+  
+  fetch('/ai/analyze-contract/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    
+    if (data.success) {
+      analysisResult = data;
+      displayResults(data);
+    } else {
+      alert(data.error || 'Analiz sırasında bir hata oluştu.');
+    }
+  })
+  .catch(error => {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    alert('Bağlantı hatası: ' + error.message);
+  });
+}
+
+function displayResults(data) {
+  // Show results section
+  document.getElementById('resultsSection').classList.add('active');
+  
+  // Display risk score
+  const score = data.risk_score || 0;
+  const scoreElement = document.getElementById('riskScore');
+  const scoreValue = document.getElementById('riskScoreValue');
+  const riskLabel = document.getElementById('riskLabel');
+  
+  scoreValue.textContent = score;
+  
+  // Set risk level
+  let riskLevel, riskText;
+  if (score < 4) {
+    riskLevel = 'low';
+    riskText = 'Düşük Risk';
+  } else if (score < 7) {
+    riskLevel = 'medium';
+    riskText = 'Orta Risk';
+  } else {
+    riskLevel = 'high';
+    riskText = 'Yüksek Risk';
+  }
+  
+  scoreElement.className = `risk-score ${riskLevel}`;
+  riskLabel.textContent = riskText;
+  
+  // Display risk indicators
+  const indicatorsContainer = document.getElementById('riskIndicators');
+  indicatorsContainer.innerHTML = '';
+  
+  if (data.risk_indicators) {
+    data.risk_indicators.forEach(indicator => {
+      const div = document.createElement('div');
+      div.className = `risk-indicator ${indicator.level}`;
+      div.innerHTML = `
+        <h4><i class="${indicator.icon}"></i> ${indicator.title}</h4>
+        <p>${indicator.description}</p>
+      `;
+      indicatorsContainer.appendChild(div);
+    });
+  }
+  
+  // Display clause analysis
+  const clauseContainer = document.getElementById('clauseAnalysis');
+  clauseContainer.innerHTML = '';
+  
+  if (data.clauses) {
+    data.clauses.forEach(clause => {
+      const div = document.createElement('div');
+      div.className = 'clause-item';
+      div.innerHTML = `
+        <div class="clause-header">
+          <div class="clause-title">
+            <i class="fas fa-paragraph"></i>
+            ${clause.title}
+          </div>
+          <span class="risk-badge ${clause.risk_level}">${clause.risk_text}</span>
+        </div>
+        <p class="clause-content">${clause.content}</p>
+        ${clause.recommendation ? `
+          <div class="clause-recommendation">
+            <p><i class="fas fa-lightbulb"></i> <strong>Öneri:</strong> ${clause.recommendation}</p>
+          </div>
+        ` : ''}
+      `;
+      clauseContainer.appendChild(div);
+    });
+  }
+  
+  // Scroll to results
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadReport() {
+  if (!analysisResult) return;
+  
+  // Create report content
+  let reportContent = `SÖZLEŞME RİSK ANALİZ RAPORU\n`;
+  reportContent += `${'='.repeat(50)}\n\n`;
+  reportContent += `Tarih: ${new Date().toLocaleDateString('tr-TR')}\n`;
+  reportContent += `Dosya: ${uploadedFile.name}\n\n`;
+  reportContent += `RİSK SKORU: ${analysisResult.risk_score}/10\n`;
+  reportContent += `${'='.repeat(50)}\n\n`;
+  
+  if (analysisResult.clauses) {
+    reportContent += `MADDE ANALİZİ:\n`;
+    reportContent += `${'-'.repeat(30)}\n\n`;
+    
+    analysisResult.clauses.forEach(clause => {
+      reportContent += `${clause.title} (${clause.risk_text})\n`;
+      reportContent += `${clause.content}\n`;
+      if (clause.recommendation) {
+        reportContent += `Öneri: ${clause.recommendation}\n`;
+      }
+      reportContent += `\n`;
+    });
+  }
+  
+  // Download file
+  const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `sozlesme_risk_raporu_${new Date().getTime()}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
+
+function printReport() {
+  window.print();
+}
+
+function newAnalysis() {
+  // Reset everything
+  removeFile();
+  selectedContractType = null;
+  analysisResult = null;
+  document.querySelectorAll('.contract-type-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('resultsSection').classList.remove('active');
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+{% endblock %}

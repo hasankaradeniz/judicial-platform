@@ -1,0 +1,707 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Akıllı Dava Dosyası Analizi - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --emerald: #047857;
+    --crimson: #c53030;
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .upload-area {
+    border: 3px dashed #dee2e6;
+    border-radius: 15px;
+    padding: 60px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 30px;
+  }
+
+  .upload-area:hover {
+    border-color: var(--royal-blue);
+    background: #e3f2fd;
+  }
+
+  .upload-area.dragover {
+    border-color: var(--emerald);
+    background: #e8f5e8;
+  }
+
+  .upload-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+
+  .upload-area:hover .upload-icon {
+    color: var(--royal-blue);
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .upload-button {
+    background: var(--gradient-royal);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .upload-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .analysis-container {
+    display: none;
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    padding: 30px;
+    margin-top: 30px;
+  }
+
+  .analysis-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--royal-blue);
+    background: #f8f9fa;
+  }
+
+  .section-title {
+    color: var(--royal-blue);
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  .section-title i {
+    margin-right: 10px;
+  }
+
+  .info-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .case-type-badge {
+    background: var(--gradient-emerald);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .confidence-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 8px;
+    margin: 10px 0;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    background: var(--gradient-emerald);
+    transition: width 0.5s ease;
+  }
+
+  .missing-document {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+  }
+
+  .missing-document.high-importance {
+    background: #ffebee;
+    border-color: #ffcdd2;
+  }
+
+  .found-document {
+    background: #e8f5e8;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+  }
+
+  .recommendation {
+    background: white;
+    border-left: 4px solid var(--gold-accent);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .recommendation.high-priority {
+    border-left-color: var(--crimson);
+  }
+
+  .similar-case {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .loading-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--royal-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 20px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient-royal);
+    width: 0%;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1>📊 AKILLI DAVA DOSYASI ANALİZİ</h1>
+    <p class="lead">PDF dava dosyanızı yükleyin, AI ile analiz edin, eksiklikleri tespit edin</p>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Upload Area -->
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">
+      <i class="fas fa-cloud-upload-alt"></i>
+    </div>
+    <h4>Dava Dosyanızı Buraya Sürükleyin</h4>
+    <p class="text-muted">veya dosya seçmek için tıklayın</p>
+    <button class="upload-button" type="button">
+      <i class="fas fa-folder-open"></i> Dosya Seç
+    </button>
+    <input type="file" id="fileInput" class="file-input" accept=".pdf,.udf" onchange="handleFileSelect()">
+    <div class="mt-3">
+      <small class="text-muted">
+        <i class="fas fa-info-circle"></i> 
+        PDF ve UDF dosyaları kabul edilir. Maksimum boyut: 10MB
+      </small>
+    </div>
+  </div>
+
+  <!-- Selected File Info -->
+  <div id="fileInfo" class="info-card" style="display: none;">
+    <h6><i class="fas fa-file text-info"></i> Seçilen Dosya</h6>
+    <div id="fileName"></div>
+    <div id="fileSize" class="text-muted"></div>
+    <button class="btn btn-primary mt-3" onclick="analyzeFile()">
+      <i class="fas fa-brain"></i> Analiz Et
+    </button>
+  </div>
+
+  <!-- Analysis Progress -->
+  <div id="analysisProgress" class="info-card" style="display: none;">
+    <h6><i class="fas fa-cogs"></i> Analiz Süreci</h6>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill">0%</div>
+    </div>
+    <div id="progressText" class="text-center text-muted">Analiz başlatılıyor...</div>
+  </div>
+
+  <!-- Analysis Results -->
+  <div id="analysisResults" class="analysis-container">
+    <h3 class="text-center mb-4">
+      <i class="fas fa-chart-line"></i> Analiz Sonuçları
+    </h3>
+
+    <!-- Document Info -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-file-alt"></i>
+        Belge Bilgileri
+      </div>
+      <div id="documentInfo"></div>
+    </div>
+
+    <!-- Case Type -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-balance-scale"></i>
+        Dava Türü Analizi
+      </div>
+      <div id="caseType"></div>
+    </div>
+
+    <!-- Missing Documents -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-exclamation-triangle"></i>
+        Belge Durumu
+      </div>
+      <div id="documentStatus"></div>
+    </div>
+
+    <!-- Legal Issues -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-gavel"></i>
+        Tespit Edilen Hukuki Konular
+      </div>
+      <div id="legalIssues"></div>
+    </div>
+
+    <!-- Relevant Laws -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-book"></i>
+        İlgili Mevzuat
+      </div>
+      <div id="relevantLaws"></div>
+    </div>
+
+    <!-- Similar Cases -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-search"></i>
+        Benzer Davalar
+      </div>
+      <div id="similarCases"></div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="analysis-section">
+      <div class="section-title">
+        <i class="fas fa-lightbulb"></i>
+        Öneriler ve Tavsiyeler
+      </div>
+      <div id="recommendations"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <h5>Dosya Analiz Ediliyor</h5>
+    <p class="text-muted">AI sistemi dosyanızı inceliyor...</p>
+  </div>
+</div>
+
+<script>
+let selectedFile = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+
+    // Drag and drop handlers
+    uploadArea.addEventListener('dragover', handleDragOver);
+    uploadArea.addEventListener('dragleave', handleDragLeave);
+    uploadArea.addEventListener('drop', handleDrop);
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type === 'application/pdf') {
+                selectedFile = file;
+                showFileInfo(file);
+            } else {
+                alert('Lütfen sadece PDF dosyası seçin.');
+            }
+        }
+    }
+});
+
+function handleFileSelect() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (file) {
+        const fileName = file.name.toLowerCase();
+        const isValidFile = fileName.endsWith('.pdf') || fileName.endsWith('.udf') || file.type === 'application/pdf';
+        
+        if (isValidFile) {
+            selectedFile = file;
+            showFileInfo(file);
+        } else {
+            alert('Lütfen sadece PDF veya UDF dosyası seçin.');
+            fileInput.value = '';
+        }
+    }
+}
+
+function showFileInfo(file) {
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    
+    fileName.innerHTML = `<strong>${file.name}</strong>`;
+    fileSize.textContent = `Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+    
+    fileInfo.style.display = 'block';
+}
+
+function analyzeFile() {
+    if (!selectedFile) {
+        alert('Lütfen önce bir dosya seçin.');
+        return;
+    }
+
+    if (selectedFile.size > 10 * 1024 * 1024) {
+        alert('Dosya boyutu 10MB\'dan büyük olamaz.');
+        return;
+    }
+
+    // Progress göster
+    showAnalysisProgress();
+
+    const formData = new FormData();
+    formData.append('case_file', selectedFile);
+
+    fetch('/ai/analyze-case/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideAnalysisProgress();
+        
+        if (data.success) {
+            displayAnalysisResults(data.analysis);
+        } else {
+            alert('Analiz hatası: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideAnalysisProgress();
+        alert('Bağlantı hatası. Lütfen tekrar deneyin.');
+    });
+}
+
+function showAnalysisProgress() {
+    const progressDiv = document.getElementById('analysisProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    progressDiv.style.display = 'block';
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 10;
+        progressFill.style.width = progress + '%';
+        progressFill.textContent = progress + '%';
+        
+        if (progress === 30) {
+            progressText.textContent = 'Dosya metin çıkarılıyor...';
+        } else if (progress === 60) {
+            progressText.textContent = 'Hukuki analiz yapılıyor...';
+        } else if (progress === 90) {
+            progressText.textContent = 'Sonuçlar hazırlanıyor...';
+        }
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            progressText.textContent = 'Analiz tamamlandı!';
+        }
+    }, 200);
+}
+
+function hideAnalysisProgress() {
+    const progressDiv = document.getElementById('analysisProgress');
+    progressDiv.style.display = 'none';
+}
+
+function displayAnalysisResults(analysis) {
+    const resultsContainer = document.getElementById('analysisResults');
+    
+    // Document Info
+    displayDocumentInfo(analysis.document_info);
+    
+    // Case Type
+    displayCaseType(analysis.case_type);
+    
+    // Document Status
+    displayDocumentStatus(analysis.missing_documents);
+    
+    // Legal Issues
+    displayLegalIssues(analysis.legal_issues);
+    
+    // Relevant Laws
+    displayRelevantLaws(analysis.relevant_laws);
+    
+    // Similar Cases
+    displaySimilarCases(analysis.similar_cases);
+    
+    // Recommendations
+    displayRecommendations(analysis.recommendations);
+    
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+}
+
+function displayDocumentInfo(info) {
+    const container = document.getElementById('documentInfo');
+    
+    let html = '<div class="info-card">';
+    html += `<h6><i class="fas fa-info-circle"></i> Genel Bilgiler</h6>`;
+    html += `<p><strong>Belge Türü:</strong> ${info.document_type}</p>`;
+    html += `<p><strong>Kelime Sayısı:</strong> ${info.word_count}</p>`;
+    
+    if (info.case_number) {
+        html += `<p><strong>Dava No:</strong> ${info.case_number}</p>`;
+    }
+    
+    if (info.court) {
+        html += `<p><strong>Mahkeme:</strong> ${info.court}</p>`;
+    }
+    
+    if (info.date) {
+        html += `<p><strong>Tarih:</strong> ${info.date}</p>`;
+    }
+    
+    if (info.parties.length > 0) {
+        html += `<p><strong>Taraflar:</strong> ${info.parties.join(', ')}</p>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function displayCaseType(caseType) {
+    const container = document.getElementById('caseType');
+    
+    let html = '<div class="info-card">';
+    html += `<div class="case-type-badge">${caseType.type.toUpperCase()}</div>`;
+    html += `<p class="mt-2">${caseType.description}</p>`;
+    html += `<p><strong>Güven Düzeyi:</strong></p>`;
+    html += `<div class="confidence-bar">`;
+    html += `<div class="confidence-fill" style="width: ${caseType.confidence}%"></div>`;
+    html += `</div>`;
+    html += `<small class="text-muted">%${caseType.confidence} güvenilirlik</small>`;
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+function displayDocumentStatus(docStatus) {
+    const container = document.getElementById('documentStatus');
+    
+    let html = '<div class="info-card">';
+    html += `<div class="row">`;
+    html += `<div class="col-md-6">`;
+    html += `<h6><i class="fas fa-check-circle text-success"></i> Bulunan Belgeler (${docStatus.total_found})</h6>`;
+    
+    docStatus.found.forEach(doc => {
+        html += `<div class="found-document">`;
+        html += `<i class="fas fa-check"></i> ${doc}`;
+        html += `</div>`;
+    });
+    
+    html += `</div><div class="col-md-6">`;
+    html += `<h6><i class="fas fa-exclamation-triangle text-warning"></i> Eksik Belgeler (${docStatus.total_missing})</h6>`;
+    
+    docStatus.missing.forEach(doc => {
+        const priorityClass = doc.importance === 'Yüksek' ? 'high-importance' : '';
+        html += `<div class="missing-document ${priorityClass}">`;
+        html += `<strong>${doc.document}</strong><br>`;
+        html += `<small>${doc.description}</small><br>`;
+        html += `<span class="badge badge-${doc.importance === 'Yüksek' ? 'danger' : 'warning'}">${doc.importance} Öncelik</span>`;
+        html += `</div>`;
+    });
+    
+    html += `</div></div></div>`;
+    container.innerHTML = html;
+}
+
+function displayLegalIssues(issues) {
+    const container = document.getElementById('legalIssues');
+    
+    if (issues.length === 0) {
+        container.innerHTML = '<div class="info-card"><p class="text-muted">Özel hukuki konu tespit edilmedi.</p></div>';
+        return;
+    }
+    
+    let html = '<div class="info-card">';
+    issues.forEach(issue => {
+        html += `<div class="mb-3">`;
+        html += `<h6><i class="fas fa-exclamation-circle"></i> ${issue.concept}</h6>`;
+        html += `<p>${issue.description}</p>`;
+        html += `<span class="badge badge-danger">${issue.importance} Önem</span>`;
+        html += `</div>`;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+function displayRelevantLaws(laws) {
+    const container = document.getElementById('relevantLaws');
+    
+    let html = '<div class="info-card">';
+    laws.forEach(law => {
+        html += `<div class="mb-2">`;
+        html += `<strong>${law.name}</strong><br>`;
+        html += `<small class="text-muted">${law.description}</small><br>`;
+        html += `<span class="badge badge-primary">${law.relevance} İlgili</span>`;
+        html += `</div><hr>`;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+function displaySimilarCases(cases) {
+    const container = document.getElementById('similarCases');
+    
+    if (cases.length === 0) {
+        container.innerHTML = '<div class="info-card"><p class="text-muted">Benzer dava bulunamadı.</p></div>';
+        return;
+    }
+    
+    let html = '';
+    cases.forEach(case_ => {
+        html += `<div class="similar-case">`;
+        html += `<h6>${case_.title}</h6>`;
+        html += `<p><strong>Mahkeme:</strong> ${case_.court}</p>`;
+        html += `<p><strong>Sonuç:</strong> <span class="badge badge-${case_.result === 'Kabul' ? 'success' : case_.result === 'Red' ? 'danger' : 'warning'}">${case_.result}</span></p>`;
+        html += `<p><strong>Benzerlik:</strong> ${case_.similarity}</p>`;
+        html += `</div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function displayRecommendations(recommendations) {
+    const container = document.getElementById('recommendations');
+    
+    let html = '';
+    recommendations.forEach(rec => {
+        const priorityClass = rec.priority === 'Yüksek' ? 'high-priority' : '';
+        html += `<div class="recommendation ${priorityClass}">`;
+        html += `<h6><i class="fas fa-lightbulb"></i> ${rec.type}</h6>`;
+        html += `<p>${rec.action}</p>`;
+        
+        if (rec.details.length > 0) {
+            html += `<ul class="mb-0">`;
+            rec.details.forEach(detail => {
+                html += `<li>${detail}</li>`;
+            });
+            html += `</ul>`;
+        }
+        
+        html += `<span class="badge badge-${rec.priority === 'Yüksek' ? 'danger' : 'warning'}">${rec.priority} Öncelik</span>`;
+        html += `</div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Yapay Zeka Özellikleri - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --emerald: #047857;
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, #ecc94b 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .hero-section h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--royal-blue);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .feature-card.assistant {
+    border-left-color: var(--emerald);
+  }
+
+  .feature-card.analyzer {
+    border-left-color: var(--gold-accent);
+  }
+
+  .feature-card.generator {
+    border-left-color: #8b5cf6;
+  }
+
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+
+  .feature-card.assistant .feature-icon {
+    color: var(--emerald);
+  }
+
+  .feature-card.analyzer .feature-icon {
+    color: var(--gold-accent);
+  }
+
+  .feature-card.generator .feature-icon {
+    color: #8b5cf6;
+  }
+
+  .feature-button {
+    background: var(--gradient-royal);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .feature-button:hover {
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+  }
+
+  .feature-card.assistant .feature-button {
+    background: var(--gradient-emerald);
+  }
+
+  .feature-card.analyzer .feature-button {
+    background: var(--gradient-gold);
+  }
+
+  .feature-card.generator .feature-button {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  }
+
+  .benefits-section {
+    background: #f8f9fa;
+    padding: 60px 0;
+    margin-top: 50px;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .benefit-icon {
+    font-size: 2rem;
+    color: var(--emerald);
+    margin-right: 15px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1>🤖 YAPAY ZEKA ÖZELLİKLERİ</h1>
+    <p class="lead">Hukuki işlerinizi hızlandıran ve kolaylaştıran AI destekli araçlar</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <!-- AI Hukuki Asistan -->
+    <div class="col-md-6 col-lg-4">
+      <div class="feature-card assistant">
+        <div class="text-center">
+          <div class="feature-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>AI Hukuki Asistan</h3>
+          <p class="text-muted">Doğal dille hukuki sorularınızı sorun, anında yanıt alın. Mevzuat arayın, kavramları öğrenin.</p>
+          <div class="mt-4">
+            <a href="{% url 'ai_assistant_home' %}" class="feature-button">
+              <i class="fas fa-comments"></i> Soru Sor
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Akıllı Dava Dosyası Analizi -->
+    <div class="col-md-6 col-lg-4">
+      <div class="feature-card analyzer">
+        <div class="text-center">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Sözleşme Risk Analizi</h3>
+          <p class="text-muted">Sözleşmelerinizi yükleyin, hukuki riskleri analiz edin, uzman önerileri alın.</p>
+          <div class="mt-4">
+            <a href="#" class="feature-button" onclick="alert('Bu özellik yakında eklenecek!')">
+              <i class="fas fa-upload"></i> Risk Analizi Yap
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hukuki Metin Üretici -->
+    <div class="col-md-6 col-lg-4">
+      <div class="feature-card generator">
+        <div class="text-center">
+          <div class="feature-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>Hukuki Metin Üretici</h3>
+          <p class="text-muted">Dilekçe, sözleşme ve hukuki belge taslakları oluşturun. Otomatik form doldurma.</p>
+          <div class="mt-4">
+            <a href="{% url 'legal_text_generator_home' %}" class="feature-button">
+              <i class="fas fa-magic"></i> Belge Oluştur
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Benefits Section -->
+<div class="benefits-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h2 class="text-center mb-5">🎯 Avantajlar</h2>
+        
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div>
+            <h5>Zaman Tasarrufu</h5>
+            <p class="text-muted">Rutin hukuki işlemleri otomatikleştirin, daha fazla vakayı yönetin.</p>
+          </div>
+        </div>
+        
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div>
+            <h5>Güvenilir Analiz</h5>
+            <p class="text-muted">Türk hukuk sistemine özgü AI modellerle doğru sonuçlar alın.</p>
+          </div>
+        </div>
+        
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div>
+            <h5>Kolay Kullanım</h5>
+            <p class="text-muted">Kullanıcı dostu arayüzlerle herkes kolayca kullanabilir.</p>
+          </div>
+        </div>
+        
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fas fa-sync"></i>
+          </div>
+          <div>
+            <h5>Sürekli Güncellenme</h5>
+            <p class="text-muted">Mevzuat değişikliklerine göre otomatik güncellenme.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

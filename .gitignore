@@ -1,0 +1,67 @@
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+.env
+local_settings.py
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backups
+*.backup
+*.bak
+*.tmp
+backup*/
+*_backup_*
+
+# Large files
+*.tar.gz
+*.zip
+*.sql
+*.json
+
+# Sensitive data
+*.pem
+*.key
+secrets.py
+.env.*
+
+# FAISS indexes
+faiss_dizinleri/
+*.faiss
+*.pkl
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Mac
+.DS_Store
+._*
+
+# Logs
+logs/
+*.log
+
+# Test files
+test_*.html
+debug_*.html
+temp_*.py

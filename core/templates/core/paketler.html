@@ -1,0 +1,323 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Abonelik Paketleri - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --emerald: #047857;
+    --crimson: #c53030;
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --shadow-premium: 0 8px 32px rgba(26, 54, 93, 0.16);
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, #fbd38d 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+    --gradient-crimson: linear-gradient(135deg, var(--crimson) 0%, #fc8181 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .hero-section .lead {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .pricing-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-legal);
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-premium);
+  }
+
+  .pricing-card.featured {
+    transform: scale(1.05);
+    border: 3px solid var(--gold-accent);
+  }
+
+  .pricing-card.featured .card-header {
+    background: var(--gradient-gold) !important;
+    position: relative;
+  }
+
+  .pricing-card.featured .card-header::after {
+    content: "ÖNERİLEN";
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    background: var(--crimson);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .card-header {
+    padding: 20px;
+    font-weight: 600;
+  }
+
+  .pricing-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 20px 0 10px 0;
+  }
+
+  .pricing-period {
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  .feature-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+  }
+
+  .feature-list li:last-child {
+    border-bottom: none;
+  }
+
+  .feature-list .check {
+    color: var(--emerald);
+    margin-right: 8px;
+    font-weight: 600;
+  }
+
+  .btn-pricing {
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+  }
+
+  .discount-badge {
+    background: var(--emerald);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 10px;
+  }
+
+  .comparison-section {
+    background: #f8f9fa;
+    padding: 50px 0;
+    margin-top: 50px;
+  }
+
+  .competitor-info {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    margin-bottom: 30px;
+  }
+
+  .price-comparison {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #6c757d;
+    margin-right: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1>💼 ABONELİK PAKETLERİ</h1>
+    <p class="lead">Uygun fiyatlarla Türkiye'nin en kapsamlı hukuk bilgi sistemine erişin</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Paketler -->
+  <div class="row justify-content-center">
+    <!-- Aylık Paket -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card pricing-card text-center">
+        <div class="card-header" style="background: var(--gradient-royal); color: white;">
+          <h4>Başlangıç</h4>
+        </div>
+        <div class="card-body">
+          <div class="pricing-amount text-primary">₺1,000</div>
+          <div class="pricing-period">1 Aylık Erişim</div>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> 1.2M+ Yargı Kararı</li>
+            <li><span class="check">✓</span> Güncel Mevzuat Arşivi</li>
+            <li><span class="check">✓</span> PDF Görüntüleme</li>
+            <li><span class="check">✓</span> Makale Erişimi</li>
+            <li><span class="check">✓</span> 7/24 Destek</li>
+          </ul>
+          <a href="{% url 'subscription_payment' package='monthly' %}" class="btn btn-primary btn-pricing">Satın Al</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Aylık Paket -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card pricing-card text-center">
+        <div class="card-header" style="background: var(--gradient-emerald); color: white;">
+          <h4>Popüler</h4>
+        </div>
+        <div class="card-body">
+          <div class="pricing-amount text-success">
+            ₺2,700
+            <span class="discount-badge">%10 İndirim</span>
+          </div>
+          <div class="pricing-period">3 Aylık Erişim</div>
+          <div class="price-comparison">
+            <span>Aylık:</span>
+            <div>
+              <span class="original-price">₺3,000</span>
+              <span class="text-success font-weight-bold">₺2,700</span>
+            </div>
+          </div>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Başlangıç Paket Özellikleri</li>
+            <li><span class="check">✓</span> Öncelikli Destek</li>
+            <li><span class="check">✓</span> Gelişmiş Arama</li>
+            <li><span class="check">✓</span> 300 TL Tasarruf</li>
+          </ul>
+          <a href="{% url 'subscription_payment' package='quarterly' %}" class="btn btn-success btn-pricing">Satın Al</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 Aylık Paket (ÖNERİLEN) -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card pricing-card featured text-center">
+        <div class="card-header" style="color: white;">
+          <h4>Profesyonel</h4>
+        </div>
+        <div class="card-body">
+          <div class="pricing-amount" style="color: var(--gold-accent);">
+            ₺5,200
+            <span class="discount-badge">%13 İndirim</span>
+          </div>
+          <div class="pricing-period">6 Aylık Erişim</div>
+          <div class="price-comparison">
+            <span>Aylık:</span>
+            <div>
+              <span class="original-price">₺6,000</span>
+              <span class="text-success font-weight-bold">₺5,200</span>
+            </div>
+          </div>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Popüler Paket Özellikleri</li>
+            <li><span class="check">✓</span> API Erişimi</li>
+            <li><span class="check">✓</span> Özel Raporlama</li>
+            <li><span class="check">✓</span> 800 TL Tasarruf</li>
+          </ul>
+          <a href="{% url 'subscription_payment' package='semi_annual' %}" class="btn btn-warning btn-pricing">Satın Al</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yıllık Paket -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card pricing-card text-center">
+        <div class="card-header" style="background: var(--gradient-crimson); color: white;">
+          <h4>Kurumsal</h4>
+        </div>
+        <div class="card-body">
+          <div class="pricing-amount text-danger">
+            ₺10,000
+            <span class="discount-badge">%17 İndirim</span>
+          </div>
+          <div class="pricing-period">12 Aylık Erişim</div>
+          <div class="price-comparison">
+            <span>Aylık:</span>
+            <div>
+              <span class="original-price">₺12,000</span>
+              <span class="text-success font-weight-bold">₺10,000</span>
+            </div>
+          </div>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Profesyonel Paket Özellikleri</li>
+            <li><span class="check">✓</span> Çoklu Kullanıcı (5 kişi)</li>
+            <li><span class="check">✓</span> Özel Eğitim</li>
+            <li><span class="check">✓</span> 2,000 TL Tasarruf</li>
+          </ul>
+          <a href="{% url 'subscription_payment' package='annual' %}" class="btn btn-danger btn-pricing">Satın Al</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avantajlar -->
+  <div class="comparison-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center mb-5">
+          <h3>🎯 Neden Lexatech?</h3>
+        </div>
+        <div class="col-md-4">
+          <div class="competitor-info text-center">
+            <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+            <h5>Uygun Fiyat</h5>
+            <p>Ekonomik fiyatlarla profesyonel hukuk bilgi sistemine erişim</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="competitor-info text-center">
+            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+            <h5>Güncel İçerik</h5>
+            <p>Doğrudan mevzuat.gov.tr'den çekilen en güncel mevzuat ve kararlar</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="competitor-info text-center">
+            <i class="fas fa-rocket fa-3x text-warning mb-3"></i>
+            <h5>Hızlı Erişim</h5>
+            <p>Gelişmiş AI destekli arama teknolojisi ile saniyeler içinde sonuç</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

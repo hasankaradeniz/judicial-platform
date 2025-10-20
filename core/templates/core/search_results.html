@@ -1,0 +1,565 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Arama Sonuçları - Yargı Kararları Araştırma Platformu{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --success-green: #10b981;
+    --danger-red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-800: #1f2937;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+
+  /* Header Section */
+  .search-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    color: white;
+    padding: 40px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .search-header-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .back-to-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+  }
+
+  .back-to-search:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .search-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .query-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .results-count {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-weight: 600;
+  }
+
+  /* Results Container */
+  .results-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    margin: -30px auto 60px;
+    max-width: 1200px;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .results-header {
+    background: var(--gray-50);
+    padding: 30px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .results-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin: 0 0 10px 0;
+  }
+
+  .results-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .results-info {
+    color: #666;
+    font-size: 1rem;
+  }
+
+  .sort-options {
+    display: flex;
+    gap: 10px;
+  }
+
+  .sort-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--gray-200);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+
+  .sort-btn:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+  }
+
+  .sort-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+  }
+
+  /* Decision Cards */
+  .decisions-list {
+    padding: 30px;
+  }
+
+  .decision-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .decision-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .decision-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .decision-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    text-decoration: none;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .decision-title:hover {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+
+  .decision-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #666;
+    flex-wrap: wrap;
+  }
+
+  .decision-content {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+
+  .decision-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    padding: 30px;
+    border-top: 2px solid var(--gray-100);
+    background: var(--gray-50);
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .pagination .page-item {
+    list-style: none;
+  }
+
+  .pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--gray-200);
+    background: white;
+    color: var(--gray-800);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .pagination .page-link:hover {
+    border-color: var(--primary-blue);
+    background: var(--primary-blue);
+    color: white;
+    text-decoration: none;
+  }
+
+  .pagination .page-item.active .page-link {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+  }
+
+  .pagination .page-item.disabled .page-link {
+    color: var(--gray-400);
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+    cursor: not-allowed;
+  }
+
+  .pagination .page-item.disabled .page-link:hover {
+    background: var(--gray-100);
+    color: var(--gray-400);
+  }
+
+  /* Empty Results */
+  .empty-results {
+    text-align: center;
+    padding: 60px 30px;
+    color: #666;
+  }
+
+  .empty-results i {
+    font-size: 4rem;
+    color: var(--gray-300);
+    margin-bottom: 20px;
+  }
+
+  .empty-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--gray-800);
+  }
+
+  .empty-results p {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .search-header {
+      padding: 30px 0;
+    }
+
+    .query-display {
+      font-size: 1.2rem;
+    }
+
+    .results-container {
+      margin: -20px 15px 30px;
+      border-radius: 15px;
+    }
+
+    .results-header,
+    .decisions-list,
+    .pagination-container {
+      padding: 20px;
+    }
+
+    .decision-card {
+      padding: 20px;
+    }
+
+    .search-summary {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .results-meta {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .sort-options {
+      justify-content: center;
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .pagination .page-link {
+      width: 35px;
+      height: 35px;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Loading Animation */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-header">
+  <div class="container search-header-content">
+    <a href="/judicial-decisions/" class="back-to-search">
+      <i class="fas fa-arrow-left"></i>
+      Yeni Arama Yap
+    </a>
+    
+    <div class="search-summary">
+      <h1 class="query-display">
+        {% if query %}
+          "{{ query }}"
+        {% else %}
+          Arama Sonuçları
+        {% endif %}
+      </h1>
+      
+      {% if total_decisions %}
+      <div class="results-count">
+        <i class="fas fa-balance-scale"></i>
+        {{ total_decisions }} Karar Bulundu
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="results-container">
+    {% if query and total_decisions > 0 %}
+    <div class="results-header">
+      <h2 class="results-title">Arama Sonuçları</h2>
+      <div class="results-meta">
+        <div class="results-info">
+          <i class="fas fa-clock"></i>
+          Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+          ({{ total_decisions }} sonuçtan {{ page_obj.object_list|length }} tanesi gösteriliyor)
+        </div>
+        <div class="sort-options">
+          <button class="sort-btn active" data-sort="relevance">
+            <i class="fas fa-sort-amount-down"></i>
+            İlgililik
+          </button>
+          <button class="sort-btn" data-sort="date">
+            <i class="fas fa-calendar-alt"></i>
+            Tarih
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="decisions-list" id="decisionsContainer">
+      <div style="background: yellow; padding: 10px;">        <p>Query: {{ query }}</p>        <p>Total decisions: {{ total_decisions }}</p>        <p>Decisions list length: {{ decisions|length }}</p>        <p>Newest decisions length: {{ newest_decisions|length }}</p>        <p>Page obj: {{ page_obj }}</p>      </div>
+      {% if query %}{% for decision in decisions %}{% else %}{% for decision in newest_decisions %}{% endif %}
+      <div class="decision-card">
+        <div class="decision-header">
+          <a href="/judicial/{{ decision.id }}/" class="decision-title">
+            {{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}
+          </a>
+          <div class="decision-meta">
+            <span><i class="fas fa-gavel"></i> {{ decision.karar_turu }}</span>
+            <span><i class="fas fa-calendar"></i> {{ decision.karar_tarihi|date:"d.m.Y" }}</span>
+          </div>
+        </div>
+        
+        <div class="decision-content">
+          {{ decision.karar_ozeti|truncatewords:50|linebreaksbr }}
+        </div>
+        
+        <div class="decision-footer">
+          <span>
+            <i class="fas fa-tag"></i>
+            {% if decision.relevance_score %}
+              İlgililik: {{ decision.relevance_score|floatformat:0 }}/100
+            {% else %}
+              Karar Özeti
+            {% endif %}
+          </span>
+          <a href="/judicial/{{ decision.id }}/" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-eye"></i>
+            Detayları Görüntüle
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination-container">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query|urlencode }}&page=1">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">
+              <i class="fas fa-angle-left"></i>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-left"></i></span>
+          </li>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">
+              <i class="fas fa-angle-right"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query|urlencode }}&page={{ page_obj.paginator.num_pages }}">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-right"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% elif query %}
+    <!-- Empty Results -->
+    <div class="empty-results">
+      <i class="fas fa-search"></i>
+      <h3>Sonuç Bulunamadı</h3>
+      <p>
+        "{{ query }}" için arama yapıldı ancak eşleşen karar bulunamadı.<br>
+        Farklı anahtar kelimeler deneyebilir veya arama terimlerinizi değiştirebilirsiniz.
+      </p>
+    </div>
+    {% else %}
+    <!-- No Query -->
+    <div class="empty-results">
+      <i class="fas fa-balance-scale"></i>
+      <h3>Arama Yapın</h3>
+      <p>
+        Yargı kararlarında arama yapmak için yukarıdaki "Yeni Arama Yap" butonunu kullanın.
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+// Sort functionality
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const sort = this.dataset.sort;
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sort);
+    window.location.href = url.toString();
+  });
+});
+
+// Update active sort button based on URL
+const urlParams = new URLSearchParams(window.location.search);
+const currentSort = urlParams.get('sort') || 'relevance';
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.sort === currentSort);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+"""
+Celery configuration for judicial_platform project.
+"""
+import os
+from celery import Celery
+from django.conf import settings
+
+# Django settings modülünü Celery için ayarla
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'judicial_platform.settings')
+
+app = Celery('judicial_platform')
+
+# Celery konfigürasyonu
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# Task discovery - tüm INSTALLED_APPS'ten task'ları otomatik bul
+app.autodiscover_tasks()
+
+# Celery Beat scheduler için task tanımları
+app.conf.beat_schedule = {
+    'update-faiss-index-daily': {
+        'task': 'core.tasks.update_faiss_index',
+        'schedule': 60.0 * 60.0 * 24.0,  # Her 24 saatte bir (günlük)
+        'options': {'expires': 60.0 * 60.0 * 2.0}  # 2 saat sonra expire
+    },
+    'check-index-health-every-6-hours': {
+        'task': 'core.tasks.check_index_health',
+        'schedule': 60.0 * 60.0 * 6.0,  # Her 6 saatte bir
+        'options': {'expires': 60.0 * 60.0}  # 1 saat sonra expire
+    },
+    'optimize-index-weekly': {
+        'task': 'core.tasks.optimize_faiss_index',
+        'schedule': 60.0 * 60.0 * 24.0 * 7.0,  # Haftalık
+        'options': {'expires': 60.0 * 60.0 * 4.0}  # 4 saat sonra expire
+    },
+    'warm-cache-hourly': {
+        'task': 'core.tasks.warm_application_cache',
+        'schedule': 60.0 * 60.0,  # Her saatte bir
+        'options': {'expires': 60.0 * 30.0}  # 30 dakika sonra expire
+    },
+}
+
+# Timezone ayarı
+app.conf.timezone = 'Europe/Istanbul'
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')

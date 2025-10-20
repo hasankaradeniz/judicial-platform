@@ -1,0 +1,502 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2c5aa0;
+    --secondary: #d69e2e;
+    --secondary-light: #fbd38d;
+    --success: #047857;
+    --danger: #c53030;
+    --white: #ffffff;
+    --light-gray: #f7fafc;
+    --gray: #e2e8f0;
+    --dark-gray: #4a5568;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background-color: var(--light-gray);
+  }
+
+  .hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    animation: pulse 30s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  .search-container {
+    background: white;
+    border-radius: 16px;
+    padding: 50px;
+    margin: -60px auto 60px;
+    max-width: 900px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    z-index: 10;
+  }
+
+  .search-title {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .search-description {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 18px 25px;
+    border: 2px solid var(--gray);
+    border-radius: 12px;
+    font-size: 17px;
+    transition: all 0.3s ease;
+    background: var(--white);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .search-button {
+    padding: 18px 40px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .search-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .search-button:active {
+    transform: translateY(0);
+  }
+
+  .search-examples {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .example-query {
+    display: inline-block;
+    background: var(--light-gray);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin: 2px 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .example-query:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  .features-section {
+    padding: 80px 0;
+    background: white;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-top: 50px;
+  }
+
+  .feature-card {
+    text-align: center;
+    padding: 40px 30px;
+    border-radius: 16px;
+    background: var(--light-gray);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .feature-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .feature-icon {
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+  }
+
+  .feature-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+  }
+
+  .feature-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .info-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+    color: var(--primary);
+  }
+
+  .info-content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 30px;
+    align-items: center;
+    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    padding: 40px;
+  }
+
+  .info-icon {
+    font-size: 4rem;
+    opacity: 0.8;
+  }
+
+  .info-text h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .info-text p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .search-button.loading .button-text {
+    display: none;
+  }
+
+  .search-button.loading .loading-spinner {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 60px 0;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .search-container {
+      margin: -40px 20px 40px;
+      padding: 30px 20px;
+    }
+
+    .search-form {
+      flex-direction: column;
+    }
+
+    .search-button {
+      justify-content: center;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .info-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 20px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Türk Hukuk Mevzuatı</h1>
+      <p class="hero-subtitle">
+        Türkiye Cumhuriyeti'nin güncel kanunları, yönetmelikleri ve diğer hukuki düzenlemelerine
+        <strong>mevzuat.gov.tr</strong> üzerinden gerçek zamanlı erişim
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Search Section -->
+<div class="container">
+  <div class="search-container">
+    <h2 class="search-title">Mevzuat Arama</h2>
+    <p class="search-description">
+      Kanun adı, numara, madde içeriği veya anahtar kelime ile güncel mevzuat arayın
+    </p>
+    
+    <form method="get" action="{% url 'legislation_search_new' %}" class="search-form" id="searchForm">
+      <input type="text" 
+             name="q" 
+             class="search-input" 
+             placeholder="{{ search_placeholder }}"
+             required
+             id="searchInput">
+      <button type="submit" class="search-button" id="searchButton">
+        <span class="button-text">
+          <i class="fas fa-search"></i>
+          <span>ARA</span>
+        </span>
+        <div class="loading-spinner"></div>
+      </button>
+    </form>
+    
+    <div class="search-examples">
+      <span style="margin-right: 10px;">Örnek aramalar:</span>
+      <span class="example-query" data-query="Türk Medeni Kanunu">Türk Medeni Kanunu</span>
+      <span class="example-query" data-query="4721 sayılı kanun">4721 sayılı kanun</span>
+      <span class="example-query" data-query="miras hukuku">miras hukuku</span>
+      <span class="example-query" data-query="ticaret kanunu">ticaret kanunu</span>
+      <span class="example-query" data-query="vergi usul">vergi usul</span>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+  <div class="container">
+    <h2 style="text-align: center; font-size: 2.5rem; color: var(--text-primary); margin-bottom: 20px;">
+      Neden Lexatech Mevzuat?
+    </h2>
+    <p style="text-align: center; color: var(--text-secondary); font-size: 1.2rem; max-width: 600px; margin: 0 auto;">
+      En güncel ve güvenilir mevzuat veritabanına kolay erişim
+    </p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-sync-alt"></i>
+        </div>
+        <h3 class="feature-title">Gerçek Zamanlı Veri</h3>
+        <p class="feature-description">
+          Mevzuat.gov.tr ile doğrudan entegrasyon sayesinde her zaman en güncel mevzuatlara erişim
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-search-plus"></i>
+        </div>
+        <h3 class="feature-title">Gelişmiş Arama</h3>
+        <p class="feature-description">
+          Kanun adı, numara, madde içeriği veya anahtar kelime ile hızlı ve kapsamlı arama
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <h3 class="feature-title">PDF Görüntüleme</h3>
+        <p class="feature-description">
+          Tüm mevzuatları resmi PDF formatında görüntüleme ve indirme imkanı
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3 class="feature-title">Mobil Uyumlu</h3>
+        <p class="feature-description">
+          Her cihazdan kolay erişim için responsive tasarım ve hızlı yükleme
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3 class="feature-title">Güvenli Erişim</h3>
+        <p class="feature-description">
+          SSL şifreleme ve güvenli bağlantı ile resmi kaynaklara güvenli erişim
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3 class="feature-title">7/24 Erişim</h3>
+        <p class="feature-description">
+          Kesintisiz hizmet ile istediğiniz zaman mevzuat araştırması yapın
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Section -->
+<div class="info-section">
+  <div class="container">
+    <div class="info-content">
+      <div class="info-icon">
+        <i class="fas fa-info-circle"></i>
+      </div>
+      <div class="info-text">
+        <h3>Resmi ve Güvenilir Kaynak</h3>
+        <p>
+          Bu platform, T.C. Başbakanlık mevzuat.gov.tr sitesi ile entegre çalışarak
+          Türkiye Cumhuriyeti'nin resmi mevzuat veritabanından güncel bilgileri sunar.
+          Tüm sonuçlar resmi kaynaklardan alınır ve hiçbir değişiklik yapılmaz.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const exampleQueries = document.querySelectorAll('.example-query');
+    
+    // Örnek sorguları tıklanabilir yap
+    exampleQueries.forEach(function(query) {
+        query.addEventListener('click', function() {
+            const queryText = this.getAttribute('data-query');
+            searchInput.value = queryText;
+            searchForm.submit();
+        });
+    });
+    
+    // Form submit edildiğinde loading state'i göster
+    searchForm.addEventListener('submit', function(e) {
+        const query = searchInput.value.trim();
+        if (!query) {
+            e.preventDefault();
+            alert('Lütfen aranacak ifadeyi girin');
+            return;
+        }
+        
+        searchButton.classList.add('loading');
+        searchButton.disabled = true;
+    });
+    
+    // Enter tuşu ile arama
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchForm.submit();
+        }
+    });
+});
+</script>
+{% endblock %}

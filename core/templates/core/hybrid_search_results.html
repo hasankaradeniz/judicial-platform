@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Arama Sonuçları</h2>
+  {% if results %}
+    <ul class="list-group">
+      {% for r in results %}
+        <li class="list-group-item mb-3">
+          <strong>{{ r.karar_veren_mahkeme }}</strong><br>
+          <small><strong>Esas:</strong> {{ r.esas_numarasi }} &nbsp; <strong>Tarih:</strong> {{ r.karar_tarihi }}</small>
+          <p>{{ r.karar_ozeti|truncatewords:40 }}</p>
+          <a href="{% url 'judicial_detail' r.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Sonuç bulunamadı.</p>
+  {% endif %}
+</div>
+{% endblock %}

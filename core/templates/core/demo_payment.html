@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Ödeme - Lexatech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5aa0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .payment-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .demo-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        .order-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .order-info h3 {
+            margin: 0 0 15px 0;
+            color: #1a365d;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .warning-box h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        .warning-box ul {
+            text-align: left;
+            margin: 10px 0;
+        }
+        .demo-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        .tech-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .tech-info strong {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="demo-badge">DEMO ÖDEME MODU</div>
+        
+        <div class="logo">💳 Lexatech Ödeme</div>
+        
+        <div class="order-info">
+            <h3>Sipariş Detayları</h3>
+            <div class="info-row">
+                <span>Sipariş No:</span>
+                <span><strong>{{ order_id }}</strong></span>
+            </div>
+            <div class="info-row">
+                <span>Paket:</span>
+                <span>{{ package_name }}</span>
+            </div>
+            <div class="info-row">
+                <span>Tutar:</span>
+                <span><strong>{{ amount }} TL</strong></span>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Yerel Test Ortamı Uyarısı</h4>
+            <p>Bu demo ödeme sayfası aşağıdaki nedenlerle görüntülenmektedir:</p>
+            <ul>
+                <li>Sunucu IP adresi ParamPOS test ortamında kayıtlı değil</li>
+                <li>Yerel geliştirme ortamında çalışıyorsunuz (127.0.0.1:8000)</li>
+                <li>Gerçek ödeme işlemi yapılamıyor</li>
+            </ul>
+            <p><strong>Çözüm:</strong> Production'da sunucu IP adresini ParamPOS'a kaydettiriniz.</p>
+        </div>
+        
+        <div class="tech-info">
+            <div><strong>Client Code:</strong> {{ client_code }}</div>
+            <div><strong>Tespit Edilen IP:</strong> {{ ip_address }}</div>
+            <div><strong>Test Ortamı:</strong> Aktif</div>
+        </div>
+        
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; font-size: 14px;">
+            <h4 style="margin: 0 0 10px 0; color: #1976d2;">📝 Production İçin Test Bilgileri:</h4>
+            <p style="margin: 5px 0;"><strong>IP Kaydı:</strong> {{ ip_address }} adresini ParamPOS'a kaydettiriniz</p>
+            <p style="margin: 5px 0;"><strong>Test Kartları:</strong></p>
+            <ul style="margin: 5px 0;">
+                <li>Visa: 4022774022774026 (Son Kullanma: 12/26, CVV: 000)</li>
+                <li>MasterCard: 5456165456165454 (Son Kullanma: 12/26, CVV: 000)</li>
+                <li>3D Secure Şifre: a</li>
+            </ul>
+        </div>
+        
+        <p>Demo ödeme sonucunu seçin:</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order_id }}">
+            <div class="demo-buttons">
+                <button type="submit" name="action" value="success" class="btn btn-success">
+                    ✅ Ödeme Başarılı
+                </button>
+                <button type="submit" name="action" value="fail" class="btn btn-danger">
+                    ❌ Ödeme Başarısız
+                </button>
+            </div>
+        </form>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">
+            Bu demo sayfası sadece geliştirme amaçlıdır. Gerçek ödeme işlemi yapılmamaktadır.
+        </p>
+    </div>
+</body>
+</html>
