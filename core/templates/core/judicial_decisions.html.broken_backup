@@ -1,0 +1,1869 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Yargı Kararları Araştırma Platformu - Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --primary-blue: #1e3a8a;
+    --accent-gold: #f59e0b;
+    --success-green: #10b981;
+    --danger-red: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-800: #1f2937;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    color: white;
+    padding: 80px 0 60px;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .stats-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+
+  /* Advanced Search Container */
+  .search-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    padding: 40px;
+    margin: -60px auto 60px;
+    max-width: 1000px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .search-tabs {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 30px;
+  }
+
+  .search-tab {
+    flex: 1;
+    padding: 12px 20px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    color: var(--gray-800);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .search-tab:hover {
+    background: var(--gray-100);
+    color: var(--primary-blue);
+  }
+
+  .search-tab.active {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+
+  .search-form {
+    display: none;
+  }
+
+  .search-form.active {
+    display: block;
+  }
+
+  .smart-search-input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .smart-search-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  }
+
+  .search-input-container {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    font-size: 1.2rem;
+  }
+
+  .advanced-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .filter-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .filter-group.custom-date-range {
+    grid-column: auto;
+  }
+
+  .filter-group {
+    position: relative;
+  }
+
+  .filter-label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-label i {
+    color: var(--primary-blue);
+    font-size: 0.85rem;
+  }
+
+  .filter-select, .filter-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .filter-select:focus, .filter-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  }
+
+  .search-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-search {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-search:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--gray-600);
+    border: 2px solid var(--gray-300);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-clear:hover {
+    border-color: var(--gray-400);
+    color: var(--gray-800);
+  }
+
+  /* Results Section */
+  .results-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 40px;
+    overflow: hidden;
+  }
+
+  .results-header {
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .results-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .results-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+  }
+
+  .search-time {
+    background: var(--success-green);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .results-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .sort-select {
+    padding: 8px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 8px;
+    padding: 2px;
+  }
+
+  .view-btn {
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .view-btn.active {
+    background: var(--primary-blue);
+    color: white;
+  }
+
+  /* Decision Cards */
+  .decisions-grid {
+    padding: 30px;
+  }
+
+  .decision-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .decision-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary-blue) 0%, var(--accent-gold) 100%);
+  }
+
+  .decision-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--primary-blue);
+  }
+
+  .decision-header {
+    display: flex;
+    justify-content: between;
+    align-items: start;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .court-info {
+    flex: 1;
+  }
+
+  .court-name {
+    font-weight: 700;
+    color: var(--primary-blue);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+  }
+
+  .case-number {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+  }
+
+  .decision-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .relevance-score {
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #f97316 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .decision-date {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .decision-content {
+    margin: 15px 0;
+  }
+
+  .decision-summary {
+    color: var(--gray-700);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+  }
+
+  .keyword-tag {
+    background: rgba(30, 58, 138, 0.1);
+    color: var(--primary-blue);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .decision-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .btn-detail {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .btn-detail:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-bookmark, .btn-share {
+    background: transparent;
+    border: 1px solid var(--gray-300);
+    color: var(--gray-600);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-bookmark:hover, .btn-share:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+  }
+
+  /* Loading States */
+  .loading-container {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .loading-subtext {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--gray-300);
+    margin-bottom: 20px;
+  }
+
+  .empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+  }
+
+  .empty-text {
+    color: var(--gray-500);
+    font-size: 1rem;
+    margin-bottom: 30px;
+  }
+
+  /* Simple Modern Pagination */
+  .simple-pagination {
+    margin: 40px auto;
+    max-width: 900px;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .pagination-info {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #4a5568;
+    font-size: 16px;
+  }
+
+  .pagination-info strong {
+    color: #1e3a8a;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    height: 45px;
+    padding: 0 16px;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    color: #4a5568;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .page-link:hover {
+    background: #1e3a8a;
+    border-color: #1e3a8a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+  }
+
+  .page-link.active {
+    background: #1e3a8a;
+    border-color: #1e3a8a;
+    color: white;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .page-link.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .page-link i {
+    font-size: 14px;
+  }
+
+  .page-text {
+    margin: 0 5px;
+  }
+
+  .page-dots {
+    color: #a0aec0;
+    font-weight: 700;
+    padding: 0 10px;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 640px) {
+    .simple-pagination {
+      padding: 20px;
+    }
+    
+    .page-link {
+      min-width: 38px;
+      height: 38px;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+    
+    .page-text {
+      display: none;
+    }
+    
+    .pagination-info {
+      font-size: 14px;
+    }
+    
+    .pagination-info strong {
+      font-size: 18px;
+    }
+  }
+
+  /* Statistics Section */
+  .stats-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+
+  .stats-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 30px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    border: 2px solid var(--gray-100);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--accent-gold) 100%);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-blue);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .search-container {
+      margin: -40px 20px 40px;
+      padding: 30px 20px;
+    }
+
+    .advanced-filters {
+      grid-template-columns: 1fr;
+    }
+
+    .search-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-search, .btn-clear {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .results-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .decision-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Animations */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+
+  /* Quick Filters */
+  .quick-filters {
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+
+  .quick-filter-label {
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quick-filter-label i {
+    color: var(--accent-gold);
+  }
+
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter-chip {
+    background: white;
+    border: 2px solid var(--gray-300);
+    color: var(--gray-700);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-chip:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .filter-chip.active {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+  }
+
+  /* Enhanced Filter Select Styling */
+  .filter-select option {
+    padding: 8px;
+  }
+
+  .filter-input[type="date"] {
+    cursor: pointer;
+  }
+
+  .filter-input[type="date"]::-webkit-calendar-picker-indicator {
+    color: var(--primary-blue);
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="hero-content text-center">
+      <h1 class="hero-title">⚖️ Yargı Kararı Arama Platformu</h1>
+      <p class="hero-subtitle">Kapsamlı hukuk veri tabanında gelişmiş arama teknolojisi ile hızlı ve doğru sonuçlara ulaşın</p>
+      <div class="stats-badge">
+        📊 {{ total_decisions|floatformat:0 }}+ Karar • 🔍 AI Destekli Arama • ⚡ Anlık Sonuçlar
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Advanced Search Container -->
+<div class="container">
+  <div class="search-container">
+    <!-- Search Mode Tabs -->
+    <div class="search-tabs">
+      <button class="search-tab active" onclick="switchSearchMode('simple')">
+        <i class="fas fa-search"></i> Hızlı Arama
+      </button>
+      <button class="search-tab" onclick="switchSearchMode('advanced')">
+        <i class="fas fa-sliders-h"></i> Gelişmiş Filtreler
+      </button>
+      <a href="{% url 'faiss_query:olay_gir' %}" class="search-tab">
+        <i class="fas fa-brain"></i> AI Destekli
+      </a>
+    </div>
+
+    <!-- Simple Search Form -->
+    <form id="simpleSearchForm" class="search-form active" action="/search-results/" method="GET">
+      <div class="search-input-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="simpleSearchInput" class="smart-search-input" 
+               name="q" placeholder="Arama terimini girin... (örn: boşanma nafakası, iş sözleşmesi feshi)" 
+               value="{{ query }}" autocomplete="off">
+      </div>
+      <div class="search-actions">
+        <button type="submit" class="btn-search">
+          <i class="fas fa-search"></i> Ara
+        </button>
+        <button type="button" class="btn-clear" onclick="clearSearch()">
+          <i class="fas fa-times"></i> Temizle
+        </button>
+      </div>
+    </form>
+
+    <!-- Advanced Search Form -->
+    <form id="advancedSearchForm" class="search-form" action="/search-results/" method="GET">
+      <div class="search-input-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="advancedSearchInput" class="smart-search-input" 
+               name="q" placeholder="Arama terimini girin..." value="{{ query }}">
+      </div>
+      
+      <div class="advanced-filters">
+        <!-- Row 1: Basic Filters -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-university"></i> Mahkeme Türü
+          </label>
+          <select class="filter-select" name="court_type" id="courtTypeFilter">
+            <option value="">🏛️ Tüm Mahkemeler</option>
+            <option value="yargitay">⚖️ Yargıtay</option>
+            <option value="danistay">🏛️ Danıştay</option>
+            <option value="aym">📜 Anayasa Mahkemesi</option>
+            <option value="sayistay">💰 Sayıştay</option>
+            <option value="bolge">🏢 Bölge Adliye Mahkemesi</option>
+            <option value="kvkk">🔒 KVKK</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-layer-group"></i> Daire/Dairem
+          </label>
+          <select class="filter-select" name="chamber" id="chamberFilter">
+            <option value="">Tüm Daireler</option>
+            <!-- Will be populated based on court type -->
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-calendar-alt"></i> Tarih Aralığı
+          </label>
+          <select class="filter-select" name="date_range" id="dateRangeFilter">
+            <option value="">📅 Tüm Tarihler</option>
+            <option value="today">Bugün</option>
+            <option value="week">Son 1 Hafta</option>
+            <option value="month">Son 1 Ay</option>
+            <option value="3months">Son 3 Ay</option>
+            <option value="6months">Son 6 Ay</option>
+            <option value="year">Son 1 Yıl</option>
+            <option value="custom">🗓️ Özel Tarih Aralığı</option>
+          </select>
+        </div>
+        
+        <!-- Row 2: Detailed Filters -->
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-hashtag"></i> Karar Numarası
+          </label>
+          <input type="text" class="filter-input" name="decision_number" 
+                 placeholder="Örn: 2023/1234, 2022/567">
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-file-alt"></i> Esas Numarası
+          </label>
+          <input type="text" class="filter-input" name="case_number" 
+                 placeholder="Örn: 2023/123, 2022/456">
+        </div>
+        
+        <!-- Row 3: Advanced Search Options -->
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-sort-amount-up"></i> Sonuç Sıralama
+          </label>
+          <select class="filter-select" name="sort_order">
+            <option value="relevance">🎯 İlgiye Göre</option>
+            <option value="date_desc">📅 En Yeni Tarih</option>
+            <option value="date_asc">📅 En Eski Tarih</option>
+            <option value="court_alpha">🏛️ Mahkeme A-Z</option>
+            <option value="decision_number">🔢 Karar Numarası</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="fas fa-list-ol"></i> Sayfa Başına Sonuç
+          </label>
+          <select class="filter-select" name="per_page">
+            <option value="20">20 Sonuç</option>
+            <option value="50">50 Sonuç</option>
+            <option value="100">100 Sonuç</option>
+            <option value="200">200 Sonuç</option>
+          </select>
+        </div>
+        
+        <!-- Custom Date Range (Hidden by default) -->
+        <div class="filter-group custom-date-range" id="customDateRange" style="display: none;">
+          <label class="filter-label">
+            <i class="fas fa-calendar-check"></i> Başlangıç Tarihi
+          </label>
+          <input type="date" class="filter-input" name="start_date">
+        </div>
+        
+        <div class="filter-group custom-date-range" id="customDateRangeEnd" style="display: none;">
+          <label class="filter-label">
+            <i class="fas fa-calendar-times"></i> Bitiş Tarihi  
+          </label>
+          <input type="date" class="filter-input" name="end_date">
+        </div>
+        
+        <!-- Search Within Results -->
+        <div class="filter-group full-width">
+          <label class="filter-label">
+            <i class="fas fa-search-plus"></i> Sonuçlar İçinde Ara
+          </label>
+          <input type="text" class="filter-input" name="within_results" 
+                 placeholder="Bulunan sonuçlar içinde arama yapın...">
+        </div>
+        
+        <!-- Exclude Terms -->
+        <div class="filter-group full-width">
+          <label class="filter-label">
+            <i class="fas fa-ban"></i> Hariç Tutulacak Kelimeler
+          </label>
+          <input type="text" class="filter-input" name="exclude_terms" 
+                 placeholder="Bu kelimeler içeren sonuçları hariç tut (virgülle ayırın)">
+        </div>
+      </div>
+      
+      <!-- Quick Filter Chips -->
+      <div class="quick-filters">
+        <div class="quick-filter-label">
+          <i class="fas fa-bolt"></i> Hızlı Filtreler:
+        </div>
+        <div class="filter-chips">
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('yargitay', 'recent')">
+            ⚖️ Yargıtay (Son 1 Yıl)
+          </button>
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('danistay', 'recent')">
+            🏛️ Danıştay (Son 1 Yıl)  
+          </button>
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('aym', 'all')">
+            📜 Anayasa Mahkemesi
+          </button>
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('hgk', 'all')">
+            ⚖️ Hukuk Genel Kurulu
+          </button>
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('yargitay', 'this_year')">
+            📅 Bu Yılki Kararlar
+          </button>
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('all', 'landmark')">
+            ⭐ Emsal Kararlar
+          </button>
+        </div>
+      </div>
+      
+      <div class="search-actions">
+        <button type="submit" class="btn-search">
+          <i class="fas fa-filter"></i> Filtreli Arama
+        </button>
+        <button type="button" class="btn-clear" onclick="clearAdvancedSearch()">
+          <i class="fas fa-undo"></i> Filtreleri Temizle
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Loading Indicator -->
+<div id="loadingContainer" class="container" style="display: none;">
+  <div class="results-section">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Arama yapılıyor...</div>
+      <div class="loading-subtext">En alakalı sonuçlar getiriliyor</div>
+    </div>
+  </div>
+</div>
+
+<!-- Search Results -->
+<div id="resultsContainer" class="container" style="{% if not query %}display: none;{% endif %}">
+  <div class="results-section fade-in">
+    <div class="results-header">
+      <div class="results-info">
+        <div class="results-count">{{ total_decisions|default:0 }} sonuç</div>
+        {% if search_time %}
+        <div class="search-time">{{ search_time }} ms</div>
+        {% endif %}
+        {% if query %}
+        <div style="color: var(--gray-600);">"{{ query }}" için</div>
+        {% endif %}
+      </div>
+      
+      <div class="results-controls">
+        <select class="sort-select" onchange="handleSortChange(this.value)">
+          <option value="relevance">İlgiye Göre</option>
+          <option value="date_desc">En Yeni</option>
+          <option value="date_asc">En Eski</option>
+          <option value="court">Mahkemeye Göre</option>
+        </select>
+        
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="switchView('list')">
+            <i class="fas fa-list"></i>
+          </button>
+          <button class="view-btn" onclick="switchView('grid')">
+            <i class="fas fa-th"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="decisionsContainer" class="decisions-grid">
+      <!-- Results will be populated by JavaScript -->
+    </div>
+    
+    <div id="paginationContainer" class="pagination-container" style="display: none;">
+      <!-- Pagination will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- Latest Decisions (when no search) -->
+<div id="latestDecisionsContainer" class="container" style="{% if query %}display: none;{% endif %}">
+  <div class="results-section slide-in-left">
+    <div class="results-header">
+      <div class="results-info">
+        <div class="results-count">En Yeni Kararlar</div>
+        <div style="color: var(--gray-600);">Son eklenen {{ newest_decisions|length }} karar</div>
+      </div>
+    </div>
+    
+    <div class="decisions-grid">
+      {% for decision in newest_decisions %}
+      <div class="decision-card">
+        <div class="decision-header">
+          <div class="court-info">
+            <div class="court-name">{{ decision.karar_veren_mahkeme|upper }}</div>
+            <div class="case-number">{{ decision.karar_numarasi|default:"N/A" }} • {{ decision.esas_numarasi|default:"N/A" }}</div>
+          </div>
+          <div class="decision-meta">
+            <div class="decision-date">{{ decision.karar_tarihi|default:"Tarih N/A" }}</div>
+          </div>
+        </div>
+        
+        <div class="decision-content">
+          <div class="decision-summary">{{ decision.karar_ozeti|truncatewords:25|default:"Özet mevcut değil" }}</div>
+          {% if decision.anahtar_kelimeler %}
+          <div class="keywords">
+            {% for keyword in decision.anahtar_kelimeler|slice:":3" %}
+            <span class="keyword-tag">{{ keyword }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        
+        <div class="decision-actions">
+          <a href="{% url 'judicial_detail' decision.id %}" class="btn-detail">
+            <i class="fas fa-eye"></i> Detayı Gör
+          </a>
+          <button class="btn-bookmark" onclick="bookmarkDecision({{ decision.id }})">
+            <i class="fas fa-bookmark"></i>
+          </button>
+          <button class="btn-share" onclick="shareDecision({{ decision.id }})">
+            <i class="fas fa-share"></i>
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="container">
+  <div class="stats-section">
+    <h2 class="stats-title">📊 Platform İstatistikleri</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number" data-target="{{ total_decisions }}">0</span>
+        <div class="stat-label">Toplam Karar Sayısı</div>
+      </div>
+      
+      {% for court_type, count in court_type_counts.items %}
+      {% if court_type and court_type|length > 2 %}
+      <div class="stat-card">
+        <span class="stat-number" data-target="{{ count }}">0</span>
+        <div class="stat-label">{{ court_type|title }}</div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Global variables
+let currentSearchMode = 'simple';
+let currentPage = 1;
+let currentQuery = '{{ query|escapejs }}';
+let currentSort = 'relevance';
+let isLoading = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    
+    // If there's an existing query, perform search
+    if (currentQuery) {
+        performSearch(currentQuery, 1);
+    }
+});
+
+function initializeApp() {
+    // Initialize form handlers
+    setupSearchForms();
+    
+    // Initialize counter animations
+    animateCounters();
+    
+    // Initialize autocomplete
+    initializeAutocomplete();
+    
+    // Initialize dynamic filters
+    initializeDynamicFilters();
+    
+    // Initialize quick filters
+    initializeQuickFilters();
+    
+    // Initialize page jump Enter key handler
+    initializePageJumpHandler();
+}
+
+function setupSearchForms() {
+}
+
+    
+    // Update tab states
+    document.querySelectorAll('.search-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update form visibility
+    document.querySelectorAll('.search-form').forEach(form => {
+        form.classList.remove('active');
+    });
+    
+    const activeForm = mode + 'SearchForm';
+    document.getElementById(activeForm).classList.add('active');
+}
+
+function performSearch(query, page = 1) {    // Simple redirect to search results page    const params = new URLSearchParams({        q: query,        page: page,        sort: currentSort || "relevance"    });    window.location.href = "/search-results/?" + params.toString();}
+    hideLoading();
+    
+    const container = document.getElementById('decisionsContainer');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (!data.results || data.results.length === 0) {
+        displayEmptyState();
+        return;
+    }
+    
+    // Update results count and stats
+    updateResultsHeader(data);
+    
+    // Generate results HTML
+    let html = '';
+    data.results.forEach(decision => {
+        html += generateDecisionCard(decision);
+    });
+    
+    container.innerHTML = html;
+    
+    // Update pagination
+    updatePagination(data.pagination);
+    
+    // Show results container
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateDecisionCard(decision) {
+    const keywords = decision.anahtar_kelimeler ? 
+        decision.anahtar_kelimeler.split(',').slice(0, 3).map(k => 
+            `<span class="keyword-tag">${k.trim()}</span>`
+        ).join('') : '';
+        
+    return `
+        <div class="decision-card fade-in">
+            <div class="decision-header">
+                <div class="court-info">
+                    <div class="court-name">${decision.karar_veren_mahkeme.toUpperCase()}</div>
+                    <div class="case-number">${decision.karar_numarasi || 'N/A'} • ${decision.esas_numarasi || 'N/A'}</div>
+                </div>
+                <div class="decision-meta">
+                    ${decision.relevance_score ? `<div class="relevance-score">Skor: ${decision.relevance_score.toFixed(3)}</div>` : ''}
+                    <div class="decision-date">${decision.karar_tarihi || 'Tarih N/A'}</div>
+                </div>
+            </div>
+            
+            <div class="decision-content">
+                <div class="decision-summary">${decision.karar_ozeti || 'Özet mevcut değil'}</div>
+                <div class="keywords">${keywords}</div>
+            </div>
+            
+            <div class="decision-actions">
+                <a href="/judicial/${decision.id}/" class="btn-detail">
+                    <i class="fas fa-eye"></i> Detayı Gör
+                </a>
+                <button class="btn-bookmark" onclick="bookmarkDecision(${decision.id})">
+                    <i class="fas fa-bookmark"></i>
+                </button>
+                <button class="btn-share" onclick="shareDecision(${decision.id})">
+                    <i class="fas fa-share"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function updateResultsHeader(data) {
+    const countElement = document.querySelector('.results-count');
+    const timeElement = document.querySelector('.search-time');
+    
+    if (countElement) {
+        countElement.textContent = `${data.total_decisions} sonuç`;
+    }
+    
+    if (timeElement && data.search_time) {
+        timeElement.textContent = `${data.search_time} ms`;
+    }
+}
+
+function updatePagination(pagination) {
+    const container = document.getElementById('paginationContainer');
+    
+    if (!pagination || pagination.total_pages <= 1) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Calculate displayed items range
+    const perPage = pagination.per_page || 20;
+    const startItem = (pagination.current_page - 1) * perPage + 1;
+    const endItem = Math.min(pagination.current_page * perPage, pagination.total_results);
+    
+    let html = '<div class="simple-pagination">';
+    
+    // Info section
+    html += `
+        <div class="pagination-info">
+            <strong>${pagination.total_results.toLocaleString('tr-TR')}</strong> sonuç bulundu
+            <br>
+            <span style="font-size: 14px; color: #718096;">
+                Gösterilen: ${startItem}-${endItem} | Sayfa ${pagination.current_page} / ${pagination.total_pages}
+            </span>
+        </div>
+    `;
+    
+    // Controls section
+    html += '<div class="pagination-controls">';
+    
+    // Previous button
+    if (pagination.has_previous) {
+        html += `
+            <a href="#" class="page-link" onclick="handlePaginationClick(${pagination.current_page - 1}); return false;">
+                <i class="fas fa-chevron-left"></i>
+                <span class="page-text">Önceki</span>
+            </a>
+        `;
+    } else {
+        html += `
+            <span class="page-link disabled">
+                <i class="fas fa-chevron-left"></i>
+                <span class="page-text">Önceki</span>
+            </span>
+        `;
+    }
+    
+    // Page numbers
+    const maxVisible = 5; // Maximum visible page numbers
+    let startPage = Math.max(1, pagination.current_page - 2);
+    let endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+    
+    // Adjust range
+    if (endPage - startPage < maxVisible - 1) {
+        if (startPage === 1) {
+            endPage = Math.min(maxVisible, pagination.total_pages);
+        } else {
+            startPage = Math.max(1, pagination.total_pages - maxVisible + 1);
+        }
+    }
+    
+    // First page and dots
+    if (startPage > 1) {
+        html += `<a href="#" class="page-link" onclick="handlePaginationClick(1); return false;">1</a>`;
+        if (startPage > 2) {
+            html += '<span class="page-dots">...</span>';
+        }
+    }
+    
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === pagination.current_page) {
+            html += `<span class="page-link active">${i}</span>`;
+        } else {
+            html += `<a href="#" class="page-link" onclick="handlePaginationClick(${i}); return false;">${i}</a>`;
+        }
+    }
+    
+    // Last page and dots
+    if (endPage < pagination.total_pages) {
+        if (endPage < pagination.total_pages - 1) {
+            html += '<span class="page-dots">...</span>';
+        }
+        html += `<a href="#" class="page-link" onclick="handlePaginationClick(${pagination.total_pages}); return false;">${pagination.total_pages}</a>`;
+    }
+    
+    // Next button
+    if (pagination.has_next) {
+        html += `
+            <a href="#" class="page-link" onclick="handlePaginationClick(${pagination.current_page + 1}); return false;">
+                <span class="page-text">Sonraki</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        `;
+    } else {
+        html += `
+            <span class="page-link disabled">
+                <span class="page-text">Sonraki</span>
+                <i class="fas fa-chevron-right"></i>
+            </span>
+        `;
+    }
+    
+    html += '</div>'; // Close controls
+    html += '</div>'; // Close simple-pagination
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+}
+
+function displayEmptyState() {
+    // Hide loading state when showing empty results
+    hideLoading();
+    
+    const container = document.getElementById('decisionsContainer');
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="empty-title">Sonuç bulunamadı</div>
+            <div class="empty-text">
+                Arama kriterlerinizi değiştirip tekrar deneyin.<br>
+                Daha genel terimler kullanmayı deneyebilirsiniz.
+            </div>
+            <button class="btn-search" onclick="clearSearch()">
+                <i class="fas fa-redo"></i> Yeni Arama
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('resultsContainer').style.display = 'block';
+    document.getElementById('paginationContainer').style.display = 'none';
+}
+
+function displayError(message) {
+    // Hide loading state when showing error
+    hideLoading();
+    
+    const container = document.getElementById('decisionsContainer');
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon" style="color: var(--danger-red);">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="empty-title">Hata Oluştu</div>
+            <div class="empty-text">${message}</div>
+            <button class="btn-search" onclick="location.reload()">
+                <i class="fas fa-redo"></i> Sayfayı Yenile
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('resultsContainer').style.display = 'block';
+}
+
+function showLoading() {
+    document.getElementById('loadingContainer').style.display = 'block';
+}
+
+function hideLoading() {
+    document.getElementById('loadingContainer').style.display = 'none';
+}
+
+function hideLatestDecisions() {
+    document.getElementById('latestDecisionsContainer').style.display = 'none';
+}
+
+function updateURL(query, page) {
+    const url = new URL(window.location);
+    url.searchParams.set('q', query);
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+}
+
+function handleSortChange(sortType) {
+    currentSort = sortType;
+    if (currentQuery) {
+        performSearch(currentQuery, 1);
+    }
+}
+
+function switchView(viewType) {
+    // Update view toggle buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Apply view styles (implementation depends on requirements)
+    const container = document.getElementById('decisionsContainer');
+    if (viewType === 'grid') {
+        container.style.display = 'grid';
+        container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(400px, 1fr))';
+        container.style.gap = '20px';
+    } else {
+        container.style.display = 'block';
+        container.style.gridTemplateColumns = 'none';
+        container.style.gap = 'normal';
+    }
+}
+
+function clearSearch() {
+    document.getElementById('simpleSearchInput').value = '';
+    document.getElementById('advancedSearchInput').value = '';
+    currentQuery = '';
+    
+    // Hide results and show latest decisions
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('latestDecisionsContainer').style.display = 'block';
+    
+    // Update URL
+    window.history.pushState({}, '', window.location.pathname);
+}
+
+function clearAdvancedSearch() {
+    const form = document.getElementById('advancedSearchForm');
+    form.reset();
+}
+
+function jumpToPage() {
+    const input = document.getElementById('pageJumpInput');
+    const page = parseInt(input.value);
+    const maxPage = parseInt(input.max);
+    
+    if (page >= 1 && page <= maxPage) {
+        performSearch(currentQuery, page);
+    } else {
+        alert('Geçersiz sayfa numarası!');
+        input.value = currentPage; // Reset to current page
+    }
+}
+
+// Event listener for Enter key on page jump input
+document.addEventListener('keydown', function(e) {
+    if (e.target && e.target.id === 'pageJumpInput' && e.key === 'Enter') {
+        e.preventDefault();
+        jumpToPage();
+    }
+});
+
+function initializePageJumpHandler() {
+    // Add event listener for Enter key on page jump input
+    // This will be called every time pagination is updated
+    document.addEventListener('keydown', function(e) {
+        if (e.target && e.target.id === 'pageJumpInput' && e.key === 'Enter') {
+            e.preventDefault();
+            jumpToPage();
+        }
+    });
+}
+
+
+function bookmarkDecision(decisionId) {
+    // Implementation for bookmarking
+    console.log('Bookmark decision:', decisionId);
+    // Could save to localStorage or make API call
+}
+
+function shareDecision(decisionId) {
+    // Implementation for sharing
+    const url = `${window.location.origin}/judicial/${decisionId}/`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Yargı Kararı',
+            url: url
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Link kopyalandı!');
+        });
+    }
+}
+
+function animateCounters() {
+    const counters = document.querySelectorAll('.stat-number');
+    const speed = 100;
+
+    counters.forEach(counter => {
+        const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(updateCount, 15);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        };
+
+        updateCount();
+    });
+}
+
+function initializeAutocomplete() {
+    // Simple autocomplete implementation
+    const searchInputs = ['simpleSearchInput', 'advancedSearchInput'];
+    
+    searchInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            // Add autocomplete suggestions (would typically fetch from API)
+            input.addEventListener('input', function() {
+                // Implementation for autocomplete suggestions
+            });
+        }
+    });
+}
+
+function initializeDynamicFilters() {
+    // Court type change handler
+    const courtTypeFilter = document.getElementById('courtTypeFilter');
+    const chamberFilter = document.getElementById('chamberFilter');
+    const dateRangeFilter = document.getElementById('dateRangeFilter');
+    
+    if (courtTypeFilter) {
+        courtTypeFilter.addEventListener('change', function() {
+            updateChamberOptions(this.value);
+        });
+    }
+    
+    // Date range custom handler
+    if (dateRangeFilter) {
+        dateRangeFilter.addEventListener('change', function() {
+            toggleCustomDateRange(this.value === 'custom');
+        });
+    }
+}
+
+function updateChamberOptions(courtType) {
+    const chamberFilter = document.getElementById('chamberFilter');
+    if (!chamberFilter) return;
+    
+    // Clear existing options
+    chamberFilter.innerHTML = '<option value="">Tüm Daireler</option>';
+    
+    const chamberOptions = {
+        'yargitay': [
+            '1. Hukuk Dairesi', '2. Hukuk Dairesi', '3. Hukuk Dairesi', '4. Hukuk Dairesi',
+            '5. Hukuk Dairesi', '6. Hukuk Dairesi', '7. Hukuk Dairesi', '8. Hukuk Dairesi',
+            '9. Hukuk Dairesi', '10. Hukuk Dairesi', '11. Hukuk Dairesi', '12. Hukuk Dairesi',
+            '13. Hukuk Dairesi', '14. Hukuk Dairesi', '15. Hukuk Dairesi',
+            '1. Ceza Dairesi', '2. Ceza Dairesi', '3. Ceza Dairesi', '4. Ceza Dairesi',
+            '5. Ceza Dairesi', '6. Ceza Dairesi', '7. Ceza Dairesi', '8. Ceza Dairesi',
+            'Hukuk Genel Kurulu', 'Ceza Genel Kurulu', 'Büyük Genel Kurul'
+        ],
+        'danistay': [
+            'Birinci Daire', 'İkinci Daire', 'Üçüncü Daire', 'Dördüncü Daire',
+            'Beşinci Daire', 'Altıncı Daire', 'Yedinci Daire', 'Sekizinci Daire',
+            'Dokuzuncu Daire', 'Onuncu Daire', 'On Birinci Daire', 'On İkinci Daire',
+            'On Üçüncü Daire', 'On Dördüncü Daire', 'On Beşinci Daire',
+            'İdari Dava Daireleri Kurulu', 'Vergi Dava Daireleri Kurulu', 'Dava Daireleri Genel Kurulu'
+        ],
+        'aym': [
+            'Birinci Bölüm', 'İkinci Bölüm', 'Üçüncü Bölüm', 'Genel Kurul'
+        ],
+        'sayistay': [
+            'Birinci Daire', 'İkinci Daire', 'Üçüncü Daire', 'Dördüncü Daire',
+            'Beşinci Daire', 'Altıncı Daire', 'Genel Kurul'
+        ],
+        'bolge': [
+            'Hukuk Dairesi', 'Ceza Dairesi', 'Ticaret Dairesi', 
+            'Aile Dairesi', 'İş Dairesi', 'İdare Dairesi'
+        ]
+    };
+    
+    if (chamberOptions[courtType]) {
+        chamberOptions[courtType].forEach(chamber => {
+            const option = document.createElement('option');
+            option.value = chamber;
+            option.textContent = chamber;
+            chamberFilter.appendChild(option);
+        });
+    }
+}
+
+function toggleCustomDateRange(show) {
+    const customDateRange = document.getElementById('customDateRange');
+    const customDateRangeEnd = document.getElementById('customDateRangeEnd');
+    
+    if (customDateRange && customDateRangeEnd) {
+        customDateRange.style.display = show ? 'block' : 'none';
+        customDateRangeEnd.style.display = show ? 'block' : 'none';
+    }
+}
+
+function initializeQuickFilters() {
+    // Quick filter functionality handled by onclick events in HTML
+    const filterChips = document.querySelectorAll('.filter-chip');
+    
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            // Toggle active state
+            this.classList.toggle('active');
+        });
+    });
+}
+
+function applyQuickFilter(courtType, timeRange) {
+    // Clear existing filters
+    clearAdvancedSearch();
+    
+    // Apply court type filter
+    const courtTypeFilter = document.getElementById('courtTypeFilter');
+    if (courtTypeFilter && courtType !== 'all') {
+        courtTypeFilter.value = courtType;
+        updateChamberOptions(courtType);
+    }
+    
+    // Apply time range filter
+    const dateRangeFilter = document.getElementById('dateRangeFilter');
+    if (dateRangeFilter && timeRange !== 'all') {
+        switch(timeRange) {
+            case 'recent':
+                dateRangeFilter.value = 'last_year';
+                break;
+            case 'this_year':
+                dateRangeFilter.value = 'last_year';
+                break;
+            case 'landmark':
+                // Apply special filter for landmark cases
+                const keywordFilter = document.querySelector('select[name="keyword_type"]');
+                if (keywordFilter) {
+                    keywordFilter.value = 'legal_terms';
+                }
+                break;
+        }
+    }
+    
+    // Special handling for Hukuk Genel Kurulu
+    if (courtType === 'hgk') {
+        courtTypeFilter.value = 'yargitay';
+        updateChamberOptions('yargitay');
+        const chamberFilter = document.getElementById('chamberFilter');
+        if (chamberFilter) {
+            chamberFilter.value = 'Hukuk Genel Kurulu';
+        }
+    }
+    
+    // Update active chip state
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Automatically perform search if there's a query
+    if (currentQuery) {
+        const form = document.getElementById('advancedSearchForm');
+        const formData = new FormData(form);
+        const query = formData.get('q') || currentQuery;
+        performAdvancedSearch(query, formData);
+    }
+}
+
+function performAdvancedSearch(query, formData) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    currentQuery = query;
+    
+    // Show loading state
+    showLoading();
+    hideLatestDecisions();
+    
+    // Build search parameters
+    const searchParams = new URLSearchParams();
+    searchParams.set('q', query);
+    
+    // Add all form data to search params
+    for (let [key, value] of formData.entries()) {
+        if (value && value.trim()) {
+            searchParams.set(key, value);
+        }
+    }
+    
+    // Update URL
+    const url = new URL(window.location);
+    url.search = searchParams.toString();
+    window.history.pushState({}, '', url);
+    
+    // Make AJAX request
+    fetch(`?${searchParams.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayResults(data);
+    })
+    .catch(error => {
+        console.error('Advanced search error:', error);
+        displayError('Gelişmiş arama sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+    })
+    .finally(() => {
+        hideLoading();
+        isLoading = false;
+    });
+}
+
+function clearAdvancedSearch() {
+    const form = document.getElementById('advancedSearchForm');
+    if (form) {
+        form.reset();
+        toggleCustomDateRange(false);
+        
+        // Reset chamber options
+        const chamberFilter = document.getElementById('chamberFilter');
+        if (chamberFilter) {
+            chamberFilter.innerHTML = '<option value="">Tüm Daireler</option>';
+        }
+        
+        // Clear quick filter states
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+    }
+}
+
+function handlePaginationClick(page) {
+    if (currentSearchMode === 'simple') {
+        performSearch(currentQuery, page);
+    } else if (currentSearchMode === 'advanced') {
+        const form = document.getElementById('advancedSearchForm');
+        const formData = new FormData(form);
+        performAdvancedSearch(currentQuery, formData, page);
+    }
+}
+
+// Global function for pagination
+window.performSearch = performSearch;
+window.applyQuickFilter = applyQuickFilter;
+window.handlePaginationClick = handlePaginationClick;
+</script>
+{% endblock %}

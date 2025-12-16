@@ -1,3 +1,4 @@
+import logging
 # core/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -10,7 +11,6 @@ from django.db.models import Q
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,9 @@ from random import sample
 from .models import Article
 from .param_payment_service import ParamPaymentService
 from .param_simple_service import ParamSimpleService
+from .param_simple_service import ParamSimpleService
+from .param_shared_payment_service import ParamSharedPaymentService
+from .param_modal_service import ParamModalService
 
 def voice_assistant(request):
     """Sesli asistan ana sayfası"""
@@ -160,31 +163,49 @@ def about(request):
     return render(request, 'core/about.html')
 
 def combined_search_results(request):
+    """
+    Kelime bazlı arama sistemi - her kelimeyi ayrı ayrı arar
+    """
     query = request.GET.get('q', '')
-    area = request.GET.get('area', 'both')  # varsayılan "both", yani tüm alanlarda arama
+    area = request.GET.get('area', 'both')
 
     judicial_results = JudicialDecision.objects.none()
     legislation_results = Legislation.objects.none()
     article_results = Article.objects.none()
 
     if query:
-        if area in ['judicial', 'both']:
-            judicial_results = JudicialDecision.objects.filter(
-                Q(karar_ozeti__icontains=query) |
-                Q(anahtar_kelimeler__icontains=query) |
-                Q(karar_tam_metni__icontains=query)
-            )
-        if area in ['legislation', 'both']:
-            legislation_results = Legislation.objects.filter(
-                Q(baslik__icontains=query) |
-                Q(konu__icontains=query)
-            )
-        if area in ['articles', 'both']:
-            article_results = Article.objects.filter(
-                Q(makale_basligi__icontains=query) |
-                Q(makale_ozeti__icontains=query) |
-                Q(makale_metni__icontains=query)
-            )
+        # Sorguyu kelimelere ayır ve boş kelimeleri filtrele
+        words = [word.strip() for word in query.split() if word.strip()]
+        
+        if words and area in ['judicial', 'both']:
+            # Her kelime için Q objesi oluştur
+            q_objects = Q()
+            for word in words:
+                q_objects &= (
+                    Q(karar_ozeti__icontains=word) |
+                    Q(anahtar_kelimeler__icontains=word) |
+                    Q(karar_tam_metni__icontains=word)
+                )
+            judicial_results = JudicialDecision.objects.filter(q_objects)
+            
+        if words and area in ['legislation', 'both']:
+            q_objects = Q()
+            for word in words:
+                q_objects &= (
+                    Q(baslik__icontains=word) |
+                    Q(konu__icontains=word)
+                )
+            legislation_results = Legislation.objects.filter(q_objects)
+            
+        if words and area in ['articles', 'both']:
+            q_objects = Q()
+            for word in words:
+                q_objects &= (
+                    Q(makale_basligi__icontains=word) |
+                    Q(makale_ozeti__icontains=word) |
+                    Q(makale_metni__icontains=word)
+                )
+            article_results = Article.objects.filter(q_objects)
 
     context = {
         'query': query,
@@ -198,7 +219,6 @@ def combined_search_results(request):
 
 from django.db.models import Count, Q
 from core.models import JudicialDecision
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -250,20 +270,13 @@ def judicial_decisions(request):
             where_clauses = []
             params = []
             
-            # Full-text search varsa
+            # Basit arama
             if query:
-                select_sql += """,
-                       ts_rank(to_tsvector('turkish', COALESCE(karar_ozeti, '') || ' ' || 
-                                         COALESCE(anahtar_kelimeler, '') || ' ' || 
-                                         COALESCE(karar_tam_metni, '')), 
-                              plainto_tsquery('turkish', %s)) as rank"""
-                where_clauses.append("""
-                    to_tsvector('turkish', COALESCE(karar_ozeti, '') || ' ' || 
-                                          COALESCE(anahtar_kelimeler, '') || ' ' || 
-                                          COALESCE(karar_tam_metni, '')) 
-                    @@ plainto_tsquery('turkish', %s)
-                """)
-                params.extend([query, query])
+                select_sql += ", 1 as rank"
+                words = query.split()[:3]  # Max 3 kelime
+                for word in words:
+                    where_clauses.append("karar_ozeti ILIKE %s")
+                    params.append(f"%{word.strip()}%")
             else:
                 select_sql += ", 0 as rank"
             
@@ -339,7 +352,6 @@ def judicial_decisions(request):
             params.extend([per_page, offset])
             
             # Query timeout ayarla (30 saniye)
-            cursor.execute("SET statement_timeout = '30s'")
             
             # Performance için LIMIT optimize et
             max_search_limit = 10000  # Çok büyük sonuçları sınırla
@@ -353,6 +365,8 @@ def judicial_decisions(request):
                 if where_clauses:  # Filtre varsa tam count
                     count_sql = "SELECT COUNT(*) FROM core_judicialdecision" + where_sql
                     count_params = params[:-2] if params else []
+                    # Aynı parametreleri stats için de kullan
+                    stats_count_params = count_params
                     cursor.execute(count_sql, count_params)
                     total_results = cursor.fetchone()[0]
                     
@@ -360,12 +374,13 @@ def judicial_decisions(request):
                     if total_results > max_search_limit:
                         total_results = max_search_limit
                 else:  # Filtre yoksa estimate count kullan (çok hızlı)
-                    cursor.execute("SELECT reltuples::BIGINT AS estimate FROM pg_class WHERE relname = 'core_judicialdecision'")
+                    cursor.execute('SELECT COUNT(*) FROM core_judicialdecision')
                     total_results = cursor.fetchone()[0] or 0
                 
             except Exception as e:
                 # Query timeout veya hata durumunda boş sonuç döndür
-                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Query: {query}, Total Results: {total_results}, SQL: {full_sql[:200]}")
                 logger = logging.getLogger(__name__)
                 logger.error(f"Database query error: {str(e)}")
                 results = []
@@ -373,7 +388,7 @@ def judicial_decisions(request):
                 count_params = []
             finally:
                 # Timeout'u resetle
-                cursor.execute("RESET statement_timeout")
+                stats_count_params = []
         
         # Sonuçları Django objelerine çevir
         decisions = []
@@ -389,6 +404,7 @@ def judicial_decisions(request):
                 'relevance_score': row[7] if len(row) > 7 else 0
             })()
             decisions.append(decision)
+        print(f"Added decision to list. Total: {len(decisions)}")
         
         # Sayfalama nesnesi oluştur
         from django.core.paginator import Page
@@ -402,14 +418,16 @@ def judicial_decisions(request):
         
         if court_type_counts is None:
             with connection.cursor() as cursor:
-                stats_sql = "SELECT karar_turu, COUNT(*) as total FROM core_judicialdecision" + where_sql + " GROUP BY karar_turu"
-                # count_params tanımını güvenli hale getir
-                safe_count_params = locals().get('count_params', params[:-2] if params else [])
-                cursor.execute(stats_sql, safe_count_params)
-                court_type_counts = {row[0]: row[1] for row in cursor.fetchall()}
-            cache.set(cache_key_search_stats, court_type_counts, 300)  # 5 dakika
+                pass  # Placeholder
+                #                 stats_sql = "SELECT karar_turu, COUNT(*) as total FROM core_judicialdecision" + where_sql + " GROUP BY karar_turu"
+                #                 # count_params tanımını güvenli hale getir
+                #                 safe_count_params = count_params if "count_params" in locals() and len(count_params) > 0 else []
+                #                 cursor.execute(stats_sql, safe_count_params)
+                #                 court_type_counts = {row[0]: row[1] for row in cursor.fetchall()}
+                #             cache.set(cache_key_search_stats, court_type_counts, 300)  # 5 dakika
         
         search_time = round((time.time() - start_time) * 1000, 2)
+        court_type_counts = {}
         
         if is_ajax:
             return JsonResponse({
@@ -468,7 +486,6 @@ def judicial_decisions(request):
             newest_decisions = PageObj(decisions, page_obj)
         except Exception as e:
             # Fallback if PageObj creation fails
-            import logging
             logger = logging.getLogger(__name__)
             logger.error(f"PageObj creation error: {str(e)}")
             newest_decisions = decisions[:15]  # Simple fallback
@@ -514,6 +531,8 @@ def judicial_decisions(request):
     context = {
         'query': query,
         'newest_decisions': newest_decisions,
+        'page_obj': newest_decisions,
+        'decisions': results,
         'court_type_counts': court_type_counts,
         'total_decisions': total_decisions,
         'is_paginated': getattr(newest_decisions, 'has_other_pages', lambda: False)(),
@@ -996,7 +1015,7 @@ def api_search(request):
         results.append({
             'id': decision.id,
             'title': decision.karar_turu,
-            'summary': decision.karar_ozeti[:200] if decision.karar_ozeti else '',
+            'summary': decision.karar_ozeti if decision.karar_ozeti else '',
             'court': decision.karar_veren_mahkeme,
             'date': str(decision.karar_tarihi) if decision.karar_tarihi else ''
         })
@@ -1022,6 +1041,8 @@ def search_results(request):
         'filter': decision_filter,
         'results': results,
         'newest_decisions': newest_decisions,
+        'page_obj': newest_decisions,
+        'decisions': results,
         'random_decisions': random_decisions,
         'total_decisions': total_decisions,
         'court_counts': court_counts_json,
@@ -1057,19 +1078,25 @@ def subscription_payment(request, package):
             error = "Lütfen tüm alanları doldurun."
             return render(request, 'core/subscription_payment.html', {'error': error, 'package': package})
 
-        # Kullanıcı bilgilerini hazırla (kart bilgileri test için)
+        # Form verilerinden kart bilgilerini al
+        card_owner = request.POST.get("card_owner")
+        card_number = request.POST.get("card_number").replace(" ", "")  # Boşlukları temizle
+        expire_month = request.POST.get("expire_month")
+        expire_year = request.POST.get("expire_year")
+        cvc = request.POST.get("cvc")
+
+        # Kullanıcı bilgilerini hazırla
         user_data = {
-            'name': customer_name,
-            'phone': customer_phone,
-            'address': address,
-            'tc_or_vergi_no': tc_or_vergi_no,
-            # Test kart bilgileri (production'da form'dan alınacak)
-            'card_owner': customer_name,
-            'card_number': '4022774022774026',
-            'expire_month': '12',
-            'expire_year': '2026',
-            'cvc': '000',
-            'gsm': customer_phone if customer_phone.startswith('5') else f'5{customer_phone[-9:]}'
+            "name": customer_name,
+            "phone": customer_phone,
+            "address": address,
+            "tc_or_vergi_no": tc_or_vergi_no,
+            "card_owner": card_owner,
+            "card_number": card_number,
+            "expire_month": expire_month,
+            "expire_year": expire_year,
+            "cvc": cvc,
+            "gsm": customer_phone if customer_phone.startswith("5") else f"5{customer_phone[-9:]}"
         }
 
         # Ödeme kaydı oluştur
@@ -1101,21 +1128,16 @@ def subscription_payment(request, package):
         }
 
         # Ödeme URL'i başarılı mı kontrol et
+        logger.info(f"Payment result: {payment_result}")
         if payment_result['success']:
-            if payment_result.get('requires_redirect'):
-                # Form-based payment için redirect template'i
-                if payment_result.get('is_form'):
-                    return render(request, 'core/payment_redirect.html', {
-                        'is_form_submission': True,
-                        'payment_url': payment_result['payment_url'],
-                        'form_params': payment_result.get('form_params', {}),
-                        'order_id': payment_result['order_id'],
-                        'package': package,
-                        'amount': payment_result['amount']
-                    })
-                else:
-                    # 3D Secure veya demo sayfasına redirect et
-                    return redirect(payment_result['payment_url'])
+            if payment_result.get("is_html_form"):
+                # UCD_HTML formu göster
+                return render(request, "core/payment_3d_form.html", {
+                    "html_content": payment_result.get("html_content", "")
+                })
+            elif payment_result.get("requires_redirect"):
+                # 3D Secure veya demo sayfasına redirect et
+                return redirect(payment_result['payment_url'])
             else:
                 # Direct payment success
                 return redirect('payment_success')
@@ -1139,15 +1161,93 @@ def subscription_payment(request, package):
     return render(request, 'core/subscription_payment.html', context)
 
 @csrf_exempt
-@require_POST
 def payment_success(request):
+    logger.info(f"=== PAYMENT SUCCESS CALLBACK ===")
+    logger.info(f"Method: {request.method}")
+    logger.info(f"GET params: {request.GET.dict()}")
+    logger.info(f"POST params: {request.POST.dict()}")
+    logger.info(f"Headers: {dict(request.headers)}")
+    logger.info(f"Session payment_data: {request.session.get("payment_data", {})}")
+    logger.info(f"=== END CALLBACK DATA ===")
+
+    # Test mode bypass
+    if False:  # Temporarily disabled - settings.PARAM_TEST_MODE and request.method == "GET":
+        # Session'dan payment bilgilerini al
+        payment_data = request.session.get("payment_data", {})
+        if payment_data:
+            order_id = payment_data.get("order_id")
+            try:
+                payment = Payment.objects.get(order_id=order_id)
+                payment.status = "success"
+                payment.transaction_id = "TEST_" + str(payment.id)
+                payment.save()
+                
+                # Abonelik oluştur
+                subscription, created = Subscription.objects.get_or_create(user=payment.user)
+                subscription.plan = payment.package
+                subscription.accepted_terms = payment_data.get("accepted_terms", False)
+                subscription.accepted_sale = payment_data.get("accepted_sale", False)
+                subscription.accepted_delivery = payment_data.get("accepted_delivery", False)
+                subscription.start_date = timezone.now()
+                subscription.tc_or_vergi_no = payment_data.get("tc_or_vergi_no", "")
+                subscription.address = payment_data.get("address", "")
+                subscription.end_date = None
+                subscription.save()
+                
+                if "payment_data" in request.session:
+                    del request.session["payment_data"]
+                
+                return redirect("subscription_success")
+            except Payment.DoesNotExist:
+                pass
+
     """
     Param Pos'dan gelen başarılı ödeme callback'i
     """
-    param_service = ParamPaymentService()
+    # 3D Secure callback için ParamSimpleService kullan
+    if request.method == "POST" and request.POST.get("md"):
+        param_service = ParamSimpleService()
+        callback_data = request.POST.dict()
+        logger.info(f"Using ParamSimpleService for 3D callback")
+        
+        # 3D ödemeyi tamamla
+        payment_result = param_service.complete_3d_payment(request, callback_data)
+        
+        if payment_result["success"]:
+            try:
+                # orderId ile Payment kaydını bul
+                order_id = callback_data.get("orderId")
+                payment = Payment.objects.get(order_id=order_id)
+                payment.status = "success"
+                payment.transaction_id = payment_result.get("transaction_id", payment_result.get("dekont_id"))
+                payment.param_response = callback_data
+                payment.save()
+                
+                # Kullanıcıyı ve abonelik bilgilerini Payment kaydından al
+                subscription, created = Subscription.objects.get_or_create(user=payment.user)
+                subscription.plan = payment.package
+                subscription.start_date = timezone.now()
+                subscription.end_date = None
+                subscription.save()
+                
+                # Kullanıcıyı login yap (session kaybolduğu için)
+                from django.contrib.auth import login
+                login(request, payment.user, backend="django.contrib.auth.backends.ModelBackend")
+                
+                return redirect("subscription_success")
+                
+            except Payment.DoesNotExist:
+                return render(request, "core/payment_error.html", {"error": "Ödeme kaydı bulunamadı."})
+        else:
+            return render(request, "core/payment_error.html", {"error": payment_result.get("error", "3D doğrulama başarısız.")})
+    else:
+        # Eski kod (ParamPaymentService) için
+        param_service = ParamPaymentService()
     
     try:
         # POST verilerini al
+        logger.info(f"3D Callback POST data: {response_data}")
+        logger.info(f"3D Callback method: {request.method}")
         response_data = request.POST.dict()
         
         # Ödeme sonucunu doğrula
@@ -1222,7 +1322,45 @@ def demo_payment(request):
     amount = request.GET.get('amount', '0')
     package = request.GET.get('package', 'monthly')
     
-    param_service = ParamPaymentService()
+    # 3D Secure callback için ParamSimpleService kullan
+    if request.method == "POST" and request.POST.get("md"):
+        param_service = ParamSimpleService()
+        callback_data = request.POST.dict()
+        logger.info(f"Using ParamSimpleService for 3D callback")
+        
+        # 3D ödemeyi tamamla
+        payment_result = param_service.complete_3d_payment(request, callback_data)
+        
+        if payment_result["success"]:
+            try:
+                # orderId ile Payment kaydını bul
+                order_id = callback_data.get("orderId")
+                payment = Payment.objects.get(order_id=order_id)
+                payment.status = "success"
+                payment.transaction_id = payment_result.get("transaction_id", payment_result.get("dekont_id"))
+                payment.param_response = callback_data
+                payment.save()
+                
+                # Kullanıcıyı ve abonelik bilgilerini Payment kaydından al
+                subscription, created = Subscription.objects.get_or_create(user=payment.user)
+                subscription.plan = payment.package
+                subscription.start_date = timezone.now()
+                subscription.end_date = None
+                subscription.save()
+                
+                # Kullanıcıyı login yap (session kaybolduğu için)
+                from django.contrib.auth import login
+                login(request, payment.user, backend="django.contrib.auth.backends.ModelBackend")
+                
+                return redirect("subscription_success")
+                
+            except Payment.DoesNotExist:
+                return render(request, "core/payment_error.html", {"error": "Ödeme kaydı bulunamadı."})
+        else:
+            return render(request, "core/payment_error.html", {"error": payment_result.get("error", "3D doğrulama başarısız.")})
+    else:
+        # Eski kod (ParamPaymentService) için
+        param_service = ParamPaymentService()
     package_name = param_service.get_package_description(package)
     
     if request.method == 'POST':
@@ -1248,22 +1386,23 @@ def demo_payment(request):
 @csrf_exempt
 def payment_3d_callback(request):
     """
-    3D Secure callback handler (Param POS)
+    3D Secure callback handler
+    Query param: ?durum=basarili veya ?durum=hata
     """
+    durum = request.GET.get('durum')
+    param_service = ParamSimpleService()
+    
+    if durum != 'basarili':
+        # 3D doğrulama başarısız
+        return render(request, 'core/payment_error.html', {
+            'error': '3D Secure doğrulama başarısız oldu.'
+        })
+    
     try:
         # POST verilerini al
+        logger.info(f"3D Callback POST data: {response_data}")
+        logger.info(f"3D Callback method: {request.method}")
         callback_data = request.POST.dict()
-        
-        # GET parametresinden durum al
-        durum = request.GET.get('durum')
-        
-        # Basit durum kontrolü
-        if durum == 'hata':
-            return render(request, 'core/payment_error.html', {
-                'error': '3D Secure doğrulama başarısız oldu.'
-            })
-        
-        param_service = ParamSimpleService()
         
         # 3D ödemeyi tamamla
         payment_result = param_service.complete_3d_payment(request, callback_data)
@@ -1533,38 +1672,14 @@ def legislation_home(request):
     return render(request, 'core/legislation_home.html', context)
 
 def mevzuat_pdf_view(request):
-    """Mevzuat PDF görüntüleyici - Parametrelerden PDF URL oluşturur"""
-    # Parametreleri al
-    mevzuat_no = request.GET.get('no')
-    mevzuat_tur = request.GET.get('tur')
-    mevzuat_tertip = request.GET.get('tertip')
-    title = request.GET.get('title', 'Mevzuat')
+    """Mevzuat PDF görüntüleyici"""
+    url = request.GET.get('url', '')
+    if not url:
+        return JsonResponse({'error': 'URL parametresi eksik'}, status=400)
     
-    # Eğer direkt URL verilmişse onu kullan
-    direct_url = request.GET.get('url')
-    if direct_url:
-        context = {
-            'pdf_url': direct_url,
-            'title': title
-        }
-        return render(request, 'core/mevzuat_pdf_viewer.html', context)
-    
-    # Parametrelerden URL oluştur
-    if not all([mevzuat_no, mevzuat_tur, mevzuat_tertip]):
-        return JsonResponse({'error': 'Gerekli parametreler eksik (no, tur, tertip)'}, status=400)
-    
-    # PDF URL'sini oluştur
-    pdf_url = f"https://www.mevzuat.gov.tr/MevzuatMetin/{mevzuat_tur}.{mevzuat_tertip}.{mevzuat_no}.pdf"
-    
-    context = {
-        'pdf_url': pdf_url,
-        'title': title,
-        'mevzuat_no': mevzuat_no,
-        'back_url': request.META.get('HTTP_REFERER', reverse('legislation_home'))
-    }
-    
-    # mevzuat_pdf_viewer.html template'ini kullan
-    return render(request, 'core/mevzuat_pdf_viewer.html', context)
+    context = {'pdf_url': url}
+    return render(request, 'core/pdf_viewer.html', context)
+
 def legislation_detail(request, mevzuat_id):
     """
     Mevzuat detay sayfası
@@ -1706,101 +1821,43 @@ def legislation_home_new(request):
 
 def legislation_search_new(request):
     """
-    Mevzuat.gov.tr'de arama - Selenium ile sonuçları çekip göster
+    Mevzuat.gov.tr'de arama - Direkt yönlendirme çözümü
     """
-    from .improved_selenium_service import ImprovedSeleniumMevzuatService
     from urllib.parse import quote_plus
-    import time
     
     query = request.GET.get('q', '').strip()
-    page = int(request.GET.get('page', 1))
     
     if not query:
         return redirect('legislation_home')
     
-    # Redirect modu (isteğe bağlı)
-    redirect_mode = request.GET.get('redirect', 'false').lower() == 'true'
+    # URL-safe query oluştur
+    encoded_query = quote_plus(query)
+    
+    # Mevzuat.gov.tr'ye POST ile arama yapmak için form oluştur
+    mevzuat_search_url = f"https://www.mevzuat.gov.tr/aramasonuc"
+    
+    # Kullanıcıya seçenek sun: iframe veya direkt redirect
+    redirect_mode = request.GET.get('redirect', 'false') == 'true'
     
     if redirect_mode:
-        # Doğrudan mevzuat.gov.tr'ye yönlendir
-        encoded_query = quote_plus(query)
+        # Direkt yönlendirme - GET parametresi ile
         redirect_url = f"https://www.mevzuat.gov.tr/aramasonuc?AranacakMetin={encoded_query}"
         return redirect(redirect_url)
     
-    try:
-        # Selenium ile arama yap
-        start_time = time.time()
-        service = ImprovedSeleniumMevzuatService(headless=True)
-        search_results = service.search_legislation(query, page)
-        search_time = round(time.time() - start_time, 2)
-        
-        # Sonuçlar varsa göster
-        if search_results.get('results'):
-            # Sayfalama bilgilerini hazırla
-            page_range = []
-            total_pages = search_results.get('total_pages', 1)
-            current_page = search_results.get('current_page', 1)
-            
-            # Basit sayfalama mantığı
-            start_page = max(1, current_page - 2)
-            end_page = min(total_pages, current_page + 2)
-            
-            for i in range(start_page, end_page + 1):
-                page_range.append(i)
-            
-            # Başlangıç ve bitiş indekslerini hesapla
-            per_page = 10
-            start_index = (current_page - 1) * per_page + 1
-            end_index = min(current_page * per_page, search_results.get('total_count', 0))
-            
-            context = {
-                'query': query,
-                'results': search_results.get('results', []),
-                'total_count': search_results.get('total_count', 0),
-                'has_next': search_results.get('has_next', False),
-                'has_previous': search_results.get('has_previous', False),
-                'current_page': current_page,
-                'total_pages': total_pages,
-                'page_range': page_range,
-                'start_index': start_index,
-                'end_index': end_index,
-                'search_time': search_time,
-                'error': search_results.get('error'),
-                'iframe_mode': False,
-                'show_post_form': False  # Sonuç bulunduğunda POST form gösterme
-            }
-        else:
-            # Sonuç yoksa veya hata varsa boş sonuç göster
-            context = {
-                'query': query,
-                'results': [],
-                'total_count': 0,
-                'has_next': False,
-                'has_previous': False,
-                'current_page': page,
-                'total_pages': 1,
-                'search_time': search_time,
-                'error': search_results.get('error') or 'Sonuç bulunamadı',
-                'iframe_mode': False,
-                'show_post_form': False
-            }
-        
-        return render(request, 'core/legislation_search_results.html', context)
-        
-    except Exception as e:
-        logger.error(f"Mevzuat arama hatası: {e}")
-        
-        # Hata durumunda da boş sonuç göster
-        context = {
-            'query': query,
-            'results': [],
-            'total_count': 0,
-            'error': f'Arama sırasında bir hata oluştu: {str(e)}',
-            'iframe_mode': False,
-            'show_post_form': False
-        }
-        
-        return render(request, 'core/legislation_search_results.html', context)
+    # Alternatif: POST formu ile yönlendirme sayfası göster
+    context = {
+        'query': query,
+        'encoded_query': encoded_query,
+        'mevzuat_search_url': mevzuat_search_url,
+        'post_mode': True,
+        'results': [],
+        'total_count': 0,
+        'error': None
+    }
+    
+    return render(request, 'core/legislation_search_results.html', context)
+
+def mevzuat_pdf_viewer(request):
     """
     Mevzuat PDF görüntüleyici
     """
@@ -1853,3 +1910,152 @@ def mevzuat_search_page(request):
     })
 
 
+from .callback_view import payment_callback
+
+
+def judicial_decisions_home(request):
+    """Ana yargı kararları sayfası - sadece arama formu"""
+    context = {
+        'query': '',
+        'decisions': [],
+        'newest_decisions': [],
+        'total_decisions': 0
+    }
+    return render(request, 'core/judicial_decisions.html', context)
+def search_results_view(request):
+    """Local cache ile optimize edilmiş arama sonuçları"""
+    from django.core.paginator import Paginator
+    from django.db.models import Q
+    from django.core.cache import cache
+    from core.models import JudicialDecision
+    import hashlib
+    import time
+    
+    # Arama parametreleri
+    query = request.GET.get('q', '').strip()
+    page_number = request.GET.get('page', 1)
+    sort_order = request.GET.get('sort', 'relevance')
+    
+    # Boş liste ile başla
+    decisions = []
+    total_count = 0
+    page_obj = None
+    
+    if query:
+        # Cache key oluştur (query + sort için unique)
+        cache_key_base = hashlib.md5(f"search_{query}_{sort_order}".encode()).hexdigest()[:16]
+        
+        # Ana sonuçlar için cache key
+        results_cache_key = f"results_{cache_key_base}"
+        count_cache_key = f"count_{cache_key_base}"
+        
+        # Cache'den kontrol et
+        cached_results = cache.get(results_cache_key)
+        cached_count = cache.get(count_cache_key)
+        
+        if cached_results is not None and cached_count is not None:
+            # Cache'den al
+            print(f"Cache HIT: {query[:20]}")
+            all_results = cached_results
+            total_count = cached_count
+        else:
+            # Cache MISS - veritabanından al
+            print(f"Cache MISS: {query[:20]} - DB Query")
+            start_time = time.time()
+            
+            # Kelime bazlı arama (3 kelimeye kadar)
+            words = query.split()[:3]
+            
+            # Q objects oluştur
+            q_objects = Q()
+            for word in words:
+                if word:
+                    q_objects &= Q(karar_ozeti__icontains=word)
+            
+            # Veritabanı sorgusu
+            if q_objects:
+                results_query = JudicialDecision.objects.filter(q_objects).select_related()
+                
+                # Sıralama
+                if sort_order == 'date':
+                    results_query = results_query.order_by('-karar_tarihi')
+                else:
+                    results_query = results_query.order_by('-id')
+                
+                # Toplam sayı
+                total_count = results_query.count()
+                
+                # İlk 100 sonucu cache'le (5 sayfa)
+                all_results = list(results_query[:500])
+                
+                # Cache'e kaydet (15 dakika) - memory tasarrufu için kısa süre
+                cache.set(results_cache_key, all_results, 900)  # 15 dakika
+                cache.set(count_cache_key, total_count, 900)
+                
+                db_time = time.time() - start_time
+                print(f"DB Query: {db_time:.2f}s, {total_count} total, cached {len(all_results)}")
+            else:
+                all_results = []
+                total_count = 0
+        
+        # Sayfalama
+        if all_results:
+            paginator = Paginator(all_results, 20)
+            try:
+                page_obj = paginator.get_page(page_number)
+                decisions = list(page_obj)
+                
+                # Cache dışı sayfa istendiyse (5+ sayfa)
+                if int(page_number) > 25:
+                    print(f"Page {page_number} beyond cache - DB query")
+                    # DB'den direkt al
+                    words = query.split()[:3]
+                    q_objects = Q()
+                    for word in words:
+                        if word:
+                            q_objects &= Q(karar_ozeti__icontains=word)
+                    
+                    if q_objects:
+                        results_query = JudicialDecision.objects.filter(q_objects).select_related()
+                        if sort_order == 'date':
+                            results_query = results_query.order_by('-karar_tarihi')
+                        else:
+                            results_query = results_query.order_by('-id')
+                        
+                        paginator = Paginator(results_query, 20)
+                        page_obj = paginator.get_page(page_number)
+                        decisions = list(page_obj)
+                    
+            except Exception as e:
+                print(f"Pagination error: {e}")
+                paginator = Paginator([], 20)
+                page_obj = paginator.get_page(1)
+                decisions = []
+        else:
+            paginator = Paginator([], 20)
+            page_obj = paginator.get_page(1)
+    else:
+        # Sorgu yok
+        paginator = Paginator([], 20)
+        page_obj = paginator.get_page(1)
+    
+    # Word count filter - exclude decisions with less than 1500 words
+#     if decisions:
+#         filtered_decisions = []
+#         for decision in decisions:
+#             if decision.karar_tam_metni:
+#                 word_count = len(decision.karar_tam_metni.split())
+#                 if word_count >= 1500:
+#                     filtered_decisions.append(decision)
+#         decisions = filtered_decisions
+    # Context oluştur
+    context = {
+        'query': query,
+        'decisions': decisions,
+        'page_obj': page_obj,
+        'total_count': total_count,
+        'sort_order': sort_order,
+        'words_searched': query.split()[:3] if query else []
+    }
+    
+    return render(request, 'core/search_results_new.html', context)

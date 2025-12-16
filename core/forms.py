@@ -27,6 +27,64 @@ class CustomUserCreationForm(UserCreationForm):
             'title': 'Geçerli bir telefon numarası giriniz (Örn: 05551234567)'
         })
     )
+    
+    # Adres bilgileri - fatura için gerekli
+    address_line_1 = forms.CharField(
+        label="Adres Satırı 1",
+        max_length=255,
+        required=True,
+        help_text="Mahalle, cadde, sokak ve kapı numarası",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Örn: Atatürk Mah. İstiklal Cad. No: 123',
+            'class': 'form-control'
+        })
+    )
+    address_line_2 = forms.CharField(
+        label="Adres Satırı 2",
+        max_length=255,
+        required=False,
+        help_text="Apartman, daire numarası gibi ek bilgiler (opsiyonel)",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Örn: A Blok Daire: 45 (opsiyonel)',
+            'class': 'form-control'
+        })
+    )
+    city = forms.CharField(
+        label="Şehir",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Örn: İstanbul',
+            'class': 'form-control'
+        })
+    )
+    district = forms.CharField(
+        label="İlçe",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Örn: Kadıköy',
+            'class': 'form-control'
+        })
+    )
+    postal_code = forms.CharField(
+        label="Posta Kodu",
+        max_length=10,
+        required=False,
+        validators=[
+            RegexValidator(
+                r'^\d{5}$', 
+                "Geçerli bir posta kodu giriniz. (Örn: 34000)"
+            )
+        ],
+        widget=forms.TextInput(attrs={
+            'placeholder': '34000 (opsiyonel)',
+            'class': 'form-control',
+            'pattern': r'\d{5}',
+            'title': 'Geçerli bir posta kodu giriniz (5 haneli sayı)'
+        })
+    )
+    
     accept_user_agreement = forms.BooleanField(
         label="Kullanıcı Sözleşmesi'ni kabul ediyorum.",
         required=True
@@ -42,7 +100,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("username", "email", "phone_number", "password1", "password2", "accept_user_agreement", "accept_privacy_policy", "accept_data_protection")
+        fields = ("username", "email", "phone_number", "address_line_1", "address_line_2", "city", "district", "postal_code", "password1", "password2", "accept_user_agreement", "accept_privacy_policy", "accept_data_protection")
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,12 +126,29 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
+        
         if commit:
             user.save()
             # UserProfile otomatik olarak post_save signal ile oluşturulacak
-            # Telefon numarasını profile ekle
+            # Signals çalıştıktan sonra profile bilgilerini güncelle
             from .models import UserProfile
-            profile, created = UserProfile.objects.get_or_create(user=user)
-            profile.phone_number = self.cleaned_data["phone_number"]
-            profile.save()
+            import time
+            
+            # Profile'ın signal ile oluşturulmasını bekle
+            time.sleep(0.1)  # Kısa bir bekleme
+            
+            try:
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                
+                # Form verilerini profile'a ata
+                profile.phone_number = self.cleaned_data.get("phone_number", "")
+                profile.address_line_1 = self.cleaned_data.get("address_line_1", "")
+                profile.address_line_2 = self.cleaned_data.get("address_line_2", "")
+                profile.city = self.cleaned_data.get("city", "")
+                profile.district = self.cleaned_data.get("district", "")
+                profile.postal_code = self.cleaned_data.get("postal_code", "")
+                profile.save()
+                
+            except Exception as e:
+                print(f"Error saving profile data: {e}")
         return user

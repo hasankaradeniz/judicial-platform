@@ -6,9 +6,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('account/', include('allauth.urls')),
-    path('accounts/', include('allauth.urls')),
-    path('', include('core.urls')),  # Uygulamamızın URL’lerini dahil ediyoruz
+    path('account/', include('allauth.urls')),  # Allauth URL'leri (varsayılan davranış)
+    path('', include('core.urls')),  # Core URL'leri
     path('faiss/', include('faiss_query.urls')),
 ]
 

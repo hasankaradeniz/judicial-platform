@@ -35,7 +35,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # Bunu ekleyin!
+    'allauth.account.middleware.AccountMiddleware',  # Allauth middleware
+    'core.trial_middleware.TrialMiddleware',  # Deneme süresi kontrolü
+    'core.trial_middleware.TrialStatusMiddleware',  # Deneme bilgilerini context'e ekler
     'core.middleware.UserAccessControlMiddleware',  # User access control middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -61,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.trial_status',  # Trial durumu
             ],
         },
     },
@@ -97,7 +100,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Cache ayarları
-CACHES = {    'default': {        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',        'LOCATION': 'judicial-platform-cache',        'TIMEOUT': 1800,        'OPTIONS': {            'MAX_ENTRIES': 1000,        }    }}
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'judicial-platform-cache',
+        'TIMEOUT': 1800,  # 30 dakika
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
 
 LANGUAGE_CODE = 'tr' 
 TIME_ZONE = 'Europe/Istanbul'
@@ -118,7 +130,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Google API için ayarlar (Google Custom Search API)
 GOOGLE_API_KEY = 'AIzaSyCpozKuhViWV809M7AmQ7Hi7LKbiAjdtCk'
 GOOGLE_CSE_ID = '347c206ed96464b79'
-GEMINI_API_KEY = 'AIzaSyAbHvx5H1qBcp6sEvcNLHV2yKhkrKX6w-c'
+GEMINI_API_KEY = 'AIzaSyC68qVtPz658HoQEl0v5l-_AAtrbeEPDOE'
 
 
 LOGIN_REDIRECT_URL = '/profile/'
@@ -130,7 +142,11 @@ LOGIN_URL = '/login/'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGIN_REDIRECT_URL = '/profile/'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
+ACCOUNT_LOGOUT_ON_GET = True  # Doğrudan logout, confirmation sayfası yok
+
+# Parola değişikliği ayarları - Django varsayılan davranışı
+# Parola değiştirildikten sonra login sayfasına yönlendirme (güvenlik için logout)
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

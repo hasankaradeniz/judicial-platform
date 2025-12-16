@@ -6,29 +6,32 @@
 {% block extra_styles %}
 <style>
   :root {
-    --primary-blue: #1e3a8a;
-    --accent-gold: #f59e0b;
-    --success-green: #10b981;
-    --danger-red: #ef4444;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-800: #1f2937;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --primary: #1a365d;
+    --primary-light: #2c5aa0;
+    --secondary: #d69e2e;
+    --secondary-light: #fbd38d;
+    --success: #047857;
+    --danger: #c53030;
+    --white: #ffffff;
+    --light-gray: #f7fafc;
+    --gray: #e2e8f0;
+    --dark-gray: #4a5568;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
   }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: var(--light-gray);
     min-height: 100vh;
   }
 
   /* Hero Section */
   .hero-section {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     padding: 80px 0 60px;
     margin-bottom: 0;
@@ -39,11 +42,17 @@
   .hero-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    animation: pulse 30s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
   }
 
   .hero-content {
@@ -79,19 +88,21 @@
 
   /* Advanced Search Container */
   .search-container {
-    background: white;
-    border-radius: 20px;
-    box-shadow: var(--shadow-xl);
-    padding: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    padding: 50px;
     margin: -60px auto 60px;
-    max-width: 1000px;
+    max-width: 900px;
     position: relative;
     z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .search-tabs {
     display: flex;
-    background: var(--gray-100);
+    background: var(--gray);
     border-radius: 12px;
     padding: 4px;
     margin-bottom: 30px;
@@ -107,7 +118,7 @@
     font-weight: 600;
     background: transparent;
     border: none;
-    color: var(--gray-800);
+    color: var(--text-primary);
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -116,12 +127,13 @@
   }
 
   .search-tab:hover {
-    background: var(--gray-100);
-    color: var(--primary-blue);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--primary);
+    transform: translateY(-1px);
   }
 
   .search-tab.active {
-    background: var(--primary-blue);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     box-shadow: var(--shadow-md);
   }
@@ -136,18 +148,19 @@
 
   .smart-search-input {
     width: 100%;
-    padding: 16px 20px 16px 50px;
-    border: 2px solid var(--gray-200);
+    padding: 18px 25px 18px 50px;
+    border: 2px solid var(--gray);
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 17px;
     transition: all 0.3s ease;
-    background: white;
+    background: var(--white);
   }
 
   .smart-search-input:focus {
     outline: none;
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+    transform: translateY(-1px);
   }
 
   .search-input-container {
@@ -160,7 +173,7 @@
     left: 18px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gray-400);
+    color: var(--text-secondary);
     font-size: 1.2rem;
   }
 
@@ -186,7 +199,7 @@
   .filter-label {
     display: block;
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-primary);
     margin-bottom: 8px;
     font-size: 0.9rem;
     display: flex;
@@ -195,23 +208,25 @@
   }
 
   .filter-label i {
-    color: var(--primary-blue);
+    color: var(--secondary);
     font-size: 0.85rem;
   }
 
   .filter-select, .filter-input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid var(--gray-200);
+    border: 2px solid var(--gray);
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background: var(--white);
   }
 
   .filter-select:focus, .filter-input:focus {
     outline: none;
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    transform: translateY(-1px);
   }
 
   .search-actions {
@@ -222,54 +237,59 @@
   }
 
   .btn-search {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     border: none;
-    padding: 14px 32px;
-    border-radius: 50px;
+    padding: 18px 40px;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 17px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .btn-search:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
   }
 
   .btn-clear {
     background: transparent;
-    color: var(--gray-600);
-    border: 2px solid var(--gray-300);
-    padding: 12px 24px;
-    border-radius: 50px;
+    color: var(--text-secondary);
+    border: 2px solid var(--gray);
+    padding: 16px 32px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
   }
 
   .btn-clear:hover {
-    border-color: var(--gray-400);
-    color: var(--gray-800);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
   }
 
   /* Results Section */
   .results-section {
-    background: white;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
     box-shadow: var(--shadow-lg);
     margin-bottom: 40px;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .results-header {
-    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    background: linear-gradient(135deg, var(--light-gray) 0%, white 100%);
     padding: 25px 30px;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray);
     display: flex;
     justify-content: between;
     align-items: center;
@@ -286,11 +306,11 @@
   .results-count {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--primary);
   }
 
   .search-time {
-    background: var(--success-green);
+    background: var(--success);
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -306,14 +326,15 @@
 
   .sort-select {
     padding: 8px 12px;
-    border: 1px solid var(--gray-300);
+    border: 1px solid var(--gray);
     border-radius: 8px;
     font-size: 0.9rem;
+    background: var(--white);
   }
 
   .view-toggle {
     display: flex;
-    background: var(--gray-100);
+    background: var(--gray);
     border-radius: 8px;
     padding: 2px;
   }
@@ -328,7 +349,7 @@
   }
 
   .view-btn.active {
-    background: var(--primary-blue);
+    background: var(--primary);
     color: white;
   }
 
@@ -338,8 +359,9 @@
   }
 
   .decision-card {
-    background: white;
-    border: 1px solid var(--gray-200);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--gray);
     border-radius: 12px;
     padding: 25px;
     margin-bottom: 20px;
@@ -355,13 +377,13 @@
     left: 0;
     width: 4px;
     height: 100%;
-    background: linear-gradient(180deg, var(--primary-blue) 0%, var(--accent-gold) 100%);
+    background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
   }
 
   .decision-card:hover {
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
-    border-color: var(--primary-blue);
+    border-color: var(--primary);
   }
 
   .decision-header {
@@ -379,13 +401,13 @@
 
   .court-name {
     font-weight: 700;
-    color: var(--primary-blue);
+    color: var(--primary);
     font-size: 1.1rem;
     margin-bottom: 5px;
   }
 
   .case-number {
-    color: var(--gray-600);
+    color: var(--text-secondary);
     font-size: 0.9rem;
   }
 
@@ -396,7 +418,7 @@
   }
 
   .relevance-score {
-    background: linear-gradient(135deg, var(--accent-gold) 0%, #f97316 100%);
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -405,8 +427,8 @@
   }
 
   .decision-date {
-    background: var(--gray-100);
-    color: var(--gray-700);
+    background: var(--gray);
+    color: var(--text-primary);
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -418,9 +440,10 @@
   }
 
   .decision-summary {
-    color: var(--gray-700);
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 0.95rem;
+/* Pattern-based formatting for summary sections */  .decision-summary {    white-space: pre-line;  }
   }
 
   .keywords {
@@ -431,8 +454,8 @@
   }
 
   .keyword-tag {
-    background: rgba(30, 58, 138, 0.1);
-    color: var(--primary-blue);
+    background: rgba(26, 54, 93, 0.1);
+    color: var(--primary);
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.8rem;
@@ -444,14 +467,14 @@
     gap: 10px;
     align-items: center;
     padding-top: 15px;
-    border-top: 1px solid var(--gray-100);
+    border-top: 1px solid var(--gray);
   }
 
   .btn-detail {
-    background: var(--primary-blue);
+    background: var(--primary);
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 10px 18px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -461,7 +484,7 @@
   }
 
   .btn-detail:hover {
-    background: #1e40af;
+    background: var(--primary-light);
     transform: translateY(-1px);
     color: white;
     text-decoration: none;
@@ -469,8 +492,8 @@
 
   .btn-bookmark, .btn-share {
     background: transparent;
-    border: 1px solid var(--gray-300);
-    color: var(--gray-600);
+    border: 1px solid var(--gray);
+    color: var(--text-secondary);
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
@@ -478,8 +501,9 @@
   }
 
   .btn-bookmark:hover, .btn-share:hover {
-    border-color: var(--primary-blue);
-    color: var(--primary-blue);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
   }
 
   /* Loading States */
@@ -491,8 +515,8 @@
   .loading-spinner {
     width: 50px;
     height: 50px;
-    border: 4px solid var(--gray-200);
-    border-top: 4px solid var(--primary-blue);
+    border: 4px solid var(--gray);
+    border-top: 4px solid var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 20px;
@@ -504,13 +528,13 @@
   }
 
   .loading-text {
-    color: var(--gray-600);
+    color: var(--text-secondary);
     font-size: 1.1rem;
     margin-bottom: 10px;
   }
 
   .loading-subtext {
-    color: var(--gray-500);
+    color: var(--text-secondary);
     font-size: 0.9rem;
   }
 
@@ -522,19 +546,19 @@
 
   .empty-icon {
     font-size: 4rem;
-    color: var(--gray-300);
+    color: var(--gray);
     margin-bottom: 20px;
   }
 
   .empty-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--text-primary);
     margin-bottom: 10px;
   }
 
   .empty-text {
-    color: var(--gray-500);
+    color: var(--text-secondary);
     font-size: 1rem;
     margin-bottom: 30px;
   }
@@ -544,20 +568,22 @@
     margin: 40px auto;
     max-width: 900px;
     padding: 30px;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .pagination-info {
     text-align: center;
     margin-bottom: 25px;
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 16px;
   }
 
   .pagination-info strong {
-    color: #1e3a8a;
+    color: var(--primary);
     font-size: 22px;
     font-weight: 700;
   }
@@ -577,10 +603,10 @@
     min-width: 45px;
     height: 45px;
     padding: 0 16px;
-    background: #f7fafc;
-    border: 2px solid #e2e8f0;
+    background: var(--light-gray);
+    border: 2px solid var(--gray);
     border-radius: 10px;
-    color: #4a5568;
+    color: var(--text-secondary);
     font-weight: 600;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -588,16 +614,16 @@
   }
 
   .page-link:hover {
-    background: #1e3a8a;
-    border-color: #1e3a8a;
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+    box-shadow: var(--shadow-md);
   }
 
   .page-link.active {
-    background: #1e3a8a;
-    border-color: #1e3a8a;
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
     cursor: default;
     pointer-events: none;
@@ -618,7 +644,7 @@
   }
 
   .page-dots {
-    color: #a0aec0;
+    color: var(--text-secondary);
     font-weight: 700;
     padding: 0 10px;
   }
@@ -651,18 +677,20 @@
 
   /* Statistics Section */
   .stats-section {
-    background: white;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
     box-shadow: var(--shadow-lg);
     padding: 40px;
     margin-bottom: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .stats-title {
     text-align: center;
     font-size: 2rem;
     font-weight: 700;
-    color: var(--gray-800);
+    color: var(--text-primary);
     margin-bottom: 30px;
   }
 
@@ -673,8 +701,8 @@
   }
 
   .stat-card {
-    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
-    border: 2px solid var(--gray-100);
+    background: linear-gradient(135deg, var(--light-gray) 0%, white 100%);
+    border: 2px solid var(--gray);
     border-radius: 16px;
     padding: 30px;
     text-align: center;
@@ -690,19 +718,19 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--accent-gold) 100%);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
   }
 
   .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary-blue);
+    border-color: var(--primary);
   }
 
   .stat-number {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--primary-blue);
+    color: var(--primary);
     margin-bottom: 10px;
     display: block;
   }
@@ -710,7 +738,7 @@
   .stat-label {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--text-primary);
   }
 
   /* Responsive Design */
@@ -771,11 +799,40 @@
     from { opacity: 0; transform: translateX(-30px); }
     to { opacity: 1; transform: translateX(0); }
   }
+  
+  /* Lazy loading animation */
+  .decision-card:not(.visible) {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  .decision-card {
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    will-change: transform;
+    contain: layout style paint;
+  }
+  
+  .decision-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Loading skeleton for better perceived performance */
+  .skeleton-loader {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+  
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 
 
   /* Quick Filters */
   .quick-filters {
-    background: var(--gray-50);
+    background: var(--light-gray);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 30px;
@@ -783,7 +840,7 @@
 
   .quick-filter-label {
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-primary);
     margin-bottom: 15px;
     display: flex;
     align-items: center;
@@ -791,7 +848,7 @@
   }
 
   .quick-filter-label i {
-    color: var(--accent-gold);
+    color: var(--secondary);
   }
 
   .filter-chips {
@@ -802,8 +859,8 @@
 
   .filter-chip {
     background: white;
-    border: 2px solid var(--gray-300);
-    color: var(--gray-700);
+    border: 2px solid var(--gray);
+    color: var(--text-primary);
     padding: 8px 16px;
     border-radius: 25px;
     font-size: 0.85rem;
@@ -816,15 +873,15 @@
   }
 
   .filter-chip:hover {
-    border-color: var(--primary-blue);
-    color: var(--primary-blue);
+    border-color: var(--primary);
+    color: var(--primary);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
   }
 
   .filter-chip.active {
-    background: var(--primary-blue);
-    border-color: var(--primary-blue);
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
   }
 
@@ -838,8 +895,83 @@
   }
 
   .filter-input[type="date"]::-webkit-calendar-picker-indicator {
-    color: var(--primary-blue);
+    color: var(--primary);
     cursor: pointer;
+  }
+
+  /* Loading and Error States */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--light-gray);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .empty-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .empty-icon, .error-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+
+  .empty-state h3, .error-state h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .empty-state p, .error-state p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  .btn-retry {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s ease;
+  }
+
+  .btn-retry:hover {
+    background: var(--primary-light);
   }
 </style>
 {% endblock %}
@@ -852,7 +984,7 @@
       <h1 class="hero-title">⚖️ Yargı Kararı Arama Platformu</h1>
       <p class="hero-subtitle">Kapsamlı hukuk veri tabanında gelişmiş arama teknolojisi ile hızlı ve doğru sonuçlara ulaşın</p>
       <div class="stats-badge">
-        📊 {{ total_decisions|floatformat:0 }}+ Karar • 🔍 AI Destekli Arama • ⚡ Anlık Sonuçlar
+        📊 {{ total_decisions }}+ Karar • 🔍 AI Destekli Arama • ⚡ Anlık Sonuçlar
       </div>
     </div>
   </div>
@@ -878,7 +1010,7 @@
     <form id="simpleSearchForm" class="search-form active" action="/search-results/" method="GET">
       <div class="search-input-container">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="simpleSearchInput" class="smart-search-input" 
+        <input type="text" id="simpleSearchInput" name="q" class="smart-search-input" 
                name="q" placeholder="Arama terimini girin... (örn: boşanma nafakası, iş sözleşmesi feshi)" 
                value="{{ query }}" autocomplete="off">
       </div>
@@ -896,7 +1028,7 @@
     <form id="advancedSearchForm" class="search-form" action="/search-results/" method="GET">
       <div class="search-input-container">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="advancedSearchInput" class="smart-search-input" 
+        <input type="text" id="advancedSearchInput" name="q" class="smart-search-input" 
                name="q" placeholder="Arama terimini girin..." value="{{ query }}">
       </div>
       
@@ -908,12 +1040,12 @@
           </label>
           <select class="filter-select" name="court_type" id="courtTypeFilter">
             <option value="">🏛️ Tüm Mahkemeler</option>
-            <option value="yargitay">⚖️ Yargıtay</option>
-            <option value="danistay">🏛️ Danıştay</option>
-            <option value="aym">📜 Anayasa Mahkemesi</option>
-            <option value="sayistay">💰 Sayıştay</option>
-            <option value="bolge">🏢 Bölge Adliye Mahkemesi</option>
-            <option value="kvkk">🔒 KVKK</option>
+            <option value="YARGITAY">⚖️ Yargıtay</option>
+            <option value="DANIŞTAY">🏛️ Danıştay</option>
+            <option value="ANAYASA MAHKEMESİ">📜 Anayasa Mahkemesi</option>
+            <option value="SAYIŞTAY">💰 Sayıştay</option>
+            <option value="BÖLGE ADLİYE MAHKEMESİ">🏢 Bölge Adliye Mahkemesi</option>
+            <option value="KVKK">🔒 KVKK</option>
           </select>
         </div>
         
@@ -1027,19 +1159,19 @@
           <i class="fas fa-bolt"></i> Hızlı Filtreler:
         </div>
         <div class="filter-chips">
-          <button type="button" class="filter-chip" onclick="applyQuickFilter('yargitay', 'recent')">
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('YARGITAY', 'recent')">
             ⚖️ Yargıtay (Son 1 Yıl)
           </button>
-          <button type="button" class="filter-chip" onclick="applyQuickFilter('danistay', 'recent')">
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('DANIŞTAY', 'recent')">
             🏛️ Danıştay (Son 1 Yıl)  
           </button>
-          <button type="button" class="filter-chip" onclick="applyQuickFilter('aym', 'all')">
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('ANAYASA MAHKEMESİ', 'all')">
             📜 Anayasa Mahkemesi
           </button>
           <button type="button" class="filter-chip" onclick="applyQuickFilter('hgk', 'all')">
             ⚖️ Hukuk Genel Kurulu
           </button>
-          <button type="button" class="filter-chip" onclick="applyQuickFilter('yargitay', 'this_year')">
+          <button type="button" class="filter-chip" onclick="applyQuickFilter('YARGITAY', 'this_year')">
             📅 Bu Yılki Kararlar
           </button>
           <button type="button" class="filter-chip" onclick="applyQuickFilter('all', 'landmark')">
@@ -1130,16 +1262,16 @@
       <div class="decision-card">
         <div class="decision-header">
           <div class="court-info">
-            <div class="court-name">{{ decision.karar_veren_mahkeme|upper }}</div>
-            <div class="case-number">{{ decision.karar_numarasi|default:"N/A" }} • {{ decision.esas_numarasi|default:"N/A" }}</div>
+            <div class="court-name">{{ decision.court|upper }}</div>
+            <div class="case-number">{{ decision.id|default:"N/A" }} • {{ decision.title|default:"N/A" }}</div>
           </div>
           <div class="decision-meta">
-            <div class="decision-date">{{ decision.karar_tarihi|default:"Tarih N/A" }}</div>
+            <div class="decision-date">{{ decision.date|default:"Tarih N/A" }}</div>
           </div>
         </div>
         
         <div class="decision-content">
-          <div class="decision-summary">{{ decision.karar_ozeti|truncatewords:25|default:"Özet mevcut değil" }}</div>
+          <div class="formatSummary(decision.summary) || "Özet mevcut değil"" }}</div>
           {% if decision.anahtar_kelimeler %}
           <div class="keywords">
             {% for keyword in decision.anahtar_kelimeler|slice:":3" %}
@@ -1199,16 +1331,278 @@ let currentQuery = '{{ query|escapejs }}';
 let currentSort = 'relevance';
 let isLoading = false;
 
+// State management functions
+function saveSearchState(state) {
+    try {
+        sessionStorage.setItem('searchState', JSON.stringify(state));
+    } catch (e) {
+        console.warn('Could not save search state:', e);
+    }
+}
+
+function restoreSearchState() {
+    try {
+        const stateStr = sessionStorage.getItem('searchState');
+        return stateStr ? JSON.parse(stateStr) : null;
+    } catch (e) {
+        console.warn('Could not restore search state:', e);
+        return null;
+    }
+}
+
+function getSearchCache(key) {
+    try {
+        const cached = sessionStorage.getItem(key);
+        return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+        console.warn('Could not get search cache:', e);
+        return null;
+    }
+}
+
+function setSearchCache(key, data) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+        console.warn('Could not set search cache:', e);
+    }
+}
+
+function updateURL(query, page) {
+    const url = new URL(window.location);
+    if (query) {
+        url.searchParams.set('q', query);
+    } else {
+        url.searchParams.delete('q');
+    }
+    if (page > 1) {
+        url.searchParams.set('page', page);
+    } else {
+        url.searchParams.delete('page');
+    }
+    
+    // Update URL without reloading page
+    window.history.replaceState({
+        query: query,
+        page: page,
+        sort: currentSort,
+        scrollPosition: window.scrollY
+    }, '', url.toString());
+}
+
+// UI utility functions
+function showLoading() {
+    const resultsContainer = document.getElementById('resultsContainer');
+    const decisionsContainer = document.getElementById('decisionsContainer');
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+    }
+    
+    if (decisionsContainer) {
+        decisionsContainer.innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Aranıyor...</div>
+            </div>
+        `;
+    }
+}
+
+function hideLoading() {
+    // Loading is hidden when results are displayed
+}
+
+function hideLatestDecisions() {
+    const latestContainer = document.getElementById('latestDecisionsContainer');
+    if (latestContainer) {
+        latestContainer.style.display = 'none';
+    }
+}
+
+function displayEmptyState() {
+    const container = document.getElementById('decisionsContainer');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (container) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Sonuç bulunamadı</h3>
+                <p>Arama kriterlerinize uygun karar bulunamadı. Lütfen farklı anahtar kelimeler deneyin.</p>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+    }
+    
+    // Hide pagination
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (paginationContainer) {
+        paginationContainer.style.display = 'none';
+    }
+}
+
+function displayError(message) {
+    const container = document.getElementById('decisionsContainer');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (container) {
+        container.innerHTML = `
+            <div class="error-state">
+                <div class="error-icon">⚠️</div>
+                <h3>Hata oluştu</h3>
+                <p>${message}</p>
+                <button onclick="location.reload()" class="btn-retry">Tekrar Dene</button>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+    }
+}
+
+function detectSearchModeFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Advanced search parameters that indicate advanced mode
+    const advancedParams = ['court_type', 'chamber', 'date_range', 'decision_number', 'case_number', 'sort_order', 'per_page', 'within_results', 'exclude_terms'];
+    
+    // Check if any advanced parameters are present
+    const hasAdvancedParams = advancedParams.some(param => urlParams.get(param));
+    
+    if (hasAdvancedParams) {
+        console.log('Advanced search parameters detected in URL, switching to advanced mode');
+        currentSearchMode = 'advanced';
+        localStorage.setItem('currentSearchMode', 'advanced');
+    } else {
+        console.log('No advanced parameters detected, staying in simple mode');
+        currentSearchMode = 'simple';
+        localStorage.setItem('currentSearchMode', 'simple');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Detect search mode from URL parameters first
+    detectSearchModeFromURL();
+    
     initializeApp();
     
-    // If there's an existing query, perform search
-    if (currentQuery) {
-        performSearch(currentQuery, 1);
+    // Handle browser back/forward navigation
+    window.addEventListener('popstate', function(event) {
+        if (event.state) {
+            // Restore from state
+            currentQuery = event.state.query || '';
+            currentPage = event.state.page || 1;
+            currentSort = event.state.sort || 'relevance';
+            
+            // Update search inputs
+            document.getElementById('simpleSearchInput').value = currentQuery;
+            document.getElementById('advancedSearchInput').value = currentQuery;
+            
+            // Perform search with cache
+            if (currentQuery) {
+                performSearch(currentQuery, currentPage, true);
+                
+                // Restore scroll position after a short delay
+                setTimeout(() => {
+                    if (event.state.scrollPosition) {
+                        window.scrollTo(0, event.state.scrollPosition);
+                    }
+                }, 100);
+            }
+        } else {
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            const page = parseInt(urlParams.get('page')) || 1;
+            const sort = urlParams.get('sort') || 'relevance';
+            
+            if (query) {
+                currentQuery = query;
+                currentPage = page;
+                currentSort = sort;
+                performSearch(query, page, true);
+            }
+        }
+    });
+    
+    // Check if returning to page (e.g., from detail page)
+    if (window.performance.navigation.type === 2) {
+        // Browser back button was used
+        const lastState = restoreSearchState();
+        if (lastState) {
+            currentQuery = lastState.query;
+            currentPage = lastState.page;
+            currentSort = lastState.sort;
+            currentSearchMode = lastState.searchMode || currentSearchMode;
+            
+            // Update search inputs
+            document.getElementById('simpleSearchInput').value = currentQuery;
+            document.getElementById('advancedSearchInput').value = currentQuery;
+            
+            // Restore search mode
+            switchSearchMode(currentSearchMode);
+            
+            // Restore advanced form data if available
+            if (lastState.formData && currentSearchMode === 'advanced') {
+                restoreAdvancedFormData(lastState.formData);
+                const form = document.getElementById('advancedSearchForm');
+                const formData = new FormData(form);
+                performAdvancedSearch(currentQuery, formData, currentPage);
+            } else {
+                // Restore search results from cache
+                performSearch(currentQuery, currentPage, true);
+            }
+            
+            // Restore scroll position
+            setTimeout(() => {
+                window.scrollTo(0, lastState.scrollPosition || 0);
+            }, 100);
+            
+            return;
+        }
+    }
+    
+    // Normal page load - check URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q') || currentQuery;
+    const page = parseInt(urlParams.get('page')) || 1;
+    const sort = urlParams.get('sort') || 'relevance';
+    
+    // Check for advanced search parameters
+    const hasAdvancedParams = ['court_type', 'chamber', 'date_range', 'decision_number', 'case_number'].some(param => urlParams.get(param));
+    
+    if (query || hasAdvancedParams) {
+        currentQuery = query;
+        currentPage = page;
+        currentSort = sort;
+        
+        if (hasAdvancedParams) {
+            currentSearchMode = 'advanced';
+            switchSearchMode('advanced');
+            restoreAdvancedFormFromURL(urlParams);
+            const form = document.getElementById('advancedSearchForm');
+            const formData = new FormData(form);
+            performAdvancedSearch(query, formData, page);
+        } else {
+            performSearch(query, page);
+        }
     }
 });
 
 function initializeApp() {
+    // Restore search mode from localStorage
+    const savedMode = localStorage.getItem('currentSearchMode');
+    if (savedMode && (savedMode === 'simple' || savedMode === 'advanced')) {
+        currentSearchMode = savedMode;
+        // Update UI to reflect the saved mode
+        switchSearchMode(savedMode);
+    }
+    
     // Initialize form handlers
     setupSearchForms();
     
@@ -1229,14 +1623,62 @@ function initializeApp() {
 }
 
 function setupSearchForms() {
+    const forms = ['simpleSearchForm', 'advancedSearchForm'];
+    
+    forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', handleFormSubmit);
+        }
+    });
 }
 
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    let query = formData.get('q') || '';
+    
+    // Check which form was submitted
+    const formId = e.target.id;
+    
+    if (formId === 'simpleSearchForm' || currentSearchMode === 'simple') {
+        if (query.trim()) {
+            performSearch(query.trim(), 1);
+        }
+    } else if (formId === 'advancedSearchForm' || currentSearchMode === 'advanced') {
+        // Advanced search: use AJAX like simple search
+        // Ensure we have at least a query or some filter
+        const hasQuery = query.trim();
+        const hasFilters = Array.from(formData.entries()).some(([key, value]) => 
+            key !== 'q' && value && value.trim()
+        );
+        
+        if (hasQuery || hasFilters) {
+            performAdvancedSearch(query, formData, 1);
+        } else {
+            alert('Lütfen en azından bir arama terimi veya filtre seçin.');
+        }
+    }
+}
+
+function switchSearchMode(mode) {
+    console.log('Switching to search mode:', mode); // Debug log
+    currentSearchMode = mode;
+    
+    // Save the current mode to localStorage for persistence
+    localStorage.setItem('currentSearchMode', mode);
     
     // Update tab states
     document.querySelectorAll('.search-tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    event.target.classList.add('active');
+    
+    // Find the clicked tab and add active class
+    const clickedTab = document.querySelector(`.search-tab[onclick*="${mode}"]`);
+    if (clickedTab) {
+        clickedTab.classList.add('active');
+    }
     
     // Update form visibility
     document.querySelectorAll('.search-form').forEach(form => {
@@ -1244,22 +1686,110 @@ function setupSearchForms() {
     });
     
     const activeForm = mode + 'SearchForm';
-    document.getElementById(activeForm).classList.add('active');
+    const targetForm = document.getElementById(activeForm);
+    if (targetForm) {
+        targetForm.classList.add('active');
+        console.log('Activated form:', activeForm); // Debug log
+    } else {
+        console.error('Form not found:', activeForm); // Debug log
+    }
 }
 
-function performSearch(query, page = 1) {    // Simple redirect to search results page    const params = new URLSearchParams({        q: query,        page: page,        sort: currentSort || "relevance"    });    window.location.href = "/search-results/?" + params.toString();}
+function performSearch(query, page = 1, useCache = false) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    currentQuery = query;
+    currentPage = page;
+    
+    // Create cache key
+    const cacheKey = `search_${query}_${page}_${currentSort}`;
+    
+    // Check cache first if useCache is true or browser back/forward navigation
+    if (useCache || window.performance.navigation.type === 2) {
+        const cachedData = getSearchCache(cacheKey);
+        if (cachedData) {
+            displayResults(cachedData);
+            hideLoading();
+            isLoading = false;
+            return;
+        }
+    }
+    
+    // Show loading state
+    showLoading();
+    
+    // Hide other sections
+    hideLatestDecisions();
+    
+    // Update URL and save state
+    updateURL(query, page);
+    
+    // Make AJAX request
+    const searchParams = new URLSearchParams({
+        q: query,
+        page: page,
+        sort: currentSort
+    });
+    
+    fetch(`/api/search/?${searchParams.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Cache the results
+        setSearchCache(cacheKey, data);
+        
+        // Save search state
+        saveSearchState({
+            query: query,
+            page: page,
+            sort: currentSort,
+            scrollPosition: window.scrollY
+        });
+        
+        displayResults(data);
+    })
+    .catch(error => {
+        console.error('Search error:', error);
+        displayError('Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+    })
+    .finally(() => {
+        hideLoading();
+        isLoading = false;
+    });
+}
+
+
+function displayResults(data) {
+    // Hide loading state immediately when starting to display results
     hideLoading();
+    
+    // DEBUG: Log the received data
+    console.log('DEBUG - Received data:', data);
+    console.log('DEBUG - Results array:', data.results);
+    console.log('DEBUG - Results length:', data.results ? data.results.length : 'undefined');
+    console.log('DEBUG - Total decisions:', data.total_decisions);
     
     const container = document.getElementById('decisionsContainer');
     const resultsContainer = document.getElementById('resultsContainer');
     
     if (!data.results || data.results.length === 0) {
+        console.log('DEBUG - No results found, showing empty state');
         displayEmptyState();
         return;
     }
     
+    console.log('DEBUG - Displaying', data.results.length, 'results');
+    
     // Update results count and stats
     updateResultsHeader(data);
+    
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+    const tempDiv = document.createElement('div');
     
     // Generate results HTML
     let html = '';
@@ -1267,16 +1797,57 @@ function performSearch(query, page = 1) {    // Simple redirect to search result
         html += generateDecisionCard(decision);
     });
     
-    container.innerHTML = html;
+    tempDiv.innerHTML = html;
+    
+    // Move all children to fragment
+    while (tempDiv.firstChild) {
+        fragment.appendChild(tempDiv.firstChild);
+    }
+    
+    // Clear container and append fragment (single DOM operation)
+    container.innerHTML = '';
+    container.appendChild(fragment);
     
     // Update pagination
     updatePagination(data.pagination);
     
     // Show results container
     resultsContainer.style.display = 'block';
-    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    
+    // Only scroll if not using cache (new search)
+    const cacheKey = `search_${currentQuery}_${currentPage}_${currentSort}`;
+    const wasCached = sessionStorage.getItem(cacheKey) !== null;
+    
+    if (!wasCached) {
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Save current scroll position for future navigation
+    setTimeout(() => {
+        saveSearchState({
+            query: currentQuery,
+            page: currentPage,
+            sort: currentSort,
+            scrollPosition: window.scrollY
+        });
+        
+        // Initialize lazy loading for performance
+        initializeLazyLoading();
+        
+        // Preload next page for better UX
+        preloadNextPage();
+    }, 100);
 }
 
+function formatSummary(summary) {
+    if (\!summary) return "Özet mevcut değil";
+    
+    return summary
+        .replace(/\*\*1\. DAVA KONUSU:\*\*/g, "<br><strong>1. DAVA KONUSU:</strong>")
+        .replace(/\*\*2\. YARGITAY DEĞERLENDİRMESİ:\*\*/g, "<br><br><strong>2. YARGITAY DEĞERLENDİRMESİ:</strong>")
+        .replace(/\*\*3\. SONUÇ:\*\*/g, "<br><br><strong>3. SONUÇ:</strong>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>"); 
+}
 function generateDecisionCard(decision) {
     const keywords = decision.anahtar_kelimeler ? 
         decision.anahtar_kelimeler.split(',').slice(0, 3).map(k => 
@@ -1287,22 +1858,22 @@ function generateDecisionCard(decision) {
         <div class="decision-card fade-in">
             <div class="decision-header">
                 <div class="court-info">
-                    <div class="court-name">${decision.karar_veren_mahkeme.toUpperCase()}</div>
-                    <div class="case-number">${decision.karar_numarasi || 'N/A'} • ${decision.esas_numarasi || 'N/A'}</div>
+                    <div class="court-name">${decision.court ? decision.court.toUpperCase() : "MAHKEME BİLGİSİ N/A"}</div>
+                    <div class="case-number">${decision.id || 'N/A'} • ${decision.title || 'N/A'}</div>
                 </div>
                 <div class="decision-meta">
                     ${decision.relevance_score ? `<div class="relevance-score">Skor: ${decision.relevance_score.toFixed(3)}</div>` : ''}
-                    <div class="decision-date">${decision.karar_tarihi || 'Tarih N/A'}</div>
+                    <div class="decision-date">${decision.date || 'Tarih N/A'}</div>
                 </div>
             </div>
             
             <div class="decision-content">
-                <div class="decision-summary">${decision.karar_ozeti || 'Özet mevcut değil'}</div>
+                <div class="formatSummary(decision.summary) || "Özet mevcut değil"'}</div>
                 <div class="keywords">${keywords}</div>
             </div>
             
             <div class="decision-actions">
-                <a href="/judicial/${decision.id}/" class="btn-detail">
+                <a href="/judicial/${decision.id}/" class="btn-detail" onclick="saveCurrentState()">
                     <i class="fas fa-eye"></i> Detayı Gör
                 </a>
                 <button class="btn-bookmark" onclick="bookmarkDecision(${decision.id})">
@@ -1500,7 +2071,116 @@ function updateURL(query, page) {
     const url = new URL(window.location);
     url.searchParams.set('q', query);
     url.searchParams.set('page', page);
-    window.history.pushState({}, '', url);
+    url.searchParams.set('sort', currentSort);
+    
+    // Save state with history API
+    const state = {
+        query: query,
+        page: page,
+        sort: currentSort,
+        scrollPosition: window.scrollY
+    };
+    
+    window.history.pushState(state, '', url);
+}
+
+// Cache management functions
+function setSearchCache(key, data) {
+    try {
+        // Add timestamp to cache
+        const cacheData = {
+            timestamp: Date.now(),
+            data: data
+        };
+        
+        // Store in sessionStorage (survives page reload but not new tabs)
+        sessionStorage.setItem(key, JSON.stringify(cacheData));
+        
+        // Clean up old cache entries (keep only last 50 searches)
+        cleanupSearchCache();
+    } catch (e) {
+        console.warn('Failed to cache search results:', e);
+    }
+}
+
+function getSearchCache(key) {
+    try {
+        const cached = sessionStorage.getItem(key);
+        if (!cached) return null;
+        
+        const cacheData = JSON.parse(cached);
+        
+        // Cache expires after 30 minutes
+        const cacheExpiry = 30 * 60 * 1000; // 30 minutes
+        if (Date.now() - cacheData.timestamp > cacheExpiry) {
+            sessionStorage.removeItem(key);
+            return null;
+        }
+        
+        return cacheData.data;
+    } catch (e) {
+        console.warn('Failed to retrieve cached results:', e);
+        return null;
+    }
+}
+
+function cleanupSearchCache() {
+    try {
+        // Get all cache keys
+        const cacheKeys = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            if (key && key.startsWith('search_')) {
+                cacheKeys.push(key);
+            }
+        }
+        
+        // If more than 50 cached searches, remove oldest ones
+        if (cacheKeys.length > 50) {
+            // Get cache entries with timestamps
+            const cacheEntries = cacheKeys.map(key => {
+                try {
+                    const data = JSON.parse(sessionStorage.getItem(key));
+                    return { key, timestamp: data.timestamp || 0 };
+                } catch (e) {
+                    return { key, timestamp: 0 };
+                }
+            });
+            
+            // Sort by timestamp (oldest first)
+            cacheEntries.sort((a, b) => a.timestamp - b.timestamp);
+            
+            // Remove oldest entries
+            const toRemove = cacheEntries.length - 50;
+            for (let i = 0; i < toRemove; i++) {
+                sessionStorage.removeItem(cacheEntries[i].key);
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to cleanup cache:', e);
+    }
+}
+
+// Save search state
+function saveSearchState(state) {
+    try {
+        sessionStorage.setItem('lastSearchState', JSON.stringify(state));
+    } catch (e) {
+        console.warn('Failed to save search state:', e);
+    }
+}
+
+// Restore search state
+function restoreSearchState() {
+    try {
+        const stateStr = sessionStorage.getItem('lastSearchState');
+        if (stateStr) {
+            return JSON.parse(stateStr);
+        }
+    } catch (e) {
+        console.warn('Failed to restore search state:', e);
+    }
+    return null;
 }
 
 function handleSortChange(sortType) {
@@ -1786,11 +2466,12 @@ function applyQuickFilter(courtType, timeRange) {
     }
 }
 
-function performAdvancedSearch(query, formData) {
+function performAdvancedSearch(query, formData, page = 1) {
     if (isLoading) return;
     
     isLoading = true;
     currentQuery = query;
+    currentPage = page;
     
     // Show loading state
     showLoading();
@@ -1799,6 +2480,7 @@ function performAdvancedSearch(query, formData) {
     // Build search parameters
     const searchParams = new URLSearchParams();
     searchParams.set('q', query);
+    searchParams.set('page', page);
     
     // Add all form data to search params
     for (let [key, value] of formData.entries()) {
@@ -1807,13 +2489,11 @@ function performAdvancedSearch(query, formData) {
         }
     }
     
-    // Update URL
-    const url = new URL(window.location);
-    url.search = searchParams.toString();
-    window.history.pushState({}, '', url);
+    // Update URL and save state
+    updateURL(query, page);
     
     // Make AJAX request
-    fetch(`?${searchParams.toString()}`, {
+    fetch(`/api/search/?${searchParams.toString()}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
@@ -1861,9 +2541,242 @@ function handlePaginationClick(page) {
     }
 }
 
+// Save current state before navigating away
+function saveCurrentState() {
+    const state = {
+        query: currentQuery,
+        page: currentPage,
+        sort: currentSort,
+        searchMode: currentSearchMode,
+        scrollPosition: window.scrollY
+    };
+    
+    // If advanced search mode, save form data
+    if (currentSearchMode === 'advanced') {
+        const form = document.getElementById('advancedSearchForm');
+        if (form) {
+            const formData = new FormData(form);
+            const formDataObj = {};
+            for (let [key, value] of formData.entries()) {
+                if (value && value.trim()) {
+                    formDataObj[key] = value;
+                }
+            }
+            state.formData = formDataObj;
+        }
+    }
+    
+    saveSearchState(state);
+}
+
+// Debounce function for performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Add scroll position saving on scroll (debounced)
+const debouncedSaveScrollPosition = debounce(() => {
+    if (currentQuery) {
+        saveSearchState({
+            query: currentQuery,
+            page: currentPage,
+            sort: currentSort,
+            scrollPosition: window.scrollY
+        });
+    }
+}, 300);
+
+// Save scroll position periodically
+window.addEventListener('scroll', debouncedSaveScrollPosition);
+
+// Keyboard navigation support
+document.addEventListener('keydown', function(e) {
+    // Only handle if search results are visible
+    if (document.getElementById('resultsContainer').style.display === 'none') return;
+    
+    // Alt + Left Arrow: Previous page
+    if (e.altKey && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevButton = document.querySelector('.page-link:not(.disabled):first-child');
+        if (prevButton && prevButton.onclick) {
+            prevButton.click();
+        }
+    }
+    
+    // Alt + Right Arrow: Next page
+    if (e.altKey && e.key === 'ArrowRight') {
+        e.preventDefault();
+        const nextButton = document.querySelector('.page-link:not(.disabled):last-child');
+        if (nextButton && nextButton.onclick) {
+            nextButton.click();
+        }
+    }
+    
+    // Ctrl/Cmd + F: Focus search input
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        const searchInput = document.getElementById(currentSearchMode === 'simple' ? 'simpleSearchInput' : 'advancedSearchInput');
+        if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+});
+
+// Performance optimization: Use Intersection Observer for lazy loading
+function initializeLazyLoading() {
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    card.classList.add('visible');
+                    observer.unobserve(card);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px',
+            threshold: 0.01
+        });
+
+        // Observe all decision cards
+        setTimeout(() => {
+            document.querySelectorAll('.decision-card').forEach(card => {
+                imageObserver.observe(card);
+            });
+        }, 100);
+    }
+}
+
+// Preload next page for better performance
+function preloadNextPage() {
+    if (currentQuery && currentPage < 10) { // Only preload first 10 pages
+        const nextPage = currentPage + 1;
+        const cacheKey = `search_${currentQuery}_${nextPage}_${currentSort}`;
+        
+        // Check if already cached
+        if (!sessionStorage.getItem(cacheKey)) {
+            const searchParams = new URLSearchParams({
+                q: currentQuery,
+                page: nextPage,
+                sort: currentSort
+            });
+            
+            // Preload in background (low priority)
+            setTimeout(() => {
+                fetch(`/api/search/?${searchParams.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    setSearchCache(cacheKey, data);
+                })
+                .catch(() => {
+                    // Silently fail for preload
+                });
+            }, 2000); // Wait 2 seconds before preloading
+        }
+    }
+}
+
+// Helper functions for state restoration
+function restoreAdvancedFormData(formData) {
+    const form = document.getElementById('advancedSearchForm');
+    if (!form || !formData) return;
+    
+    // Restore each form field
+    for (let [key, value] of Object.entries(formData)) {
+        const input = form.querySelector(`[name="${key}"]`);
+        if (input) {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = true;
+            } else {
+                input.value = value;
+            }
+        }
+    }
+    
+    // Update chamber options if court type was selected
+    const courtType = formData.court_type;
+    if (courtType) {
+        updateChamberOptions(courtType);
+        // Restore chamber selection after options are updated
+        setTimeout(() => {
+            const chamberInput = form.querySelector('[name="chamber"]');
+            if (chamberInput && formData.chamber) {
+                chamberInput.value = formData.chamber;
+            }
+        }, 100);
+    }
+    
+    // Show custom date range if needed
+    if (formData.date_range === 'custom') {
+        toggleCustomDateRange(true);
+    }
+}
+
+function restoreAdvancedFormFromURL(urlParams) {
+    const form = document.getElementById('advancedSearchForm');
+    if (!form) return;
+    
+    // List of advanced search parameters
+    const advancedParams = ['court_type', 'chamber', 'date_range', 'decision_number', 'case_number', 'sort_order', 'per_page'];
+    
+    advancedParams.forEach(param => {
+        const value = urlParams.get(param);
+        if (value) {
+            const input = form.querySelector(`[name="${param}"]`);
+            if (input) {
+                input.value = value;
+            }
+        }
+    });
+    
+    // Handle court type and chamber relationship
+    const courtType = urlParams.get('court_type');
+    if (courtType) {
+        updateChamberOptions(courtType);
+        setTimeout(() => {
+            const chamber = urlParams.get('chamber');
+            if (chamber) {
+                const chamberInput = form.querySelector('[name="chamber"]');
+                if (chamberInput) {
+                    chamberInput.value = chamber;
+                }
+            }
+        }, 100);
+    }
+    
+    // Handle custom date range
+    if (urlParams.get('date_range') === 'custom') {
+        toggleCustomDateRange(true);
+        const startDate = urlParams.get('custom_date_start');
+        const endDate = urlParams.get('custom_date_end');
+        if (startDate) {
+            const startInput = form.querySelector('[name="custom_date_start"]');
+            if (startInput) startInput.value = startDate;
+        }
+        if (endDate) {
+            const endInput = form.querySelector('[name="custom_date_end"]');
+            if (endInput) endInput.value = endDate;
+        }
+    }
+}
+
 // Global function for pagination
 window.performSearch = performSearch;
 window.applyQuickFilter = applyQuickFilter;
 window.handlePaginationClick = handlePaginationClick;
+window.saveCurrentState = saveCurrentState;
 </script>
 {% endblock %}

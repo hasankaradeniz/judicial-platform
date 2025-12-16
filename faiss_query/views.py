@@ -46,7 +46,7 @@ for file in available_indexes:
 embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel(model_name="gemini-2.5-pro-preview-03-25")
+gemini_model = genai.GenerativeModel(model_name="gemini-3-pro-preview")
 
 # ---------------------------
 # Olay giriş view

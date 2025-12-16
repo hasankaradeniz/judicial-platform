@@ -325,6 +325,23 @@
   }
   
   .summary-text p {
+n  /* Özet formatlaması - özel pattern'ler için */
+  .summary-section-header {
+    display: block;
+    font-weight: bold;
+    color: #495057;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    font-size: 1.1rem;
+  }
+
+  .summary-section-header:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
     margin-bottom: 1rem;
   }
   
@@ -590,7 +607,7 @@
           <a href="{{ decision.dosya.url }}" target="_blank" class="btn-modern btn-primary-modern">
             <i class="fas fa-download"></i>
             Dosyayı İndir
-          </a>
+          </button>
         {% endif %}
         
         <button onclick="window.print()" class="btn-modern btn-success-modern">
@@ -603,10 +620,6 @@
           Metni Kopyala
         </button>
         
-        <a href="#" onclick="goBackToResults()" class="btn-modern btn-secondary-modern">
-          <i class="fas fa-arrow-left"></i>
-          Geri Dön
-        </a>
       </div>
     </div>
   </div>
@@ -615,38 +628,6 @@
 
 {% block extra_scripts %}
 <script>
-// Go back to results function
-function goBackToResults() {
-  // First check session storage for last search URL
-  const lastSearchUrl = sessionStorage.getItem('lastSearchUrl');
-  
-  if (lastSearchUrl) {
-    // Only use stored URL if it contains search parameters or is search-results page
-    if (lastSearchUrl.includes('/search-results/') || lastSearchUrl.includes('?q=') || lastSearchUrl.includes('&q=')) {
-      window.location.href = lastSearchUrl;
-      return false;
-    }
-  }
-  
-  // Check if we came from search results
-  const referrer = document.referrer;
-  
-  if (referrer && referrer.includes('/search-results/')) {
-    // Go back to search results page
-    window.location.href = referrer;
-  } else if (referrer && referrer.includes('/judicial-decisions/') && (referrer.includes('?') || referrer.includes('&'))) {
-    // If we came from judicial decisions page with filters/search parameters
-    window.location.href = referrer;
-  } else if (window.history.length > 1) {
-    // Try to go back in history
-    window.history.back();
-  } else {
-    // Default fallback to judicial decisions page
-    window.location.href = "{% url 'judicial_decisions' %}";
-  }
-  
-  return false;
-}
 
 // Metin kopyalama fonksiyonu
 function copyToClipboard() {
@@ -807,6 +788,31 @@ function highlightSearchTerms() {
 
 // Sayfa yüklendiğinde vurgulama yap
 document.addEventListener('DOMContentLoaded', highlightSearchTerms);
+n// Özet formatlaması - özel pattern'leri satır başı yap
+function formatSummaryText() {
+  const summaryText = document.querySelector('.summary-text');
+  if (summaryText) {
+    let content = summaryText.innerHTML;
+    
+    // Pattern'leri bulup <span> ile sarmala
+    const patterns = [
+      /**1.s*DAVAs*KONUSU:**/gi,
+      /**2.s*YARGITAYs*DEĞERLENDİRMESİ:**/gi,
+      /**3.s*SONUÇ:**/gi
+    ];
+    
+    patterns.forEach(pattern => {
+      content = content.replace(pattern, function(match) {
+        return '<span class="summary-section-header">' + match.replace(/**/g, '''') + '</span>';
+      });
+    });
+    
+    summaryText.innerHTML = content;
+  }
+}
+
+// Sayfa yüklendiğinde formatlamayı uygula
+document.addEventListener('DOMContentLoaded', formatSummaryText);
 </script>
 {% endblock %}
 <style>

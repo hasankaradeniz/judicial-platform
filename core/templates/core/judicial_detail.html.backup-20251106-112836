@@ -1,0 +1,831 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load text_filters %}
+{% load custom_filters %}
+
+{% block page_title %}{{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }} - Karar Detay{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* Modern profesyonel stil */
+  .decision-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  
+  .decision-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  
+  .decision-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .decision-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+  }
+  
+  .decision-content {
+    background: white;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .metadata-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-bottom: 3px solid #e9ecef;
+  }
+  
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  
+  .metadata-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .metadata-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  
+  .metadata-value {
+    color: #212529;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .text-content {
+    padding: 40px;
+  }
+  
+  .section-title {
+    color: #495057;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #667eea;
+    display: flex;
+    align-items: center;
+  }
+  
+  .section-title i {
+    margin-right: 10px;
+    color: #3b82f6;
+  }
+  
+  /* Basit ve temiz metin formatı */
+  /* Formatted Decision Text Styles */
+  .decision-text {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #1e293b;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+  
+  .court-header-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  
+  .court-header-text strong {
+    color: #1e40af;
+    font-size: 1.2rem;
+  }
+  
+  .case-numbers {
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .decision-title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 1.5rem 0;
+    padding: 0.5rem;
+    background: #f8fafc;
+    border-radius: 4px;
+  }
+  
+  .info-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .info-label {
+    font-weight: 700;
+    color: #475569;
+    text-align: left;
+  }
+  
+  .info-value {
+    color: #1e293b;
+  }
+  
+  .main-section-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e40af;
+    text-align: center;
+    margin: 2rem 0 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(to right, #f0f9ff, #e0f2fe, #f0f9ff);
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  
+  .section-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 1.5rem 0 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid #3b82f6;
+    display: inline-block;
+  }
+  
+  .section-header-conclusion {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #000000;
+    margin: 1.5rem 0 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 3px solid #000000;
+    display: block;
+  }
+  
+  .decision-text p {
+    margin-bottom: 1rem;
+    text-align: justify;
+  }
+  
+  .numbered-item {
+    font-weight: 600;
+    color: #3b82f6;
+    margin-right: 0.5rem;
+    display: inline;
+  }
+  
+  .decision-text p {
+    margin-bottom: 1rem;
+    text-align: justify;
+  }
+  
+  .conclusion-paragraph {
+    margin-bottom: 1.5rem !important;
+    padding: 0;
+    background: none;
+    border: none;
+    font-weight: 400;
+    color: #1e293b;
+  }
+  
+  .court-ref {
+    color: #7c3aed;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  .legal-ref {
+    color: #dc2626;
+    font-weight: 500;
+    background: rgba(220, 38, 38, 0.1);
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .info-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    
+    .info-label {
+      font-size: 0.9rem;
+    }
+    
+    .court-header-text {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+  
+  /* Gelişmiş paragraf stili - daha fazla boşluk */
+  .decision-text p {
+    margin-bottom: 2.5rem;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    text-indent: 2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .decision-text p:first-child {
+    text-indent: 0;
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: #34495e;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #ecf0f1;
+  }
+  
+  .decision-text p:first-child::first-letter {
+    float: left;
+    font-size: 4rem;
+    line-height: 3rem;
+    padding-right: 8px;
+    padding-top: 4px;
+    font-family: 'Georgia', serif;
+    color: #3b82f6;
+    font-weight: bold;
+  }
+  
+  /* Responsive düzenleme */
+  @media (max-width: 768px) {
+    .decision-text {
+      padding: 25px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    
+    .decision-text p {
+      text-indent: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 0.3rem;
+    }
+    
+    .decision-text p:first-child::first-letter {
+      font-size: 3rem;
+      line-height: 2.5rem;
+    }
+  }
+  
+  /* Özet bölümü */
+  .summary-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+  }
+  
+    .summary-text {
+    color: #374151;
+    line-height: 1.8;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  .summary-text p {
+    margin-bottom: 1rem;
+  }
+  
+  .summary-text strong {
+    display: block;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+    font-size: 1.1rem;
+  }
+  
+  .summary-text strong:first-child {
+    margin-top: 0;
+  }
+
+  
+  /* Anahtar kelimeler */
+    .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+      .keyword-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    color: #1e293b;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin: 4px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  
+  /* Butonlar */
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    flex-wrap: wrap;
+  }
+  
+  .btn-modern {
+    padding: 12px 30px;
+    font-weight: 500;
+    border-radius: 25px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-primary-modern {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+  
+  .btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-secondary-modern {
+    background: #6c757d;
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  }
+  
+  .btn-secondary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-success-modern {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+  }
+  
+  .btn-success-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Print styles */
+  @media print {
+    .decision-header {
+      background: #333 !important;
+      -webkit-print-color-adjust: exact;
+    }
+    
+    .action-buttons, .btn-modern {
+      display: none !important;
+    }
+    
+    .decision-text {
+      font-size: 12pt;
+      line-height: 1.6;
+    }
+    
+    .metadata-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .decision-header {
+      padding: 25px 20px;
+    }
+    
+    .decision-header h1 {
+      font-size: 1.4rem;
+    }
+    
+    .text-content {
+      padding: 25px 20px;
+    }
+    
+    .metadata-section {
+      padding: 20px;
+    }
+    
+    .metadata-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .decision-text {
+      font-size: 1rem;
+      padding: 20px;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .btn-modern {
+      width: 100%;
+      max-width: 250px;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="decision-container">
+    <!-- Profesyonel Başlık -->
+    <div class="decision-header">
+      <h1>{{ decision.karar_veren_mahkeme|upper }}</h1>
+      <div class="decision-subtitle">
+        {% if decision.esas_numarasi %}{{ decision.esas_numarasi }} Esas{% endif %}
+        {% if decision.karar_numarasi %} / {{ decision.karar_numarasi }} Karar{% endif %}
+        {% if decision.karar_tarihi %} / {{ decision.karar_tarihi|date:"d.m.Y" }}{% endif %}
+      </div>
+    </div>
+
+    <div class="decision-content">
+      <!-- Metadata Grid -->
+      <div class="metadata-section">
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-gavel"></i> Kararı Veren Mahkeme
+            </div>
+            <div class="metadata-value">{{ decision.karar_veren_mahkeme|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-hashtag"></i> Esas Numarası
+            </div>
+            <div class="metadata-value">{{ decision.esas_numarasi|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-file-alt"></i> Karar Numarası
+            </div>
+            <div class="metadata-value">{{ decision.karar_numarasi|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-calendar-alt"></i> Karar Tarihi
+            </div>
+            <div class="metadata-value">{{ decision.karar_tarihi|date:"d F Y"|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          <div class="metadata-item">
+            <div class="metadata-label">
+              <i class="fas fa-layer-group"></i> Karar Türü
+            </div>
+            <div class="metadata-value">{{ decision.karar_turu|default:"Belirtilmemiş" }}</div>
+          </div>
+          
+          {% if decision.anahtar_kelimeler %}
+          <div class="metadata-item" style="grid-column: 1 / -1;">
+            <div class="metadata-label">
+              <i class="fas fa-tags"></i> Anahtar Kelimeler
+            </div>
+            <div class="keywords">
+              {% for keyword in decision.anahtar_kelimeler|split:"🔹" %}
+                {% if keyword|trim %}
+                  <span class="keyword-tag">{{ keyword|trim }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Özet Bölümü -->
+      {% if decision.karar_ozeti %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-file-contract"></i>
+          Karar Özeti
+        </div>
+        <div class="summary-section">
+          <div class="summary-text">{{ decision.karar_ozeti|format_summary|safe }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Ana Metin -->
+      {% if decision.karar_tam_metni %}
+      <div class="text-content">
+        <div class="section-title">
+          <i class="fas fa-scroll"></i>
+          Karar Tam Metni
+        </div>
+        <div class="decision-text" id="decisionText">
+          {{ decision.karar_tam_metni|format_decision_text|safe }}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Aksiyon Butonları -->
+      <div class="action-buttons">
+        {% if decision.dosya %}
+          <a href="{{ decision.dosya.url }}" target="_blank" class="btn-modern btn-primary-modern">
+            <i class="fas fa-download"></i>
+            Dosyayı İndir
+          </a>
+        {% endif %}
+        
+        <button onclick="window.print()" class="btn-modern btn-success-modern">
+          <i class="fas fa-print"></i>
+          Yazdır
+        </button>
+        
+        <button onclick="copyToClipboard()" class="btn-modern btn-primary-modern">
+          <i class="fas fa-copy"></i>
+          Metni Kopyala
+        </button>
+        
+        <a href="#" onclick="goBackToResults()" class="btn-modern btn-secondary-modern">
+          <i class="fas fa-arrow-left"></i>
+          Geri Dön
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Go back to results function
+function goBackToResults() {
+  // First check session storage for last search URL
+  const lastSearchUrl = sessionStorage.getItem('lastSearchUrl');
+  
+  if (lastSearchUrl) {
+    // Only use stored URL if it contains search parameters or is search-results page
+    if (lastSearchUrl.includes('/search-results/') || lastSearchUrl.includes('?q=') || lastSearchUrl.includes('&q=')) {
+      window.location.href = lastSearchUrl;
+      return false;
+    }
+  }
+  
+  // Check if we came from search results
+  const referrer = document.referrer;
+  
+  if (referrer && referrer.includes('/search-results/')) {
+    // Go back to search results page
+    window.location.href = referrer;
+  } else if (referrer && referrer.includes('/judicial-decisions/') && (referrer.includes('?') || referrer.includes('&'))) {
+    // If we came from judicial decisions page with filters/search parameters
+    window.location.href = referrer;
+  } else if (window.history.length > 1) {
+    // Try to go back in history
+    window.history.back();
+  } else {
+    // Default fallback to judicial decisions page
+    window.location.href = "{% url 'judicial_decisions' %}";
+  }
+  
+  return false;
+}
+
+// Metin kopyalama fonksiyonu
+function copyToClipboard() {
+  const decisionText = document.getElementById('decisionText');
+  if (!decisionText) {
+    alert('Kopyalanacak metin bulunamadı.');
+    return;
+  }
+  
+  // Metni kopyala
+  const textContent = decisionText.innerText || decisionText.textContent;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(textContent).then(function() {
+      showToast('Karar metni panoya kopyalandı!', 'success');
+    }).catch(function(err) {
+      console.error('Kopyalama hatası: ', err);
+      fallbackCopyTextToClipboard(textContent);
+    });
+  } else {
+    fallbackCopyTextToClipboard(textContent);
+  }
+}
+
+// Fallback kopyalama metodu
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+  
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showToast('Karar metni panoya kopyalandı!', 'success');
+    } else {
+      showToast('Kopyalama işlemi başarısız oldu.', 'error');
+    }
+  } catch (err) {
+    showToast('Kopyalama desteklenmiyor.', 'error');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// Toast notification gösterme
+function showToast(message, type = 'info') {
+  // Mevcut toast'ları temizle
+  const existingToasts = document.querySelectorAll('.custom-toast');
+  existingToasts.forEach(toast => toast.remove());
+  
+  const toast = document.createElement('div');
+  toast.className = `custom-toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  // Toast stillerini ekle
+  const style = document.createElement('style');
+  style.textContent = `
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border-left: 4px solid;
+      z-index: 9999;
+      animation: slideInRight 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast-success { border-left-color: #28a745; }
+    .toast-error { border-left-color: #dc3545; }
+    .toast-info { border-left-color: #17a2b8; }
+    
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .toast-success .fas { color: #28a745; }
+    .toast-error .fas { color: #dc3545; }
+    .toast-info .fas { color: #17a2b8; }
+    
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  
+  if (!document.querySelector('#toast-styles')) {
+    style.id = 'toast-styles';
+    document.head.appendChild(style);
+  }
+  
+  document.body.appendChild(toast);
+  
+  // 3 saniye sonra toast'ı kaldır
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Yazdırma öncesi optimizasyon
+window.addEventListener('beforeprint', function() {
+  document.title = `{{ decision.karar_veren_mahkeme|escapejs }} - {{ decision.karar_numarasi|escapejs }}`;
+});
+
+// Sayfa yüklendiğinde basit optimizasyon
+document.addEventListener('DOMContentLoaded', function() {
+  const decisionText = document.getElementById('decisionText');
+  if (decisionText) {
+    // Sadece boş paragrafları temizle
+    const paragraphs = decisionText.querySelectorAll('p');
+    paragraphs.forEach(p => {
+      if (p.textContent.trim() === '') {
+        p.remove();
+      }
+    });
+  }
+});
+
+// Anahtar kelime vurgulama (URL'den gelen arama terimi varsa)
+function highlightSearchTerms() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchTerm = urlParams.get('highlight');
+  
+  if (searchTerm && document.getElementById('decisionText')) {
+    const content = document.getElementById('decisionText');
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    content.innerHTML = content.innerHTML.replace(regex, '<mark style="background: #ffeb3b; padding: 2px 4px; border-radius: 3px;">$1</mark>');
+  }
+}
+
+// Sayfa yüklendiğinde vurgulama yap
+document.addEventListener('DOMContentLoaded', highlightSearchTerms);
+</script>
+{% endblock %}
+<style>
+  /* Paragraph Spacer for visual separation */
+  .paragraph-spacer {
+    display: block;
+    height: 1.5rem;
+    clear: both;
+  }
+  
+  /* Ensure paragraphs have proper spacing */
+  p.paragraph-indent, p.danistay-paragraph {
+    margin-top: 0 \!important;
+    margin-bottom: 0 \!important;
+  }
+  
+  /* Additional spacing after section headers */
+  .section-header + .paragraph-spacer,
+  .section-header + p {
+    margin-top: 0.5rem;
+  }
+</style>

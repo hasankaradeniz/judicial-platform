@@ -14,7 +14,7 @@ conn = psycopg2.connect(
     host="145.223.82.130",
     database="yargi_veri_tabani",
     user="hasankaradeniz",
-    password="07072010Dd*",
+    password="judicial2024",
     port="5432"
 )
 cursor = conn.cursor()
@@ -57,6 +57,11 @@ if df.empty:
     exit()
 
 print(f"📄 {len(df)} yeni karar bulundu. İşleniyor...")
+print(f"🔍 İşlenecek karar ID aralığı: {df['id'].min()} - {df['id'].max()}")
+
+# İlerleme takibi için
+PROGRESS_INTERVAL = 5000
+processed_count = 0
 
 # --------------------
 # 5. Etiketleme için anahtar kelimeler
@@ -92,6 +97,9 @@ embeddings = model.encode(df["karar_tam_metni"].tolist(), batch_size=32, show_pr
 # 8. FAISS ve Mapping Güncelleme
 # --------------------
 print("🔵 FAISS dizinleri ve Mapping güncelleniyor...")
+import time
+start_time = time.time()
+
 for i, row in tqdm(df.iterrows(), total=len(df), desc="Yeni Kararlar İşleniyor"):
     karar_id = row["id"]
     metin = row["karar_tam_metni"]
@@ -119,37 +127,24 @@ for i, row in tqdm(df.iterrows(), total=len(df), desc="Yeni Kararlar İşleniyor
 
     for alan in alanlar_listesi:
         faiss_path = os.path.join(FAISS_DIR, f"faiss_{alan}.index")
-        map_path   = os.path.join(FAISS_DIR, f"mapping_{alan}.pkl")
+        map_path = os.path.join(FAISS_DIR, f"mapping_{alan}.pkl")
 
-        # FAISS index yükle / oluştur
         if alan not in faiss_index_dict:
             if os.path.exists(faiss_path):
                 faiss_index_dict[alan] = faiss.read_index(faiss_path)
             else:
                 faiss_index_dict[alan] = faiss.IndexFlatL2(embedding.shape[0])
 
-        # Mapping yükle / oluştur ve eski liste formatını dict'e dönüştür
         if alan not in mapping_dict:
             if os.path.exists(map_path):
-                with open(map_path, "rb") as f_map:
-                    loaded = pickle.load(f_map)
-                if isinstance(loaded, list):
-                    # eski liste formatı için: [item0, item1, ...] -> {0: item0, 1: item1, ...}
-                    mapping_dict[alan] = {idx: item for idx, item in enumerate(loaded)}
-                else:
-                    mapping_dict[alan] = loaded
+                with open(map_path, "rb") as f:
+                    mapping_dict[alan] = pickle.load(f)
             else:
                 mapping_dict[alan] = {}
 
-        # Yeni embedding'i FAISS'e ekle
         faiss_index_dict[alan].add(embedding.reshape(1, -1))
 
-        # Bir sonraki mapping ID'sini hesapla
-        if mapping_dict[alan]:
-            next_id = max(mapping_dict[alan].keys()) + 1
-        else:
-            next_id = 0
-
+        next_id = max(mapping_dict[alan].keys()) + 1 if mapping_dict[alan] else 0
         mapping_dict[alan][next_id] = {
             "mahkeme": row["karar_veren_mahkeme"],
             "esas_no": row["esas_numarasi"],
@@ -159,16 +154,40 @@ for i, row in tqdm(df.iterrows(), total=len(df), desc="Yeni Kararlar İşleniyor
             "metin": row["karar_tam_metni"]
         }
 
+    # İlerleme takibi
+    processed_count += 1
+    if processed_count % PROGRESS_INTERVAL == 0:
+        elapsed_time = time.time() - start_time
+        rate = processed_count / elapsed_time
+        remaining = len(df) - processed_count
+        eta_seconds = remaining / rate if rate > 0 else 0
+        eta_minutes = eta_seconds / 60
+        
+        print(f"\n📊 İlerleme Raporu:")
+        print(f"   ✅ İşlenen: {processed_count:,} / {len(df):,} ({processed_count/len(df)*100:.1f}%)")
+        print(f"   ⏱️  Geçen süre: {elapsed_time/60:.1f} dakika")
+        print(f"   🚀 Hız: {rate:.1f} karar/saniye")
+        print(f"   ⏳ Tahmini kalan süre: {eta_minutes:.1f} dakika")
+        print(f"   🔍 Son işlenen ID: {karar_id}")
+        print(f"   📁 Aktif FAISS alanları: {len(faiss_index_dict)}")
+        print("   " + "="*50)
+
 # --------------------
 # 9. FAISS ve Mapping'leri topluca kaydet
 # --------------------
-print("💾 Değişiklikler kaydediliyor...")
+print(f"\n💾 Değişiklikler kaydediliyor...")
+print(f"📁 Kaydedilecek FAISS alanları: {len(faiss_index_dict)}")
+
 for alan, index in faiss_index_dict.items():
-    faiss.write_index(index, os.path.join(FAISS_DIR, f"faiss_{alan}.index"))
+    index_path = os.path.join(FAISS_DIR, f"faiss_{alan}.index")
+    faiss.write_index(index, index_path)
+    print(f"   ✅ {alan}.index kaydedildi ({index.ntotal} embedding)")
 
 for alan, mapping in mapping_dict.items():
-    with open(os.path.join(FAISS_DIR, f"mapping_{alan}.pkl"), "wb") as f:
+    mapping_path = os.path.join(FAISS_DIR, f"mapping_{alan}.pkl")
+    with open(mapping_path, "wb") as f:
         pickle.dump(mapping, f)
+    print(f"   ✅ {alan}.pkl kaydedildi ({len(mapping)} kayıt)")
 
 # --------------------
 # 10. En son işlenen ID'yi kaydet
@@ -177,4 +196,10 @@ max_id_in_batch = df["id"].max()
 with open(LAST_ID_FILE, "w") as f:
     f.write(str(max_id_in_batch))
 
-print(f"\n✅ Güncelleme tamamlandı. En son işlenen karar ID'si: {max_id_in_batch}")
+total_time = time.time() - start_time
+print(f"\n🎉 Güncelleme tamamlandı!")
+print(f"   📊 İşlenen toplam karar: {processed_count:,}")
+print(f"   🔍 En son işlenen ID: {max_id_in_batch}")
+print(f"   ⏱️  Toplam süre: {total_time/60:.1f} dakika")
+print(f"   🚀 Ortalama hız: {processed_count/total_time:.1f} karar/saniye")
+print(f"   📁 Oluşturulan FAISS alanları: {len(faiss_index_dict)}")

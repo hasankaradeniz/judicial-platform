@@ -183,7 +183,7 @@ Paket Satışları:
                     subject='Lexatech - Günlük Özet',
                     message=message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['admin@lexatech.ai'],
+                    recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['lexatech.ai@gmail.com'],
                     fail_silently=False,
                 )
                 return True

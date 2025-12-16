@@ -1,17 +1,695 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block page_title %}Profilim | Lexatech{% endblock %}
+{% block page_title %}Profil | Lexatech{% endblock %}
+
+{% block extra_styles %}
+<style>
+  :root {
+    --royal-blue: #1a365d;
+    --royal-blue-light: #2c5aa0;
+    --gold-accent: #d69e2e;
+    --emerald: #047857;
+    --crimson: #c53030;
+    --shadow-legal: 0 4px 20px rgba(26, 54, 93, 0.12);
+    --shadow-premium: 0 8px 32px rgba(26, 54, 93, 0.16);
+    --gradient-royal: linear-gradient(135deg, var(--royal-blue) 0%, var(--royal-blue-light) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-accent) 0%, #fbd38d 100%);
+    --gradient-emerald: linear-gradient(135deg, var(--emerald) 0%, #10b981 100%);
+  }
+
+  .hero-section {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 3rem;
+    border: 4px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--shadow-legal);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 30px;
+    overflow: hidden;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-premium);
+  }
+
+  .card-header-custom {
+    background: var(--gradient-royal);
+    color: white;
+    padding: 20px;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .card-header-premium {
+    background: var(--gradient-gold);
+    color: var(--royal-blue);
+  }
+
+  .card-header-security {
+    background: var(--gradient-emerald);
+    color: white;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.3s ease;
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .info-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--royal-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+
+  .info-content {
+    flex-grow: 1;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+  }
+
+  .info-value {
+    color: #4a5568;
+    font-size: 1rem;
+  }
+
+  .subscription-card {
+    background: var(--gradient-royal);
+    color: white;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subscription-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+  }
+
+  .premium-features-card {
+    background: var(--gradient-gold);
+    color: var(--royal-blue);
+    border: none;
+    position: relative;
+  }
+
+  .premium-features-card::after {
+    content: "FIRSAŢ";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--crimson);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .urgency-message {
+    background: rgba(192, 86, 33, 0.1);
+    border: 1px solid rgba(192, 86, 33, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    color: var(--royal-blue);
+  }
+  
+  .competition-alert {
+    background: rgba(26, 54, 93, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  .feature-list li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    color: var(--royal-blue);
+    font-weight: 500;
+  }
+
+  .feature-list .check {
+    color: var(--emerald);
+    margin-right: 10px;
+    font-weight: 600;
+  }
+
+  .btn-profile {
+    background: var(--gradient-royal);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 25px;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+  }
+
+  .btn-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-legal);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-premium {
+    background: rgba(255,255,255,0.9);
+    color: var(--royal-blue);
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+
+  .btn-premium:hover {
+    background: white;
+    color: var(--royal-blue);
+  }
+
+  .btn-security {
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: var(--emerald);
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-security:hover {
+    background: white;
+    color: var(--emerald);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(4, 120, 87, 0.3);
+  }
+
+  .subscription-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    backdrop-filter: blur(10px);
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 20px auto;
+    font-size: 1.5rem;
+  }
+
+  .status-active {
+    background: var(--emerald);
+    color: white;
+  }
+
+  .status-trial {
+    background: var(--gold-accent);
+    color: white;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255,255,255,0.1);
+    margin: 20px 0;
+    border-radius: 10px;
+  }
+
+  .stat-item {
+    text-align: center;
+    color: white;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 40px 0;
+    }
+    
+    .hero-section h1 {
+      font-size: 2rem;
+    }
+
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h1 class="text-center">Profil Bilgilerim</h1>
-  <div class="card">
-    <div class="card-body">
-      <p><strong>Kullanıcı Adı:</strong> {{ user.username }}</p>
-      <p><strong>E-posta:</strong> {{ user.email }}</p>
-      <!-- Ek profil bilgilerini buraya ekleyebilirsiniz -->
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="profile-avatar">
+      <i class="fas fa-user"></i>
+    </div>
+    <h1>{{ user.get_full_name|default:user.username }}</h1>
+    <p class="lead">
+      <i class="fas fa-envelope me-2"></i>{{ user.email }}
+    </p>
+    {% if user.date_joined %}
+    <small style="opacity: 0.8;">
+      <i class="fas fa-calendar-alt me-1"></i>
+      {{ user.date_joined|date:"d F Y" }} tarihinde katıldı
+    </small>
+    {% endif %}
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value">{{ user.last_login|timesince|default:"Hiç" }}</div>
+        <div class="stat-label">Son Giriş</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ user.date_joined|timesince }}</div>
+        <div class="stat-label">Üyelik Süresi</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">
+          {% if user.profile.can_access_platform %}
+            <i class="fas fa-check-circle" style="color: #10b981;"></i>
+          {% else %}
+            <i class="fas fa-times-circle" style="color: #f56565;"></i>
+          {% endif %}
+        </div>
+        <div class="stat-label">Platform Erişimi</div>
+      </div>
     </div>
   </div>
 </div>
+
+<div class="container">
+  <div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-4">
+      <!-- Personal Information -->
+      <div class="profile-card">
+        <div class="card-header-custom">
+          <i class="fas fa-user me-2"></i>Kişisel Bilgiler
+        </div>
+        <div class="card-body p-0">
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-signature"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Kullanıcı Adı</div>
+              <div class="info-value">{{ user.username }}</div>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">E-posta Adresi</div>
+              <div class="info-value">{{ user.email }}</div>
+            </div>
+          </div>
+
+          {% if user.profile.phone_number %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Telefon Numarası</div>
+              <div class="info-value">{{ user.profile.phone_number }}</div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if user.get_full_name %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Ad Soyad</div>
+              <div class="info-value">{{ user.get_full_name }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Address Information -->
+      {% if user.profile.address_line_1 or user.profile.city %}
+      <div class="profile-card">
+        <div class="card-header-custom">
+          <i class="fas fa-map-marker-alt me-2"></i>Adres Bilgileri
+        </div>
+        <div class="card-body p-0">
+          {% if user.profile.address_line_1 %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-home"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Adres</div>
+              <div class="info-value">
+                {{ user.profile.address_line_1 }}
+                {% if user.profile.address_line_2 %}
+                  <br>{{ user.profile.address_line_2 }}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if user.profile.city or user.profile.district %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-city"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Şehir / İlçe</div>
+              <div class="info-value">
+                {% if user.profile.district %}{{ user.profile.district }}, {% endif %}{{ user.profile.city }}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if user.profile.postal_code %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-mail-bulk"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Posta Kodu</div>
+              <div class="info-value">{{ user.profile.postal_code }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Security Card -->
+      <div class="profile-card">
+        <div class="card-header-security">
+          <i class="fas fa-shield-alt me-2"></i>Hesap Güvenliği
+        </div>
+        <div class="card-body text-center">
+          <p class="mb-3">Hesabınızın güvenliği için parolanızı düzenli olarak değiştirin.</p>
+          <a href="{% url 'account_change_password' %}" class="btn-security">
+            <i class="fas fa-key me-2"></i>Parola Değiştir
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-8">
+      <!-- Subscription Status -->
+      <div class="profile-card subscription-card">
+        <div class="card-body text-center">
+          {% if user.profile.has_active_subscription %}
+            <div class="subscription-badge">Aktif Abonelik</div>
+            <div class="status-indicator status-active">
+              <i class="fas fa-crown"></i>
+            </div>
+            <h3>Premium Üye</h3>
+            <p class="mb-2">Tüm premium özelliklere erişiminiz bulunmaktadır.</p>
+            {% if user.subscription %}
+            <p class="mb-0">
+              <small>
+                <i class="fas fa-calendar me-1"></i>
+                {{ user.subscription.end_date|date:"d F Y" }} tarihine kadar geçerli
+              </small>
+            </p>
+            {% endif %}
+          {% elif user.profile.is_free_trial and not user.profile.is_free_trial_expired %}
+            <div class="subscription-badge">Platform Erişimi</div>
+            <div class="status-indicator status-trial">
+              <i class="fas fa-play"></i>
+            </div>
+            <h3>Platform Kullanımı Aktif</h3>
+            <p class="mb-3">Hukuki araştırmalarınıza başlayabilirsiniz. Premium özelliklere erişmek için üyeliğinizi yükseltin.</p>
+          {% else %}
+            <div class="subscription-badge">Ücretsiz Hesap</div>
+            <div class="status-indicator status-trial">
+              <i class="fas fa-user"></i>
+            </div>
+            <h3>Temel Üye</h3>
+            <p class="mb-3">Premium özelliklere erişim için bir abonelik paketi seçiniz.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Premium Features Promotion -->
+      {% if not user.profile.has_active_subscription %}
+      <div class="profile-card premium-features-card">
+        <div class="card-body text-center">
+          <h4><i class="fas fa-star me-2"></i>Premium Avantajları Kaçırmayın!</h4>
+          <p class="mb-3">Rakipleriniz şu anda premium özelliklerle avantaj sağlıyor!</p>
+          
+          <div class="urgency-message mb-3">
+            <div class="d-flex align-items-center justify-content-center mb-2">
+              <i class="fas fa-clock me-2" style="color: var(--crimson);"></i>
+              <strong>Sınırlı süre fırsatı!</strong>
+            </div>
+            <small>Bu ay premium üye olan kullanıcılarımızın %85'i daha hızlı sonuç alıyor</small>
+          </div>
+          
+          <ul class="feature-list">
+            <li><span class="check">🔍</span> Daha fazla arama sonucu</li>
+            <li><span class="check">📖</span> Daha kapsamlı hukuki açıklama</li>
+            <li><span class="check">🎯</span> Öncelikli müşteri desteği</li>
+            <li><span class="check">🔄</span> Günlük güncellemeler</li>
+          </ul>
+          
+          <div class="competition-alert mb-3">
+            <small style="color: var(--royal-blue); font-weight: 600;">
+              <i class="fas fa-users me-1"></i>Bu hafta 127 hukukçu premium üyeliğe geçti
+            </small>
+          </div>
+          
+          <a href="{% url 'paketler' %}" class="btn-premium">
+            <i class="fas fa-rocket me-2"></i>Geride Kalma!
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Quick Actions -->
+      <div class="action-grid">
+        <div class="profile-card">
+          <div class="card-body text-center">
+            <div class="info-icon mx-auto mb-3" style="background: var(--emerald);">
+              <i class="fas fa-gavel"></i>
+            </div>
+            <h6>Yargı Kararları</h6>
+            <p class="text-muted mb-3">Kapsamlı veri tabanımızda arama yapın</p>
+            <a href="{% url 'judicial_decisions' %}" class="btn-profile">
+              Kararları Ara
+            </a>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="card-body text-center">
+            <div class="info-icon mx-auto mb-3" style="background: var(--gold-accent);">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+            <h6>Mevzuat Tarama</h6>
+            <p class="text-muted mb-3">Güncel mevzuat ve kanunlara erişin</p>
+            <a href="{% url 'legislation_home' %}" class="btn-profile">
+              Mevzuat Ara
+            </a>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="card-body text-center">
+            <div class="info-icon mx-auto mb-3" style="background: var(--crimson);">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h6>AI Araçları</h6>
+            <p class="text-muted mb-3">Yapay zeka destekli hukuk araçlarını keşfedin</p>
+            <a href="{% url 'ai_features_home' %}" class="btn-profile">
+              AI'ı Dene
+            </a>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="card-body text-center">
+            <div class="info-icon mx-auto mb-3">
+              <i class="fas fa-search"></i>
+            </div>
+            <h6>Makale Araştırma</h6>
+            <p class="text-muted mb-3">Akademik makalelerde arama yapın</p>
+            <a href="{% url 'articles' %}" class="btn-profile">
+              Makale Ara
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn-profile me-2">
+          <i class="fas fa-home me-1"></i>Ana Sayfa
+        </a>
+        <a href="{% url 'paketler' %}" class="btn-profile me-2">
+          <i class="fas fa-shopping-cart me-1"></i>Paketler
+        </a>
+        <a href="{% url 'logout' %}" class="btn-profile">
+          <i class="fas fa-sign-out-alt me-1"></i>Çıkış Yap
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on scroll
+    const cards = document.querySelectorAll('.profile-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+
+    cards.forEach((card) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+
+    // Add hover effects for info items
+    const infoItems = document.querySelectorAll('.info-item');
+    infoItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+});
+</script>
 {% endblock %}

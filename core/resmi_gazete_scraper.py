@@ -226,7 +226,7 @@ class ResmiGazeteScraper:
                         'sayi': sayi,
                         'tarih': today,
                         'link': full_pdf_url,
-                        'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - PDF formatında tüm içerikler',
+                        'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - Bugün yayınlanan Resmi Gazetenin PDF formatında tam metnidir.',
                         'tur': 'pdf'
                     }
             
@@ -249,7 +249,7 @@ class ResmiGazeteScraper:
                             'sayi': sayi,
                             'tarih': today,
                             'link': full_url,
-                            'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - PDF formatında tüm içerikler',
+                            'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - Bugün yayınlanan Resmi Gazetenin PDF formatında tam metnidir.',
                             'tur': 'pdf'
                         }
             
@@ -846,7 +846,7 @@ class ResmiGazeteScraper:
                 'sayi': str(estimated_number),
                 'tarih': today,
                 'link': 'https://www.resmigazete.gov.tr/',
-                'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - Tüm resmi yayınları içerir',
+                'ozet': f'{today} tarihli Resmi Gazete günlük sayısı - Bugün yayınlanan Resmi Gazetenin PDF formatında tam metnidir.',
                 'tur': 'resmigazete'
             }
         ]

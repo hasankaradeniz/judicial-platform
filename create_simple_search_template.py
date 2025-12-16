@@ -1,0 +1,117 @@
+# Create a simple working search_results.html template
+
+template_content = """{% extends "core/base.html" %}
+{% load static %}
+
+{% block page_title %}Arama Sonuçları - Lexatech{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Arama Sonuçları</h1>
+            
+            {% if query %}
+                <p>Arama terimi: <strong>{{ query }}</strong></p>
+                <p>Toplam sonuç: {{ total_decisions }}</p>
+                
+                {% if decisions %}
+                    {% for decision in decisions %}
+                    <div class="decision-card mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="/judicial/{{ decision.id }}/">
+                                        {{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}
+                                    </a>
+                                </h5>
+                                <p class="card-text">
+                                    <strong>Tür:</strong> {{ decision.karar_turu }}<br>
+                                    <strong>Tarih:</strong> {{ decision.karar_tarihi }}<br>
+                                    <strong>Esas No:</strong> {{ decision.esas_numarasi }}
+                                </p>
+                                <p class="card-text">{{ decision.ozet|truncatewords:30 }}</p>
+                                <a href="/judicial/{{ decision.id }}/" class="btn btn-primary">Detayları Görüntüle</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="alert alert-info">
+                        <p>Arama sonucu bulunamadı.</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>Arama sonucu bulunamadı.</p>
+                    </div>
+                {% endif %}
+                
+            {% else %}
+                <p>En son kararlar:</p>
+                {% for decision in newest_decisions %}
+                <div class="decision-card mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="/judicial/{{ decision.id }}/">
+                                    {{ decision.karar_veren_mahkeme }} - {{ decision.karar_numarasi }}
+                                </a>
+                            </h5>
+                            <p class="card-text">
+                                <strong>Tür:</strong> {{ decision.karar_turu }}<br>
+                                <strong>Tarih:</strong> {{ decision.karar_tarihi }}<br>
+                                <strong>Esas No:</strong> {{ decision.esas_numarasi }}
+                            </p>
+                            <p class="card-text">{{ decision.ozet|truncatewords:30 }}</p>
+                            <a href="/judicial/{{ decision.id }}/" class="btn btn-primary">Detayları Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">
+                    <p>Henüz karar bulunmamaktadır.</p>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            <\!-- Pagination -->
+            {% if page_obj and page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="Sayfa navigasyonu">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Önceki</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Sonraki</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+"""
+
+with open("core/templates/core/search_results.html", "w", encoding="utf-8") as f:
+    f.write(template_content)
+
+print("Simple search template created successfully\!")

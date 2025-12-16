@@ -530,9 +530,9 @@ def judicial_decisions(request):
     
     context = {
         'query': query,
-        'newest_decisions': decisions if query else newest_decisions,
+        'newest_decisions': newest_decisions,
         'page_obj': newest_decisions,
-        'decisions': decisions,
+        'decisions': results,
         'court_type_counts': court_type_counts,
         'total_decisions': total_decisions,
         'is_paginated': getattr(newest_decisions, 'has_other_pages', lambda: False)(),
@@ -1015,7 +1015,7 @@ def api_search(request):
         results.append({
             'id': decision.id,
             'title': decision.karar_turu,
-            'summary': decision.karar_ozeti[:200] if decision.karar_ozeti else '',
+            'summary': decision.karar_ozeti if decision.karar_ozeti else '',
             'court': decision.karar_veren_mahkeme,
             'date': str(decision.karar_tarihi) if decision.karar_tarihi else ''
         })
@@ -1040,9 +1040,9 @@ def search_results(request):
     context = {
         'filter': decision_filter,
         'results': results,
-        'newest_decisions': decisions if query else newest_decisions,
+        'newest_decisions': newest_decisions,
         'page_obj': newest_decisions,
-        'decisions': decisions,
+        'decisions': results,
         'random_decisions': random_decisions,
         'total_decisions': total_decisions,
         'court_counts': court_counts_json,
@@ -1979,6 +1979,10 @@ def search_results_view(request):
                 # Sıralama
                 if sort_order == 'date':
                     results_query = results_query.order_by('-karar_tarihi')
+                elif sort_order == "length_desc":
+                    results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("-text_length")
+                elif sort_order == "length_asc":
+                    results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("text_length")
                 else:
                     results_query = results_query.order_by('-id')
                 
@@ -1986,7 +1990,7 @@ def search_results_view(request):
                 total_count = results_query.count()
                 
                 # İlk 100 sonucu cache'le (5 sayfa)
-                all_results = list(results_query[:100])
+                all_results = list(results_query[:500])
                 
                 # Cache'e kaydet (15 dakika) - memory tasarrufu için kısa süre
                 cache.set(results_cache_key, all_results, 900)  # 15 dakika
@@ -2006,7 +2010,7 @@ def search_results_view(request):
                 decisions = list(page_obj)
                 
                 # Cache dışı sayfa istendiyse (5+ sayfa)
-                if int(page_number) > 5:
+                if int(page_number) > 225:
                     print(f"Page {page_number} beyond cache - DB query")
                     # DB'den direkt al
                     words = query.split()[:3]
@@ -2019,6 +2023,10 @@ def search_results_view(request):
                         results_query = JudicialDecision.objects.filter(q_objects).select_related()
                         if sort_order == 'date':
                             results_query = results_query.order_by('-karar_tarihi')
+                        elif sort_order == "length_desc":
+                            results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("-text_length")
+                        elif sort_order == "length_asc":
+                            results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("text_length")
                         else:
                             results_query = results_query.order_by('-id')
                         
@@ -2040,14 +2048,14 @@ def search_results_view(request):
         page_obj = paginator.get_page(1)
     
     # Word count filter - exclude decisions with less than 1500 words
-    if decisions:
-        filtered_decisions = []
-        for decision in decisions:
-            if decision.karar_tam_metni:
-                word_count = len(decision.karar_tam_metni.split())
-                if word_count >= 1500:
-                    filtered_decisions.append(decision)
-        decisions = filtered_decisions
+# #     if decisions:
+# #         filtered_decisions = []
+# #         for decision in decisions:
+# #             if decision.karar_tam_metni:
+# #                 word_count = len(decision.karar_tam_metni.split())
+# #                 if word_count >= 1500:
+# #                     filtered_decisions.append(decision)
+# #         decisions = filtered_decisions
     # Context oluştur
     context = {
         'query': query,

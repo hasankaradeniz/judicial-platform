@@ -529,7 +529,7 @@ Lütfen profesyonel, detaylı ve hukuki standartlara uygun bir belge oluştur. B
         # Generate with Gemini
         generator = LegalTextGenerator()
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel(model_name="gemini-2.5-pro")
+        model = genai.GenerativeModel(model_name="gemini-3-pro-preview")
         
         response = model.generate_content(prompt)
         
@@ -881,7 +881,7 @@ Analiz yaparken özellikle şunlara dikkat et:
         
         # Gemini API'yi kullan
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        model = genai.GenerativeModel(model_name="gemini-3-pro-preview")
         
         try:
             response = model.generate_content(prompt)

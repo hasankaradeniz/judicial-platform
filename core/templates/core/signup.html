@@ -1,113 +1,332 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block page_title %}Üye Ol - Lexatech{% endblock %}
+{% block page_title %}Üye Ol | Lexatech{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white text-center">
-          <h4 class="mb-0">Yeni Hesap Oluştur</h4>
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-gradient-primary text-white text-center py-4">
+          <h3 class="mb-0 font-weight-bold">Lexatech'e Katılın</h3>
+          <p class="mb-0 text-white-50">Hukuki araştırma deneyiminizi dönüştürün</p>
         </div>
-        <div class="card-body">
-          <form method="post">
+        
+        <div class="card-body p-5">
+          {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+              <strong><i class="fas fa-exclamation-triangle"></i> Lütfen aşağıdaki hataları düzeltin:</strong>
+              <ul class="mb-0 mt-2">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          
+          <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
 
-            <!-- Kullanıcı Adı -->
-            <div class="form-group row">
-              <label for="{{ form.username.id_for_label }}" class="col-sm-3 col-form-label">
-                {{ form.username.label }}
-              </label>
-              <div class="col-sm-9">
-                {{ form.username }}
-                {% for error in form.username.errors %}
-                  <div class="text-danger">{{ error }}</div>
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-user me-2"></i>Hesap Bilgileri
+              </h5>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.username.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.username.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.username }}
+                  {% if form.username.help_text %}
+                    <small class="form-text text-muted">{{ form.username.help_text }}</small>
+                  {% endif %}
+                  {% for error in form.username.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.email.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.email.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.email }}
+                  {% if form.email.help_text %}
+                    <small class="form-text text-muted">{{ form.email.help_text }}</small>
+                  {% endif %}
+                  {% for error in form.email.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="{{ form.phone_number.id_for_label }}" class="form-label font-weight-bold">
+                  {{ form.phone_number.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.phone_number }}
+                {% if form.phone_number.help_text %}
+                  <small class="form-text text-muted">{{ form.phone_number.help_text }}</small>
+                {% endif %}
+                {% for error in form.phone_number.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
                 {% endfor %}
               </div>
             </div>
 
-            <!-- E-Posta -->
-            <div class="form-group row">
-              <label for="{{ form.email.id_for_label }}" class="col-sm-3 col-form-label">
-                {{ form.email.label }}
-              </label>
-              <div class="col-sm-9">
-                {{ form.email }}
-                {% for error in form.email.errors %}
-                  <div class="text-danger">{{ error }}</div>
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-map-marker-alt me-2"></i>Adres Bilgileri
+              </h5>
+              
+              <div class="mb-3">
+                <label for="{{ form.address_line_1.id_for_label }}" class="form-label font-weight-bold">
+                  {{ form.address_line_1.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.address_line_1 }}
+                {% if form.address_line_1.help_text %}
+                  <small class="form-text text-muted">{{ form.address_line_1.help_text }}</small>
+                {% endif %}
+                {% for error in form.address_line_1.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
                 {% endfor %}
+              </div>
+              
+              <div class="mb-3">
+                <label for="{{ form.address_line_2.id_for_label }}" class="form-label font-weight-bold">
+                  {{ form.address_line_2.label }} <span class="text-muted">(opsiyonel)</span>
+                </label>
+                {{ form.address_line_2 }}
+                {% if form.address_line_2.help_text %}
+                  <small class="form-text text-muted">{{ form.address_line_2.help_text }}</small>
+                {% endif %}
+                {% for error in form.address_line_2.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+              </div>
+              
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.city.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.city.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.city }}
+                  {% for error in form.city.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.district.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.district.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.district }}
+                  {% for error in form.district.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.postal_code.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.postal_code.label }} <span class="text-muted">(opsiyonel)</span>
+                  </label>
+                  {{ form.postal_code }}
+                  {% if form.postal_code.help_text %}
+                    <small class="form-text text-muted">{{ form.postal_code.help_text }}</small>
+                  {% endif %}
+                  {% for error in form.postal_code.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
               </div>
             </div>
 
-            <!-- Parola -->
-            <div class="form-group row">
-              <label for="{{ form.password1.id_for_label }}" class="col-sm-3 col-form-label">
-                {{ form.password1.label }}
-              </label>
-              <div class="col-sm-9">
-                {{ form.password1 }}
-                {% for error in form.password1.errors %}
-                  <div class="text-danger">{{ error }}</div>
-                {% endfor %}
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-lock me-2"></i>Güvenlik
+              </h5>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.password1.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.password1.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.password1 }}
+                  {% if form.password1.help_text %}
+                    <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                  {% endif %}
+                  {% for error in form.password1.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.password2.id_for_label }}" class="form-label font-weight-bold">
+                    {{ form.password2.label }} <span class="text-danger">*</span>
+                  </label>
+                  {{ form.password2 }}
+                  {% if form.password2.help_text %}
+                    <small class="form-text text-muted">{{ form.password2.help_text }}</small>
+                  {% endif %}
+                  {% for error in form.password2.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
               </div>
             </div>
 
-            <!-- Parola Onay -->
-            <div class="form-group row">
-              <label for="{{ form.password2.id_for_label }}" class="col-sm-3 col-form-label">
-                {{ form.password2.label }}
-              </label>
-              <div class="col-sm-9">
-                {{ form.password2 }}
-                {% for error in form.password2.errors %}
-                  <div class="text-danger">{{ error }}</div>
+            <div class="mb-4">
+              <h5 class="text-primary border-bottom pb-2 mb-3">
+                <i class="fas fa-file-contract me-2"></i>Sözleşmeler ve Onaylar
+              </h5>
+              
+              <div class="form-check p-3 mb-3" style="background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                {{ form.accept_user_agreement }}
+                <label class="form-check-label" for="{{ form.accept_user_agreement.id_for_label }}">
+                  <a href="{% url 'kullanici_sozlesmesi' %}" target="_blank" class="text-decoration-none">Kullanıcı Sözleşmesi</a>'ni okudum ve kabul ediyorum <span class="text-danger">*</span>
+                </label>
+                {% for error in form.accept_user_agreement.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
                 {% endfor %}
               </div>
-            </div>
 
-            <!-- Kullanıcı Sözleşmesi Onayı -->
-            <div class="form-group form-check">
-              {{ form.accept_user_agreement }}
-              <label class="form-check-label" for="{{ form.accept_user_agreement.id_for_label }}">
-                <a href="{% url 'kullanici_sozlesmesi' %}" target="_blank">Kullanıcı Sözleşmesi</a>'ni okudum ve kabul ediyorum.
-              </label>
-              {% for error in form.accept_user_agreement.errors %}
-                <div class="text-danger">{{ error }}</div>
-              {% endfor %}
-            </div>
+              <div class="form-check p-3 mb-3" style="background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                {{ form.accept_privacy_policy }}
+                <label class="form-check-label" for="{{ form.accept_privacy_policy.id_for_label }}">
+                  <a href="{% url 'gizlilik_politikasi' %}" target="_blank" class="text-decoration-none">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum <span class="text-danger">*</span>
+                </label>
+                {% for error in form.accept_privacy_policy.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+              </div>
 
-            <!-- Gizlilik Politikası Onayı -->
-            <div class="form-group form-check">
-              {{ form.accept_privacy_policy }}
-              <label class="form-check-label" for="{{ form.accept_privacy_policy.id_for_label }}">
-                <a href="{% url 'gizlilik_politikasi' %}" target="_blank">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum.
-              </label>
-              {% for error in form.accept_privacy_policy.errors %}
-                <div class="text-danger">{{ error }}</div>
-              {% endfor %}
-            </div>
+              <div class="form-check p-3 mb-4" style="background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                {{ form.accept_data_protection }}
+                <label class="form-check-label" for="{{ form.accept_data_protection.id_for_label }}">
+                  <a href="{% url 'ziyaretci_veri_koruma' %}" target="_blank" class="text-decoration-none">KVKK Aydınlatma Metni</a>'ni okudum ve kabul ediyorum <span class="text-danger">*</span>
+                </label>
+                {% for error in form.accept_data_protection.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+              </div>
 
-            <!-- Kişisel Verileri Koruma Aydınlatma Metni Onayı -->
-            <div class="form-group form-check">
-              {{ form.accept_data_protection }}
-              <label class="form-check-label" for="{{ form.accept_data_protection.id_for_label }}">
-                <a href="{% url 'ziyaretci_veri_koruma' %}" target="_blank">KVKK Aydınlatma Metni</a>'ni okudum ve kabul ediyorum.</a>
-              </label>
-              {% for error in form.accept_data_protection.errors %}
-                <div class="text-danger">{{ error }}</div>
-              {% endfor %}
+              <button type="submit" class="btn btn-primary btn-lg btn-block py-3 font-weight-bold">
+                <i class="fas fa-user-plus me-2"></i>Hesap Oluştur
+              </button>
             </div>
-
-            <button type="submit" class="btn btn-success btn-block">Kayıt Ol</button>
           </form>
         </div>
-        <div class="card-footer text-center">
-          Zaten bir hesabınız var mı? <a href="{% url 'login' %}">Giriş Yapın</a>
+        
+        <div class="card-footer text-center py-4 bg-light">
+          <p class="mb-0">
+            Zaten hesabınız var mı? 
+            <a href="{% url 'login' %}" class="text-decoration-none font-weight-bold">Giriş Yapın</a>
+          </p>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.text-primary {
+  color: #667eea \!important;
+}
+
+.border-bottom {
+  border-bottom: 2px solid #e9ecef \!important;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  transform: translateY(-1px);
+}
+
+.form-check {
+  transition: all 0.3s ease;
+}
+
+.form-check:hover {
+  transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 2rem \!important;
+  }
+  
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+    const inputs = form.querySelectorAll('input[required]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+    
+    const password1 = document.getElementById('{{ form.password1.id_for_label }}');
+    const password2 = document.getElementById('{{ form.password2.id_for_label }}');
+    
+    if (password2) {
+        password2.addEventListener('input', function() {
+            if (password1.value \!== password2.value) {
+                password2.classList.add('is-invalid');
+            } else {
+                password2.classList.remove('is-invalid');
+                password2.classList.add('is-valid');
+            }
+        });
+    }
+});
+</script>
+
 {% endblock %}

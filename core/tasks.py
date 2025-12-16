@@ -1,12 +1,17 @@
 """
-Celery tasks for FAISS management
+Celery tasks for FAISS management - Updated for area-based system
 """
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 from .faiss_manager import faiss_manager
+from .area_based_faiss_manager import AreaBasedFAISSManager
+area_based_faiss_manager = AreaBasedFAISSManager()
+from .legal_area_detector import LegalAreaDetector
+legal_area_detector = LegalAreaDetector()
 from .models import JudicialDecision
 import logging
+from django.core.management import call_command
 
 logger = logging.getLogger(__name__)
 
@@ -200,51 +205,224 @@ def send_notification_email(subject, message, success=True):
     except Exception as e:
         logger.error(f"Failed to send notification email: {e}")
 
+# Alan bazlı FAISS task'ları
+@shared_task(bind=True, max_retries=2)
+def update_area_based_indexes(self):
+    """Alan bazlı FAISS indexlerini güncelle"""
+    try:
+        logger.info("Starting area-based FAISS index update")
+        
+        # Yeni kararları tespit et ve alan bazlı indexlere ekle
+        recent_decisions = JudicialDecision.objects.filter(
+            detected_legal_area__isnull=False
+        ).order_by('-id')[:1000]  # Son 1000 kararı kontrol et
+        
+        added_count = 0
+        for decision in recent_decisions:
+            success = area_based_faiss_manager.add_decision_to_area_index(
+                decision_id=decision.id,
+                legal_area=decision.detected_legal_area
+            )
+            if success:
+                added_count += 1
+        
+        logger.info(f"Added {added_count} decisions to area-based indexes")
+        
+        send_notification_email(
+            subject="Alan Bazlı FAISS Güncelleme Tamamlandı",
+            message=f"Alan bazlı FAISS indeksleri güncellendi. {added_count} yeni karar eklendi.",
+            success=True
+        )
+        
+        return {"status": "success", "added_count": added_count}
+        
+    except Exception as e:
+        logger.error(f"Area-based index update failed: {e}")
+        
+        if self.request.retries < self.max_retries:
+            raise self.retry(countdown=600, exc=e)
+        
+        send_notification_email(
+            subject="Alan Bazlı FAISS Güncelleme Hatası",
+            message=f"Alan bazlı indeks güncelleme başarısız: {str(e)}",
+            success=False
+        )
+        
+        return {"status": "error", "message": str(e)}
+
+@shared_task
+def detect_legal_areas_bulk(batch_size=1000, max_decisions=None):
+    """Toplu hukuk alanı tespiti"""
+    try:
+        logger.info("Starting bulk legal area detection")
+        
+        # Henüz legal area tespit edilmeyen kararları al
+        queryset = JudicialDecision.objects.filter(detected_legal_area__isnull=True)
+        
+        if max_decisions:
+            queryset = queryset[:max_decisions]
+        
+        total_count = queryset.count()
+        if total_count == 0:
+            logger.info("No decisions found for legal area detection")
+            return {"status": "success", "processed_count": 0}
+        
+        logger.info(f"Processing {total_count} decisions for legal area detection")
+        
+        processed_count = 0
+        
+        # Batch işleme
+        for i in range(0, total_count, batch_size):
+            batch = queryset[i:i+batch_size]
+            batch_updates = []
+            
+            for decision in batch:
+                try:
+                    # Legal area tespit et
+                    detected_area = legal_area_detector.get_primary_area(
+                        text=decision.full_text or "",
+                        title=decision.title or "",
+                        summary=decision.summary or ""
+                    )
+                    
+                    decision.detected_legal_area = detected_area
+                    batch_updates.append(decision)
+                    processed_count += 1
+                    
+                except Exception as e:
+                    logger.error(f"Error detecting area for decision {decision.id}: {e}")
+            
+            # Batch güncelleme
+            if batch_updates:
+                JudicialDecision.objects.bulk_update(
+                    batch_updates, 
+                    ['detected_legal_area'],
+                    batch_size=500
+                )
+                
+                logger.info(f"Updated batch {i//batch_size + 1}, processed {len(batch_updates)} decisions")
+        
+        send_notification_email(
+            subject="Hukuk Alanı Tespiti Tamamlandı",
+            message=f"Toplu hukuk alanı tespiti tamamlandı. {processed_count} karar için alan tespit edildi.",
+            success=True
+        )
+        
+        return {"status": "success", "processed_count": processed_count}
+        
+    except Exception as e:
+        logger.error(f"Bulk legal area detection failed: {e}")
+        
+        send_notification_email(
+            subject="Hukuk Alanı Tespiti Hatası",
+            message=f"Toplu hukuk alanı tespiti başarısız: {str(e)}",
+            success=False
+        )
+        
+        return {"status": "error", "message": str(e)}
+
+@shared_task
+def create_area_indexes_task():
+    """Alan bazlı indexleri oluştur"""
+    try:
+        logger.info("Starting area-based index creation")
+        
+        # Management komutunu çalıştır
+        call_command('manage_area_faiss', 'create_all_indexes', '--min-decisions=50')
+        
+        stats = area_based_faiss_manager.get_area_statistics()
+        total_indexes = len(stats)
+        total_decisions = sum(s['decision_count'] for s in stats.values())
+        
+        send_notification_email(
+            subject="Alan Bazlı İndeksler Oluşturuldu",
+            message=f"Alan bazlı indeksler oluşturuldu. {total_indexes} alan için toplam {total_decisions} karar indexlendi.",
+            success=True
+        )
+        
+        return {"status": "success", "total_indexes": total_indexes, "total_decisions": total_decisions}
+        
+    except Exception as e:
+        logger.error(f"Area index creation failed: {e}")
+        
+        send_notification_email(
+            subject="Alan Bazlı İndeks Oluşturma Hatası",
+            message=f"Alan bazlı indeks oluşturma başarısız: {str(e)}",
+            success=False
+        )
+        
+        return {"status": "error", "message": str(e)}
+
+# Resmi Gazete Task'ı
+@shared_task(bind=True, max_retries=3)
+def send_daily_gazette_emails(self):
+    """Günlük Resmi Gazete emaillerini gönder"""
+    try:
+        logger.info("Starting daily gazette email task")
+        
+        # Management komutunu çalıştır
+        call_command('send_daily_gazette')
+        
+        send_notification_email(
+            subject="Günlük Resmi Gazete Emaili Gönderildi",
+            message="Günlük Resmi Gazete özeti başarıyla tüm üyelere gönderildi.",
+            success=True
+        )
+        
+        return {"status": "success", "message": "Daily gazette emails sent"}
+        
+    except Exception as e:
+        logger.error(f"Daily gazette email task failed: {e}")
+        
+        # Retry logic
+        if self.request.retries < self.max_retries:
+            logger.info(f"Retrying gazette task, attempt {self.request.retries + 1}")
+            raise self.retry(countdown=1800, exc=e)  # 30 dakika sonra tekrar dene
+        
+        # Max retry'a ulaştıysak hata emaili gönder
+        send_notification_email(
+            subject="Günlük Resmi Gazete Email Hatası",
+            message=f"Günlük Resmi Gazete emaili gönderilemedi: {str(e)}",
+            success=False
+        )
+        
+        return {"status": "error", "message": str(e)}
+
 # Periodic task scheduling (Celery Beat ile)
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
+    # Günlük Resmi Gazete Email Gönderimi
+    'send-daily-gazette-emails': {
+        'task': 'core.tasks.send_daily_gazette_emails',
+        'schedule': crontab(hour=9, minute=0),  # Her gün sabah 09:00
+    },
+    
+    # Legacy system (backup olarak)
     'update-faiss-index-daily': {
         'task': 'core.tasks.update_faiss_index',
         'schedule': crontab(hour=2, minute=0),  # Her gün saat 02:00
     },
+    
+    # Yeni alan bazlı sistem
+    'update-area-indexes-daily': {
+        'task': 'core.tasks.update_area_based_indexes',
+        'schedule': crontab(hour=3, minute=0),  # Her gün saat 03:00 (kullanıcının isteği)
+    },
+    
+    # Hukuk alanı tespiti (haftalık)
+    'detect-legal-areas-weekly': {
+        'task': 'core.tasks.detect_legal_areas_bulk',
+        'schedule': crontab(day_of_week=1, hour=4, minute=0),  # Her pazartesi 04:00
+        'kwargs': {'batch_size': 2000, 'max_decisions': 10000}
+    },
+    
     'check-index-health-hourly': {
         'task': 'core.tasks.check_index_health', 
         'schedule': crontab(minute=0),  # Her saat başı
     },
     'optimize-index-weekly': {
         'task': 'core.tasks.optimize_faiss_index',
-        'schedule': crontab(day_of_week=0, hour=3, minute=0),  # Her pazar 03:00
+        'schedule': crontab(day_of_week=0, hour=5, minute=0),  # Her pazar 05:00
     },
 }
-@shared_task
-def process_new_decisions():
-    """Yeni kararları otomatik işler ve indexlere ekler"""
-    try:
-        from .area_based_faiss_manager import AreaBasedFAISSManager
-        
-        manager = AreaBasedFAISSManager()
-        results = manager.process_new_decisions(limit=500)
-        
-        logger.info(f"Auto-processed {results['processed']} new decisions, {results['added_to_index']} added to indexes")
-        return results
-        
-    except Exception as e:
-        logger.error(f"Error in process_new_decisions task: {e}")
-        return {'error': str(e)}
-
-@shared_task        
-def sync_area_indexes():
-    """Alan indexlerini veritabanı ile senkronize eder"""
-    try:
-        from .area_based_faiss_manager import AreaBasedFAISSManager
-        
-        manager = AreaBasedFAISSManager()
-        results = manager.sync_database_with_indexes()
-        
-        logger.info(f"Synced {results['total_synced']} decisions to area indexes")
-        return results
-        
-    except Exception as e:
-        logger.error(f"Error in sync_area_indexes task: {e}")
-        return {'error': str(e)}

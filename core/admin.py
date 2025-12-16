@@ -4,21 +4,172 @@ from .models import (
     JudicialDecision, Article, Legislation,
     MevzuatTuru, MevzuatKategori, MevzuatGelismis, 
     MevzuatMadde, MevzuatDegisiklik, MevzuatLog,
-    Subscription, Payment
+    Subscription, Payment, UserProfile, Notification
 )
 
-# Mevcut modeller
-admin.site.register(JudicialDecision)
+# JudicialDecision için özelleştirilmiş admin
+@admin.register(JudicialDecision)
+class JudicialDecisionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'karar_numarasi', 'kategori_sayisi', 'karar_tarihi', 'karar_veren_mahkeme']
+    list_filter = ['detected_legal_area', 'karar_tarihi', 'karar_veren_mahkeme']
+    search_fields = ['id', 'karar_numarasi', 'esas_numarasi', 'karar_veren_mahkeme', 'karar_tam_metni']
+    readonly_fields = ['detected_legal_area', 'kategori_sayisi']
+    date_hierarchy = 'karar_tarihi'
+    ordering = ['-id']  # ID numarasına göre azalan sırada (en yeni üstte)
+    list_per_page = 50  # Sayfa başı kayıt sayısı
+    
+    def kategori_sayisi(self, obj):
+        """Kararın kaç kategoride olduğunu gösterir"""
+        from django.db import connection
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT COUNT(*) FROM karar_kategori_iliskileri WHERE karar_id = %s",
+                    [obj.id]
+                )
+                result = cursor.fetchone()
+                count = result[0] if result else 0
+                
+                if count == 0:
+                    return "Kategori yok"
+                elif count == 1:
+                    return "1 kategori"
+                else:
+                    return f"{count} kategori"
+        except Exception as e:
+            # Fallback to detected_legal_area if query fails
+            if obj.detected_legal_area:
+                categories = [cat.strip() for cat in obj.detected_legal_area.split(',') if cat.strip()]
+                return f"{len(categories)} kategori (fallback)"
+            return "Kategori yok"
+    kategori_sayisi.short_description = "Kategori Sayısı"
+    
+    
+    actions = ['export_selected_decisions', 'mark_as_reviewed']
+    
+    def export_selected_decisions(self, request, queryset):
+        """Seçilen kararları CSV olarak dışa aktar"""
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="judicial_decisions.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Karar Numarası', 'Karar Türü', 'Mahkeme', 'Tarih', 'Kategori'])
+        
+        for decision in queryset:
+            writer.writerow([
+                decision.id,
+                decision.karar_numarasi or '',
+                decision.karar_turu or '',
+                decision.karar_veren_mahkeme or '',
+                decision.karar_tarihi or '',
+                decision.detected_legal_area or ''
+            ])
+        
+        self.message_user(request, f'{queryset.count()} karar dışa aktarıldı.')
+        return response
+    export_selected_decisions.short_description = "Seçilen kararları CSV olarak dışa aktar"
+    
+    def mark_as_reviewed(self, request, queryset):
+        """Seçilen kararları gözden geçirildi olarak işaretle"""
+        updated = 0
+        for decision in queryset:
+            # Eğer bir reviewed field'ı varsa güncelleyebiliriz
+            # Bu örnek için anahtar kelimelere "REVIEWED" ekleyelim
+            if decision.anahtar_kelimeler:
+                if "REVIEWED" not in decision.anahtar_kelimeler:
+                    decision.anahtar_kelimeler += ", REVIEWED"
+                    decision.save()
+                    updated += 1
+            else:
+                decision.anahtar_kelimeler = "REVIEWED"
+                decision.save()
+                updated += 1
+        
+        self.message_user(request, f'{updated} karar gözden geçirildi olarak işaretlendi.')
+    mark_as_reviewed.short_description = "Seçilen kararları gözden geçirildi olarak işaretle"
+    
+    fieldsets = (
+        ('Temel Bilgiler', {
+            'fields': ('karar_turu', 'karar_veren_mahkeme')
+        }),
+        ('Numara ve Tarihler', {
+            'fields': ('esas_numarasi', 'karar_numarasi', 'karar_no', 'karar_tarihi')
+        }),
+        ('AI Kategorilendirme', {
+            'fields': ('detected_legal_area',),
+            'description': 'AI tarafından otomatik tespit edilen hukuk alanı'
+        }),
+        ('İçerik', {
+            'fields': ('karar_ozeti', 'karar_tam_metni', 'anahtar_kelimeler')
+        }),
+        ('Taraflar', {
+            'fields': ('davaci', 'davali', 'mudahiller'),
+            'classes': ('collapse',)
+        }),
+    )
+
 admin.site.register(Article)
 admin.site.register(Legislation)
 
 # Subscription ve Payment modelleri
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['user', 'plan', 'start_date', 'end_date', 'accepted_terms']
-    list_filter = ['plan', 'start_date', 'accepted_terms']
-    search_fields = ['user__username', 'user__email', 'tc_or_vergi_no']
-    readonly_fields = ['start_date']
+    list_display = ['user_info', 'plan_info', 'subscription_status', 'remaining_days_info', 'payment_info', 'start_date', 'end_date']
+    list_filter = ['plan', 'start_date', 'end_date', 'accepted_terms', 'accepted_sale']
+    search_fields = ['user__username', 'user__email', 'tc_or_vergi_no', 'address']
+    readonly_fields = ['start_date', 'subscription_status', 'remaining_days_info', 'payment_info']
+    date_hierarchy = 'start_date'
+    ordering = ['-start_date']
+    list_per_page = 25
+    
+    def user_info(self, obj):
+        """Kullanıcı bilgileri"""
+        return f"{obj.user.username} ({obj.user.email})"
+    user_info.short_description = "Kullanıcı"
+    
+    def plan_info(self, obj):
+        """Plan detayları"""
+        return f"{obj.get_plan_display()}"
+    plan_info.short_description = "Plan"
+    
+    def subscription_status(self, obj):
+        """Abonelik durumu"""
+        from django.utils import timezone
+        now = timezone.now()
+        
+        if obj.end_date > now:
+            days_left = (obj.end_date - now).days
+            if days_left <= 7:
+                return f"⚠️ {days_left} gün kaldı"
+            else:
+                return "✅ Aktif"
+        else:
+            return "❌ Süresi doldu"
+    subscription_status.short_description = "Durum"
+    
+    def remaining_days_info(self, obj):
+        """Kalan günler"""
+        from django.utils import timezone
+        if obj.end_date:
+            remaining = (obj.end_date - timezone.now()).days
+            return f"{remaining} gün" if remaining > 0 else "Süresi doldu"
+        return "Bilinmiyor"
+    remaining_days_info.short_description = "Kalan Süre"
+    
+    def payment_info(self, obj):
+        """Ödeme bilgisi"""
+        try:
+            # En son ödemeyi bul
+            payment = Payment.objects.filter(user=obj.user).order_by('-created_at').first()
+            if payment:
+                return f"{payment.amount} TL ({payment.get_status_display()})"
+            return "Ödeme bulunamadı"
+        except:
+            return "Bilgi yok"
+    payment_info.short_description = "Son Ödeme"
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
@@ -44,6 +195,432 @@ class PaymentAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user_info', 'email', 'phone_number', 'full_address', 'account_type', 'status_info', 'remaining_time', 'last_login', 'created_at']
+    list_filter = ['is_free_trial', 'city', 'district', 'created_at', 'free_trial_end', 'user__last_login', 'user__is_active']
+    search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name', 'phone_number', 'city', 'district', 'address_line_1']
+    readonly_fields = ['created_at', 'updated_at', 'free_trial_start', 'account_type', 'status_info', 'remaining_time', 'subscription_details', 'trial_details', 'user_info', 'email', 'full_address', 'last_login']
+    list_per_page = 25
+    ordering = ['-created_at']
+    
+    def user_info(self, obj):
+        """Kullanıcı temel bilgileri"""
+        info_parts = []
+        
+        # Kullanıcı adı ve tam isim
+        full_name = f"{obj.user.first_name} {obj.user.last_name}".strip()
+        if full_name:
+            info_parts.append(f"👤 Ad: {full_name}")
+            info_parts.append(f"🔖 Kullanıcı Adı: {obj.user.username}")
+        else:
+            info_parts.append(f"🔖 Kullanıcı Adı: {obj.user.username}")
+        
+        # Kullanıcı durumu
+        status_icons = []
+        if obj.user.is_active:
+            status_icons.append("✅ Aktif")
+        else:
+            status_icons.append("❌ Pasif")
+            
+        if obj.user.is_superuser:
+            status_icons.append("🔑 Süper Kullanıcı")
+        elif obj.user.is_staff:
+            status_icons.append("⚙️ Staff")
+            
+        info_parts.append(f"📊 Durum: {', '.join(status_icons)}")
+        
+        # Kayıt tarihi
+        join_date = obj.user.date_joined.strftime('%d.%m.%Y')
+        info_parts.append(f"📅 Kayıt: {join_date}")
+        
+        return "\n".join(info_parts)
+    user_info.short_description = "Kullanıcı Bilgileri"
+    
+    def email(self, obj):
+        """E-posta adresi ve doğrulama durumu"""
+        if obj.user.email:
+            # E-posta doğrulandı mı kontrol et
+            email_verified = "✅ Doğrulandı" if obj.user.email else "⚠️ Doğrulanmadı"
+            return f"📧 {obj.user.email}\n{email_verified}"
+        return "❌ E-posta adresi yok"
+    email.short_description = "E-posta Bilgisi"
+    
+    def full_address(self, obj):
+        """Tam adres bilgisi"""
+        address_lines = []
+        
+        if obj.address_line_1:
+            address_lines.append(f"🏠 Adres 1: {obj.address_line_1}")
+        
+        if obj.address_line_2:
+            address_lines.append(f"🏢 Adres 2: {obj.address_line_2}")
+        
+        location_parts = []
+        if obj.district:
+            location_parts.append(obj.district)
+        if obj.city:
+            location_parts.append(obj.city)
+        
+        if location_parts:
+            address_lines.append(f"📍 Konum: {' / '.join(location_parts)}")
+        
+        if obj.postal_code:
+            address_lines.append(f"📮 Posta Kodu: {obj.postal_code}")
+        
+        # Telefon bilgisi de ekleyelim
+        if obj.phone_number:
+            address_lines.append(f"📞 Telefon: {obj.phone_number}")
+        
+        return "\n".join(address_lines) if address_lines else "❌ Adres bilgisi yok"
+    full_address.short_description = "Tam Adres ve İletişim"
+    
+    def account_type(self, obj):
+        """Hesap türü"""
+        if obj.has_active_subscription():
+            try:
+                subscription = obj.user.subscription
+                return f"Abonelik ({subscription.get_plan_display()})"
+            except:
+                return "Abonelik (Detay bulunamadı)"
+        elif obj.is_free_trial:
+            return "Ücretsiz Deneme"
+        else:
+            return "Standart"
+    account_type.short_description = "Hesap Türü"
+    
+    def status_info(self, obj):
+        """Detaylı durum bilgisi"""
+        if obj.has_active_subscription():
+            return "✅ Aktif Abonelik"
+        elif obj.is_free_trial:
+            if obj.is_free_trial_expired():
+                return "❌ Deneme Süresi Doldu"
+            elif obj.is_trial_ending_soon():
+                return "⚠️ Deneme Bitiyor"
+            else:
+                return "✅ Aktif Deneme"
+        else:
+            return "⏸️ Standart Hesap"
+    status_info.short_description = "Durum"
+    
+    def remaining_time(self, obj):
+        """Kalan süre detaylı"""
+        try:
+            from django.utils import timezone
+            from .models import Subscription
+            
+            # Önce abonelik kontrol et
+            subscription = Subscription.objects.filter(user=obj.user).first()
+            if subscription and subscription.end_date > timezone.now():
+                remaining = (subscription.end_date - timezone.now()).days
+                return f"{remaining} gün (Abonelik)"
+        except Exception as e:
+            pass
+        
+        # Deneme kontrolü
+        if obj.is_free_trial:
+            remaining = obj.get_remaining_trial_days()
+            if remaining > 0:
+                return f"{remaining} gün (Deneme)"
+            else:
+                return "Süre doldu"
+        else:
+            return "Sınırsız (Standart)"
+    remaining_time.short_description = "Kalan Süre"
+    
+    def last_login(self, obj):
+        """Son giriş tarihi"""
+        if obj.user.last_login:
+            try:
+                from django.utils import timezone
+                diff = timezone.now() - obj.user.last_login
+                if diff.days == 0:
+                    return "Bugün"
+                elif diff.days == 1:
+                    return "Dün"
+                else:
+                    return f"{diff.days} gün önce"
+            except Exception as e:
+                return f"Hata: {str(e)}"
+        return "Hiç giriş yapmamış"
+    last_login.short_description = "Son Giriş"
+    
+    def subscription_details(self, obj):
+        """Abonelik detayları"""
+        try:
+            from django.utils import timezone
+            from .models import Subscription
+            subscription = Subscription.objects.filter(user=obj.user).first()
+            if not subscription:
+                return "❌ Abonelik bulunamadı"
+            details = [
+                f"📋 Plan: {subscription.get_plan_display()}",
+                f"📅 Başlangıç: {subscription.start_date.strftime('%d.%m.%Y %H:%M')}",
+                f"📅 Bitiş: {subscription.end_date.strftime('%d.%m.%Y %H:%M')}",
+                f"⏱️ Durum: {'✅ Aktif' if subscription.end_date > timezone.now() else '❌ Süresi dolmuş'}",
+            ]
+            if subscription.tc_or_vergi_no:
+                details.append(f"🆔 TC/Vergi No: {subscription.tc_or_vergi_no}")
+            if subscription.address:
+                details.append(f"📍 Fatura Adresi: {subscription.address}")
+            
+            # Sözleşme kabulleri
+            contracts = []
+            if subscription.accepted_terms:
+                contracts.append("✅ Kullanıcı Sözleşmesi")
+            if subscription.accepted_sale:
+                contracts.append("✅ Mesafeli Satış")
+            if subscription.accepted_delivery:
+                contracts.append("✅ Teslimat Şartları")
+            
+            if contracts:
+                details.append(f"📝 Kabul Edilen Sözleşmeler:\n   {chr(10).join(contracts)}")
+            
+            # Son ödeme bilgisi
+            try:
+                from .models import Payment
+                last_payment = Payment.objects.filter(user=obj.user, status='success').order_by('-created_at').first()
+                if last_payment:
+                    details.append(f"💰 Son Ödeme: {last_payment.amount} TL ({last_payment.created_at.strftime('%d.%m.%Y')})")
+            except:
+                pass
+                
+            return "\n".join(details)
+        except Exception as e:
+            return f"Abonelik bulunamadı (Hata: {str(e)})"
+    subscription_details.short_description = "Abonelik Detayları"
+    
+    def trial_details(self, obj):
+        """Deneme detayları"""
+        if obj.is_free_trial:
+            from django.utils import timezone
+            
+            remaining_days = obj.get_remaining_trial_days()
+            total_days = 60  # 2 aylık deneme
+            used_days = total_days - remaining_days if remaining_days >= 0 else total_days
+            
+            # Durum emoji
+            if obj.is_free_trial_expired():
+                status_emoji = "❌"
+                status_text = "Süresi dolmuş"
+            elif obj.is_trial_ending_soon():
+                status_emoji = "⚠️"
+                status_text = "Yakında bitiyor"
+            else:
+                status_emoji = "✅"
+                status_text = "Aktif"
+                
+            details = [
+                f"📅 Başlangıç: {obj.free_trial_start.strftime('%d.%m.%Y %H:%M') if obj.free_trial_start else 'Bilinmiyor'}",
+                f"📅 Bitiş: {obj.free_trial_end.strftime('%d.%m.%Y %H:%M') if obj.free_trial_end else 'Bilinmiyor'}",
+                f"⏰ Toplam Süre: {total_days} gün (2 ay)",
+                f"📊 Kullanılan: {used_days} gün",
+                f"⏱️ Kalan: {remaining_days} gün",
+                f"{status_emoji} Durum: {status_text}",
+            ]
+            
+            # Progress bar (basit ASCII)
+            if total_days > 0:
+                progress = min(used_days / total_days, 1.0)
+                bar_length = 20
+                filled_length = int(bar_length * progress)
+                bar = "█" * filled_length + "░" * (bar_length - filled_length)
+                percentage = int(progress * 100)
+                details.append(f"📈 İlerleme: |{bar}| {percentage}%")
+            
+            # Bildirimler gönderildi mi?
+            try:
+                from .models import Notification
+                trial_notifications = Notification.objects.filter(
+                    user=obj.user, 
+                    notification_type__in=['free_trial_warning', 'free_trial_expired']
+                ).order_by('-created_at')
+                
+                if trial_notifications.exists():
+                    details.append("📧 Gönderilen Bildirimler:")
+                    for notif in trial_notifications[:3]:  # Son 3 bildirim
+                        notif_date = notif.created_at.strftime('%d.%m.%Y')
+                        notif_type = "Uyarı" if notif.notification_type == 'free_trial_warning' else "Süre Doldu"
+                        details.append(f"   • {notif_type} ({notif_date})")
+            except:
+                pass
+                
+            return "\n".join(details)
+        return "❌ Ücretsiz deneme süresi yok"
+    trial_details.short_description = "Deneme Detayları"
+    
+    actions = ['extend_trial_period', 'send_notification_email', 'export_user_details']
+    
+    def extend_trial_period(self, request, queryset):
+        """Seçilen kullanıcıların deneme süresini 30 gün uzat"""
+        from datetime import timedelta
+        from django.utils import timezone
+        
+        extended_count = 0
+        for profile in queryset:
+            if profile.is_free_trial and profile.free_trial_end:
+                # 30 gün uzat
+                profile.free_trial_end = profile.free_trial_end + timedelta(days=30)
+                profile.save()
+                extended_count += 1
+        
+        self.message_user(request, f'{extended_count} kullanıcının deneme süresi 30 gün uzatıldı.')
+    extend_trial_period.short_description = "Seçilen kullanıcıların deneme süresini 30 gün uzat"
+    
+    def send_notification_email(self, request, queryset):
+        """Seçilen kullanıcılara bildirim e-postası gönder"""
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        sent_count = 0
+        for profile in queryset:
+            if profile.user.email:
+                try:
+                    send_mail(
+                        subject='Lexatech - Hesap Durumunuz Hakkında',
+                        message=f"""
+Sayın {profile.user.first_name or profile.user.username},
+
+Hesap durumunuz kontrol edilmiştir.
+
+Teşekkürler,
+Lexatech Admin Ekibi
+                        """,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[profile.user.email],
+                        fail_silently=False,
+                    )
+                    sent_count += 1
+                except:
+                    pass
+        
+        self.message_user(request, f'{sent_count} kullanıcıya e-posta gönderildi.')
+    send_notification_email.short_description = "Seçilen kullanıcılara bildirim e-postası gönder"
+    
+    def export_user_details(self, request, queryset):
+        """Kullanıcı detaylarını CSV olarak dışa aktar"""
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="user_profiles.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow([
+            'Kullanıcı Adı', 'E-posta', 'Ad Soyad', 'Telefon', 'Şehir', 'İlçe',
+            'Hesap Türü', 'Durum', 'Kalan Süre', 'Son Giriş', 'Kayıt Tarihi'
+        ])
+        
+        for profile in queryset:
+            writer.writerow([
+                profile.user.username,
+                profile.user.email or '',
+                f"{profile.user.first_name} {profile.user.last_name}".strip(),
+                profile.phone_number or '',
+                profile.city or '',
+                profile.district or '',
+                profile.account_type(profile),
+                profile.status_info(profile),
+                profile.remaining_time(profile),
+                profile.last_login(profile),
+                profile.created_at.strftime('%d.%m.%Y') if profile.created_at else ''
+            ])
+        
+        self.message_user(request, f'{queryset.count()} kullanıcı detayı dışa aktarıldı.')
+        return response
+    export_user_details.short_description = "Kullanıcı detaylarını CSV olarak dışa aktar"
+    
+    fieldsets = (
+        ('👤 Temel Kullanıcı Bilgileri', {
+            'fields': ('user', 'user_info', 'email', 'phone_number'),
+            'description': 'Kullanıcının temel kimlik ve iletişim bilgileri'
+        }),
+        ('🏠 Tam Adres Bilgileri', {
+            'fields': (
+                'address_line_1', 
+                'address_line_2', 
+                'city', 
+                'district', 
+                'postal_code',
+                'full_address'
+            ),
+            'description': 'Kullanıcının fatura ve teslimat adresi bilgileri'
+        }),
+        ('📊 Hesap Durumu ve Erişim', {
+            'fields': (
+                'account_type', 
+                'status_info', 
+                'remaining_time', 
+                'last_login'
+            ),
+            'description': 'Kullanıcının hesap durumu ve platform erişim bilgileri'
+        }),
+        ('🆓 Ücretsiz Deneme Detayları', {
+            'fields': (
+                'is_free_trial', 
+                'free_trial_start', 
+                'free_trial_end', 
+                'trial_details'
+            ),
+            'description': 'Kullanıcının ücretsiz deneme süresi ve detayları'
+        }),
+        ('💳 Abonelik ve Ödeme Bilgileri', {
+            'fields': ('subscription_details',),
+            'description': 'Kullanıcının aktif abonelik ve ödeme geçmişi'
+        }),
+        ('🔧 Sistem ve Log Bilgileri', {
+            'fields': ('created_at', 'updated_at'),
+            'description': 'Hesap oluşturma ve güncelleme tarihleri'
+        }),
+    )
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['title', 'user', 'notification_type', 'is_read', 'is_admin_notification', 'created_at']
+    list_filter = ['notification_type', 'is_read', 'is_admin_notification', 'is_sent_email', 'created_at']
+    search_fields = ['title', 'message', 'user__username', 'user__email']
+    readonly_fields = ['created_at', 'sent_at', 'read_at']
+    date_hierarchy = 'created_at'
+    
+    fieldsets = (
+        ('Bildirim Bilgileri', {
+            'fields': ('notification_type', 'title', 'message', 'user')
+        }),
+        ('İlişkiler', {
+            'fields': ('payment', 'subscription'),
+            'classes': ('collapse',)
+        }),
+        ('Durum', {
+            'fields': ('is_read', 'is_sent_email', 'is_admin_notification')
+        }),
+        ('Tarihler', {
+            'fields': ('created_at', 'sent_at', 'read_at'),
+            'classes': ('collapse',)
+        }),
+        ('Ek Veriler', {
+            'fields': ('extra_data',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_as_read', 'send_email_notifications']
+    
+    def mark_as_read(self, request, queryset):
+        """Seçilen bildirimleri okundu olarak işaretle"""
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f'{updated} bildirim okundu olarak işaretlendi.')
+    mark_as_read.short_description = "Seçilen bildirimleri okundu olarak işaretle"
+    
+    def send_email_notifications(self, request, queryset):
+        """Seçilen bildirimler için e-posta gönder"""
+        sent_count = 0
+        for notification in queryset:
+            if notification.send_email_notification():
+                sent_count += 1
+        self.message_user(request, f'{sent_count} bildirim için e-posta gönderildi.')
+    send_email_notifications.short_description = "Seçilen bildirimler için e-posta gönder"
 
 # ==========================
 # GENİŞLETİLMİŞ MEVZUAT ADMİN
@@ -218,291 +795,3 @@ class MevzuatLogAdmin(admin.ModelAdmin):
             'fields': ('ip_adresi', 'detaylar', 'kayit_tarihi')
         }),
     )
-# Profesyonel Mevzuat Sistemi Admin Paneli
-# core/admin.py dosyasına eklenecek
-
-from django.contrib import admin
-from django.utils.html import format_html
-from django.urls import reverse
-from django.db.models import Count
-from .models import (
-    LegislationType, LegislationCategory, ProfessionalLegislation, 
-    LegislationArticle, CourtDecisionLegislationRelation
-)
-
-# ========================
-# MEVZUAT TÜRÜ YÖNETİMİ
-# ========================
-
-@admin.register(LegislationType)
-class LegislationTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'hierarchy_level', 'legislation_count', 'color_preview', 'is_active']
-    list_filter = ['is_active', 'hierarchy_level']
-    search_fields = ['name', 'code']
-    ordering = ['hierarchy_level', 'display_order']
-    
-    def legislation_count(self, obj):
-        count = obj.professionallegislation_set.count()
-        return format_html('<span class="badge">{}</span>', count)
-    legislation_count.short_description = 'Mevzuat Sayısı'
-    
-    def color_preview(self, obj):
-        return format_html(
-            '<div style="width: 20px; height: 20px; background-color: {}; border-radius: 50%;"></div>',
-            obj.color_code
-        )
-    color_preview.short_description = 'Renk'
-
-# ========================
-# KATEGORİ YÖNETİMİ
-# ========================
-
-@admin.register(LegislationCategory)
-class LegislationCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'parent_category', 'legislation_count', 'color_preview', 'is_active']
-    list_filter = ['is_active', 'parent_category']
-    search_fields = ['name', 'code']
-    ordering = ['display_order', 'name']
-    prepopulated_fields = {'slug': ('name',)}
-    
-    def legislation_count(self, obj):
-        count = obj.professionallegislation_set.count()
-        return format_html('<span class="badge">{}</span>', count)
-    legislation_count.short_description = 'Mevzuat Sayısı'
-    
-    def color_preview(self, obj):
-        return format_html(
-            '<div style="width: 20px; height: 20px; background-color: {}; border-radius: 50%;"></div>',
-            obj.color_code
-        )
-    color_preview.short_description = 'Renk'
-
-# ========================
-# MADDE YÖNETİMİ (INLINE)
-# ========================
-
-class LegislationArticleInline(admin.TabularInline):
-    model = LegislationArticle
-    extra = 1
-    fields = ['article_number', 'title', 'text', 'is_active', 'order']
-    ordering = ['order', 'article_number']
-
-# ========================
-# PROFESYONEL MEVZUAT YÖNETİMİ
-# ========================
-
-@admin.register(ProfessionalLegislation)
-class ProfessionalLegislationAdmin(admin.ModelAdmin):
-    list_display = [
-        'title_short', 'number', 'legislation_type', 'category', 
-        'status_badge', 'article_count', 'view_count', 'effective_date'
-    ]
-    list_filter = [
-        'legislation_type', 'category', 'status', 'is_verified',
-        'effective_date', 'created_at'
-    ]
-    search_fields = ['title', 'number', 'keywords']
-    ordering = ['-created_at']
-    
-    # Form alanları
-    fieldsets = (
-        ('Temel Bilgiler', {
-            'fields': ('title', 'short_title', 'number', 'legislation_type', 'category')
-        }),
-        ('Tarihler', {
-            'fields': (
-                'publication_date', 'effective_date', 'expiry_date', 'acceptance_date',
-                'official_gazette_date', 'official_gazette_number', 'duplicate_number'
-            ),
-            'classes': ('collapse',)
-        }),
-        ('İçerik', {
-            'fields': ('subject', 'summary', 'keywords', 'full_text', 'full_text_html')
-        }),
-        ('Durum ve İlişkiler', {
-            'fields': ('status', 'superseded_by', 'related_legislations')
-        }),
-        ('Kaynak ve SEO', {
-            'fields': (
-                'source_url', 'pdf_url', 'mevzuat_gov_id', 
-                'slug', 'meta_description'
-            ),
-            'classes': ('collapse',)
-        }),
-        ('Veri Kalitesi', {
-            'fields': (
-                'is_verified', 'verification_date', 'data_quality_score',
-                'last_checked'
-            ),
-            'classes': ('collapse',)
-        })
-    )
-    
-    # Readonly fields
-    readonly_fields = ['slug', 'created_at', 'updated_at', 'view_count', 'search_count']
-    
-    # Inline
-    inlines = [LegislationArticleInline]
-    
-    # Filter horizontal for many-to-many
-    filter_horizontal = ['related_legislations']
-    
-    # Custom methods
-    def title_short(self, obj):
-        title = obj.title
-        if len(title) > 60:
-            return title[:60] + "..."
-        return title
-    title_short.short_description = 'Başlık'
-    
-    def status_badge(self, obj):
-        colors = {
-            'active': '#28a745',
-            'repealed': '#dc3545', 
-            'amended': '#ffc107',
-            'suspended': '#6c757d'
-        }
-        color = colors.get(obj.status, '#6c757d')
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px;">{}</span>',
-            color, obj.get_status_display()
-        )
-    status_badge.short_description = 'Durum'
-    
-    def article_count(self, obj):
-        count = obj.articles.count()
-        if count > 0:
-            url = reverse('admin:core_legislationarticle_changelist') + f'?legislation={obj.id}'
-            return format_html('<a href="{}" class="button">{} madde</a>', url, count)
-        return "0 madde"
-    article_count.short_description = 'Maddeler'
-    
-    # Actions
-    actions = ['mark_as_verified', 'mark_as_active', 'mark_as_repealed']
-    
-    def mark_as_verified(self, request, queryset):
-        from django.utils import timezone
-        queryset.update(is_verified=True, verification_date=timezone.now())
-        self.message_user(request, f'{queryset.count()} mevzuat doğrulandı.')
-    mark_as_verified.short_description = 'Seçili mevzuatları doğrulandı olarak işaretle'
-    
-    def mark_as_active(self, request, queryset):
-        queryset.update(status='active')
-        self.message_user(request, f'{queryset.count()} mevzuat aktif yapıldı.')
-    mark_as_active.short_description = 'Seçili mevzuatları aktif yap'
-    
-    def mark_as_repealed(self, request, queryset):
-        queryset.update(status='repealed')
-        self.message_user(request, f'{queryset.count()} mevzuat yürürlükten kaldırıldı.')
-    mark_as_repealed.short_description = 'Seçili mevzuatları yürürlükten kaldır'
-
-# ========================
-# MADDE YÖNETİMİ
-# ========================
-
-@admin.register(LegislationArticle)
-class LegislationArticleAdmin(admin.ModelAdmin):
-    list_display = [
-        'legislation_title', 'article_number', 'title_short', 
-        'is_active', 'is_repealed', 'view_count', 'order'
-    ]
-    list_filter = [
-        'legislation__legislation_type', 'legislation__category',
-        'is_active', 'is_repealed', 'legislation'
-    ]
-    search_fields = ['legislation__title', 'article_number', 'title', 'text']
-    ordering = ['legislation', 'order', 'article_number']
-    
-    # Form alanları
-    fields = [
-        'legislation', 'article_number', 'title', 'text', 'text_html',
-        'footnotes', 'legal_notes', 'order', 'is_active', 'is_repealed', 'repeal_date'
-    ]
-    
-    def legislation_title(self, obj):
-        return f"{obj.legislation.number} - {obj.legislation.title[:50]}..."
-    legislation_title.short_description = 'Mevzuat'
-    
-    def title_short(self, obj):
-        if obj.title:
-            return obj.title[:50] + "..." if len(obj.title) > 50 else obj.title
-        return "Başlıksız"
-    title_short.short_description = 'Madde Başlığı'
-    
-    # Actions
-    actions = ['activate_articles', 'deactivate_articles']
-    
-    def activate_articles(self, request, queryset):
-        queryset.update(is_active=True)
-        self.message_user(request, f'{queryset.count()} madde aktif yapıldı.')
-    activate_articles.short_description = 'Seçili maddeleri aktif yap'
-    
-    def deactivate_articles(self, request, queryset):
-        queryset.update(is_active=False)
-        self.message_user(request, f'{queryset.count()} madde pasif yapıldı.')
-    deactivate_articles.short_description = 'Seçili maddeleri pasif yap'
-
-# ========================
-# KARAR-MEVZUAT İLİŞKİSİ YÖNETİMİ
-# ========================
-
-@admin.register(CourtDecisionLegislationRelation)
-class CourtDecisionLegislationRelationAdmin(admin.ModelAdmin):
-    list_display = [
-        'court_decision_short', 'legislation_short', 'article_number', 
-        'relation_type', 'confidence_score', 'is_verified', 'created_at'
-    ]
-    list_filter = [
-        'relation_type', 'is_verified', 'legislation__legislation_type',
-        'created_at'
-    ]
-    search_fields = [
-        'court_decision__karar_numarasi', 'legislation__title', 
-        'article__article_number'
-    ]
-    ordering = ['-created_at']
-    
-    def court_decision_short(self, obj):
-        return f"{obj.court_decision.karar_numarasi or 'No: Yok'}"
-    court_decision_short.short_description = 'Karar'
-    
-    def legislation_short(self, obj):
-        return f"{obj.legislation.number} - {obj.legislation.title[:30]}..."
-    legislation_short.short_description = 'Mevzuat'
-    
-    def article_number(self, obj):
-        return f"Madde {obj.article.article_number}" if obj.article else "-"
-    article_number.short_description = 'Madde'
-
-# ========================
-# ADMIN SİTE ÖZELLEŞTİRMESİ
-# ========================
-
-admin.site.site_header = "LexaTech Mevzuat Yönetim Sistemi"
-admin.site.site_title = "LexaTech Admin"
-admin.site.index_title = "Mevzuat ve Yargı Kararları Yönetimi"
-
-# Custom CSS ekle
-admin.site.add_css = """
-<style>
-.badge {
-    background-color: #007bff;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-size: 11px;
-}
-.button {
-    background: #007bff;
-    color: white;
-    padding: 4px 8px;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 12px;
-}
-.button:hover {
-    background: #0056b3;
-    color: white;
-}
-</style>
-"""

@@ -1,0 +1,233 @@
+# faiss_query/views.py - DÜZELTMELI VERSİYON
+
+import os
+import pickle
+import numpy as np
+from django.conf import settings
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+import markdown
+import re
+
+# Optional imports to avoid dependency issues
+try:
+    import faiss
+    FAISS_AVAILABLE = True
+except ImportError:
+    FAISS_AVAILABLE = False
+    faiss = None
+
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    SentenceTransformer = None
+
+try:
+    import google.generativeai as genai
+    GENAI_AVAILABLE = True
+except ImportError:
+    GENAI_AVAILABLE = False
+    genai = None
+
+# FAISS dizinlerini ve mappingleri yükleyelim
+FAISS_DIR = os.path.join(settings.BASE_DIR, 'faiss_dizinleri')
+
+# Check if FAISS directory exists
+if os.path.exists(FAISS_DIR):
+    available_indexes = [f for f in os.listdir(FAISS_DIR) if f.endswith(".index")]
+else:
+    available_indexes = []
+
+index_mapping = {}
+
+# Only load FAISS if available
+if FAISS_AVAILABLE and available_indexes:
+    for file in available_indexes:
+        alan_adi = file.replace("faiss_", "").replace(".index", "")
+        index_path = os.path.join(FAISS_DIR, file)
+        map_path = os.path.join(FAISS_DIR, f"mapping_{alan_adi}.pkl")
+
+        try:
+            print(f"🔄 Loading {alan_adi}...")
+            index = faiss.read_index(index_path)
+            with open(map_path, "rb") as f:
+                mapping = pickle.load(f)
+            index_mapping[alan_adi] = {"index": index, "mapping": mapping}
+            print(f"✅ {alan_adi}: {len(mapping)} decisions loaded")
+        except Exception as e:
+            print(f"⚠️ {alan_adi} için yükleme hatası: {e}")
+
+# Only initialize embedding model if sentence_transformers is available
+if SENTENCE_TRANSFORMERS_AVAILABLE:
+    try:
+        print("🤖 Loading embedding model...")
+        embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+        print("✅ Embedding model loaded successfully")
+    except Exception as e:
+        print(f"⚠️ Embedding model yüklenemedi: {e}")
+        embedding_model = None
+else:
+    embedding_model = None
+
+# Gemini API - sadece mevcutsa kullan
+if GENAI_AVAILABLE and hasattr(settings, 'GEMINI_API_KEY'):
+    try:
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        gemini_model = genai.GenerativeModel(model_name="gemini-2.5-pro-preview-03-25")
+        print("✅ Gemini model configured")
+    except Exception as e:
+        print(f"⚠️ Gemini API yüklenemedi: {e}")
+        gemini_model = None
+else:
+    gemini_model = None
+
+print(f"📊 Total indexes loaded: {len(index_mapping)}")
+
+# ---------------------------
+# Olay giriş view
+# ---------------------------
+def olay_gir(request):
+    if request.method == "POST":
+        olay = request.POST.get("olay")
+        if olay:
+            # Olayı session'a kaydet
+            request.session['olay'] = olay
+
+            # Gemini ile açıklama üret (eğer mevcut ise)
+            if gemini_model:
+                try:
+                    prompt = f"Aşağıdaki olaya göre Türk hukukuna göre genel bir hukuki açıklama yap. Açıklama sade, net ve bilgi verici olsun.\n\nOlay: {olay}"
+                    cevap = gemini_model.generate_content(prompt)
+                    hukuki_aciklama_raw = cevap.text
+                    hukuki_aciklama_html = markdown.markdown(hukuki_aciklama_raw)
+                except Exception as e:
+                    hukuki_aciklama_html = f"<p>Girilen olay: <strong>{olay}</strong></p><p>Hukuki açıklama sistemi geçici olarak devre dışıdır.</p>"
+            else:
+                hukuki_aciklama_html = f"<p>Girilen olay: <strong>{olay}</strong></p><p>Hukuki açıklama sistemi geçici olarak devre dışıdır.</p>"
+
+            request.session['hukuki_aciklama'] = hukuki_aciklama_html
+            return redirect('faiss_query:karar_listesi')
+    return render(request, 'faiss_query/olay_gir.html')
+
+# ---------------------------
+# Karar listesi view
+# ---------------------------
+def karar_listesi(request):
+    olay = request.session.get('olay')
+    hukuki_aciklama = request.session.get('hukuki_aciklama')
+    if not olay:
+        return redirect('faiss_query:olay_gir')
+
+    # Check if embedding model is available
+    if not embedding_model or not index_mapping:
+        return render(request, 'faiss_query/karar_listesi.html', {
+            'olay': olay,
+            'hukuki_aciklama': hukuki_aciklama,
+            'page_obj': None,
+            'error_message': f'FAISS arama sistemi geçici olarak devre dışıdır. (Indexes: {len(index_mapping)}, Model: {"OK" if embedding_model else "Missing"})'
+        })
+
+    try:
+        # Embedding oluştur
+        embedding = embedding_model.encode([olay])
+
+        # FAISS tarama
+        top_results = []
+        for alan_adi, data in index_mapping.items():
+            try:
+                index = data["index"]
+                mapping = data["mapping"]
+
+                # FAISS search
+                D, I = index.search(np.array(embedding).astype('float32'), 10)  # 10 result per category
+                
+                for dist, idx in zip(D[0], I[0]):
+                    if idx != -1 and idx < len(mapping):
+                        # Distance skor - düşük olan daha iyi
+                        score = 100 - min(dist * 10, 100)  # 0-100 arası skor
+                        if score > 25:  # Minimum threshold 25
+                            top_results.append({
+                                'distance': dist,
+                                'score': score,
+                                'decision': mapping[idx],
+                                'category': alan_adi,
+                                'index': idx
+                            })
+            except Exception as e:
+                print(f"⚠️ Error searching {alan_adi}: {e}")
+
+        # Sort by distance (lower is better)
+        sorted_results = sorted(top_results, key=lambda x: x['distance'])[:50]  # Top 50 results
+
+        if not sorted_results:
+            return render(request, 'faiss_query/karar_listesi.html', {
+                'olay': olay,
+                'hukuki_aciklama': hukuki_aciklama,
+                'page_obj': None,
+                'error_message': 'Girdiğiniz olay için uygun karar bulunamadı. Farklı kelimeler deneyiniz.'
+            })
+
+        paginator = Paginator(sorted_results, 25)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, 'faiss_query/karar_listesi.html', {
+            'olay': olay,
+            'hukuki_aciklama': hukuki_aciklama,
+            'page_obj': page_obj,
+        })
+    except Exception as e:
+        return render(request, 'faiss_query/karar_listesi.html', {
+            'olay': olay,
+            'hukuki_aciklama': hukuki_aciklama,
+            'page_obj': None,
+            'error_message': f'Arama sırasında hata oluştu: {str(e)}'
+        })
+
+
+def highlight_keywords(text, keywords):
+    """
+    Metindeki önemli kelimeleri <mark> etiketi ile sarı renkle vurgular.
+    """
+    for word in keywords:
+        # Kelimenin tam eşleşmesini yapalım (parçalı eşleşme olmasın)
+        text = re.sub(rf'(\b{re.escape(word)}\b)', r'<mark>\1</mark>', text, flags=re.IGNORECASE)
+    return text
+
+# ---------------------------
+# Karar detay view
+# ---------------------------
+def karar_detay(request, alan, index):
+    olay = request.session.get('olay')
+    if not olay:
+        return redirect('faiss_query:olay_gir')
+
+    page = request.GET.get('page', 1)
+
+    alan_data = index_mapping.get(alan)
+    if not alan_data:
+        return redirect('faiss_query:karar_listesi')
+
+    # index view URL'den string olarak gelir, int'e çevir
+    try:
+        index = int(index)
+    except ValueError:
+        return redirect('faiss_query:karar_listesi')
+
+    mapping = alan_data["mapping"]
+    if index < 0 or index >= len(mapping):
+        return redirect('faiss_query:karar_listesi')
+
+    karar = mapping[index]
+
+    keywords = [kelime for kelime in re.findall(r'\b\w{4,}\b', olay)]
+    karar_tam_metni = highlight_keywords(karar.get("metin", ""), keywords)
+
+    return render(request, 'faiss_query/karar_detay.html', {
+        'karar': karar,
+        'alan': alan,
+        'page': page,
+        'karar_tam_metni': karar_tam_metni,
+    })

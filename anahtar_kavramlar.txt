@@ -3927,6 +3927,22 @@ merkezi yönetim
 mahalli müşterek ihtiyaç
 görev bölüşümü
 idari teşkilat
+idari işlem (birel/düzenleyici)
+idari eylem
+yetki–şekil–sebep–konu–maksat
+usulde paralellik
+savunma hakkı
+idari para cezası
+hizmet kusuru
+kusursuz sorumluluk
+iptal davası
+tam yargı davası
+yürütmenin durdurulması
+görev–yetki–süre (2577)
+tebligat usulü
+idari sözleşme
+kamu hizmeti
+disiplin cezaları
 
 [yabancilar ve vatandaslik]
 yabancılar hukuku
@@ -4198,8 +4214,1182 @@ doğa tahribatı
 enerji güvenliği
 enerji arz güvenliği
 
+[Ceza Hukuku]
+kasten öldürme
+taksirle öldürme
+kasten yaralama
+taksirle yaralama
+hakaret
+tehdit
+yağma (gasp)
+hırsızlık
+dolandırıcılık
+güveni kötüye kullanma
+zimmet
+irtikap
+rüşvet
+ihaleye fesat karıştırma
+resmî belgede sahtecilik
+özel belgede sahtecilik
+bilişim sistemine girme
+bankacılık/bilişim dolandırıcılığı
+özel hayatın gizliliğini ihlal
+konut dokunulmazlığının ihlali
+cinsel saldırı
+cinsel taciz
+çocukların cinsel istismarı
+uyuşturucu madde ticareti
+suç işlemek için örgüt kurma
+suça teşebbüs
+suça iştirak (azmettirme, yardım)
+suçların içtimaı
+haksız tahrik
+meşru müdafaa
+zorunluluk hali
+failin kusurluluğu
+cezanın ertelenmesi
+hükmün açıklanmasının geri bırakılması (HAGB)
+seçenek yaptırımlar
+eşya ve kazanç müsaderesi
+tekerrür
+
+[Ceza Muhakemesi Hukuku]
+soruşturma
+kovuşturma
+şüpheli
+sanık
+müdafi
+müşteki/katılan
+yakalama
+gözaltı
+tutuklama
+adli kontrol
+arama ve elkoyma
+iletişimin tespiti/dinlenmesi
+gizli soruşturmacı
+teknik takip
+hukuka aykırı delil
+iddianame
+duruşma
+tanık
+bilirkişi
+keşif
+beraat
+mahkûmiyet
+uzlaşma
+seri muhakeme usulü
+basit yargılama usulü
+istinaf
+temyiz
+yargılamanın yenilenmesi
+CMK 141 tazminat
+
+[Ceza ve Guvenlik Tedbirlerinin Infazı]
+hapis cezasının infazı
+koşullu salıverme
+denetimli serbestlik
+açık/kapalı ceza infaz kurumu
+disiplin cezaları
+infaz hâkimliği
+mükerrir
+cezaların içtiması
+cezanın ertelenmesi
+hasta hükümlü işlemleri
+
+[Kabahatler Hukuku]
+idari para cezası
+mülkiyetin kamuya geçirilmesi
+sulh ceza hâkimliği itirazı
+kabahatte zamanaşımı
+tebligat ve başvuru süresi
+
+[Ceza Hukuku – Kisilere Karsi Suclar]
+kasten öldürme
+taksirle öldürme
+kasten yaralama
+taksirle yaralama
+işkence
+eziyet
+tehdit
+şantaj
+hakaret
+kişilerin huzur ve sükûnunu bozma
+haberleşmenin gizliliğini ihlal
+özel hayatın gizliliğini ihlal
+kişisel verilerin kaydedilmesi
+verilerin hukuka aykırı verilmesi veya ele geçirilmesi
+konut dokunulmazlığının ihlali
+malvarlığına zarar verme
+hürriyeti tahdit
+cinsel saldırı
+cinsel taciz
+çocuğun cinsel istismarı
+reşit olmayanla cinsel ilişki
+nitelikli cinsel saldırı
+nitelikli yaralama
+organ veya doku ticareti
+çocuk düşürtme–düşürme
+kısırlaştırma
+aile içi şiddet
+ihmal ve istismar
+aile yükümlülüğünü ihlal
+
+[Ceza Hukuku – Malvarligina Karşi Suclar]
+hırsızlık
+nitelikli hırsızlık
+yağma (gasp)
+dolandırıcılık
+nitelikli dolandırıcılık
+bilişim dolandırıcılığı
+güveni kötüye kullanma
+mala zarar verme
+hakkı olmayan yere tecavüz
+karşılıksız yararlanma
+senedin bozulması veya gizlenmesi
+haksız kazanç
+fatura sahteciliği
+
+[Ceza Hukuku – Kamu idaresine Karsi Suclar]
+zimmet
+irtikap
+rüşvet
+ihaleye fesat karıştırma
+edimin ifasına fesat karıştırma
+görevi kötüye kullanma
+görevi ihmal
+yetki gaspı
+resmî belgede sahtecilik
+özel belgede sahtecilik
+mühür bozma
+kaçakçılık
+vergi kaçakçılığı
+rüşvet teklif etme veya aracılık etme
+adli yargı görevinin ihlali
+bilgi ve belge gizleme
+
+[Ceza Hukuku – Kamu Guvenine Karsi Suclar]
+para–kıymetli evrak sahteciliği
+mühür ve damga sahteciliği
+resmi belge sahteciliği
+nüfus cüzdanı sahteciliği
+senet sahteciliği
+taklit–tağyir
+ayırt etme gücü bulunmayan kişilerin kandırılması
+
+[Ceza Hukuku – Kamu Barisina Karsi Suclar]
+halkı kin ve düşmanlığa tahrik
+suç işlemeye tahrik
+yalan haber yayma
+tehdit veya korku yaratacak haber
+silahlı örgüt kurma
+örgüte yardım ve yataklık
+örgüt propagandası
+halkı askerlikten soğutma
+suçu ve suçluyu övme
+
+[Ceza Hukuku – Adliyeye Karsi Suclar]
+iftira
+yalan tanıklık
+bilirkişilikte yalan beyan
+adli görevi engelleme
+delilleri yok etme
+suçluyu kayırma
+suçluyu bildirmeme
+suç üstlenme
+yalan yemin
+mahkeme kararına uymama
+
+[Ceza Hukuku – Topluma Karsi Suclar]
+genel güvenliğin kasten tehlikeye sokulması
+trafik güvenliğini tehlikeye sokma
+yangın çıkarma
+patlayıcı madde bulundurma
+narkotik suçları
+uyuşturucu madde kullanma
+uyuşturucu madde ticareti
+kaçakçılık
+çevrenin kasten kirletilmesi
+gürültüye neden olma
+imar kirliliği
+hayvanlara kötü muamele
+sağlık için tehlikeli madde temini
+bozulmuş gıda satışı
+doping suçu
+kamu sağlığını tehlikeye sokma
+tekel dışı madde üretimi
+
+[Ceza Hukuku – Ekonomik ve Bilisim Suclari]
+bilişim sistemine girme
+veri bozma
+sistemi engelleme
+yasa dışı bahis
+kripto para dolandırıcılığı
+kredi kartı dolandırıcılığı
+siber saldırı
+spam ve phishing
+yetkisiz erişim
+veri hırsızlığı
+
+[Ceza Hukuku – ozel Hayat ve seref]
+hakaret
+iftira
+tehdit
+özel hayatın gizliliğini ihlal
+haberleşmenin gizliliği
+ses/görüntü kaydı izinsiz paylaşım
+kişisel verilerin hukuka aykırı işlenmesi
+internet yoluyla hakaret
+sosyal medya suçu
+
+[Ceza Hukuku – cocuklara ve Kadinlara Karsi Suclar]
+çocuğun cinsel istismarı
+reşit olmayanla cinsel ilişki
+çocuk kaçırma
+çocuk alıkoyma
+çocuğu suça sürükleme
+çocuk istismarı–ihmali
+kadına karşı şiddet
+ısrarlı takip (stalking)
+kadına yönelik ayrımcılık
+ev içi şiddet
+cinsel saldırı
+tecavüz
+aile yükümlülüğünün ihlali
+
+[Ceza Hukuku – Basin ve ifade ozgurlugu Suslari]
+basın yoluyla hakaret
+basın yoluyla iftira
+yayın yoluyla suç işlemeye tahrik
+müstehcen yayın
+halkı kin ve düşmanlığa tahrik
+basın yoluyla gizliliğin ihlali
+
+[Ceza Hukuku – Askeri Suclar ve Devlete Karsi Suclar]
+vatana ihanet
+casusluk
+devletin birliğini bozma
+anayasal düzeni ortadan kaldırma
+cumhurbaşkanına suikast
+terör suçu
+örgüt kurma
+örgüt üyeliği
+örgüte yardım
+örgüt propagandası
+askeri itaatsizlik
+emre itaatsizlik
+firar
+askeri sır ifşası
+disiplin cezası
+
+[Ceza Hukuku – Uyusturucu ve Kaçakcilik Suclari]
+uyuşturucu madde imalatı
+uyuşturucu madde satışı
+uyuşturucu madde kullanma
+uyuşturucu madde bulundurma
+uyuşturucu ithalatı
+uyuşturucu ihracatı
+yasa dışı tütün–alkol üretimi
+akaryakıt kaçakçılığı
+silah kaçakçılığı
+insan kaçakçılığı
+göçmen kaçakçılığı
+organ ticareti
+
+[Ceza Hukuku – infaz ve Denetim]
+koşullu salıverme
+denetimli serbestlik
+cezanın infazı
+açık/kapalı cezaevi
+disiplin cezaları
+hasta hükümlü işlemleri
+iyi hal değerlendirmesi
+infaz hâkimliği
+izin işlemleri
+erteleme–durdurma
+
+[imar ve sehircilik Hukuku]
+nazım/uygulama imar planı
+plan değişikliği
+plan iptal davası
+yapı ruhsatı
+yapı kullanma izni (iskan)
+kaçak yapı
+yıkım kararı
+imar barışı–yapı kayıt belgesi
+parselasyon
+ifraz/tevhit
+
+[Tuketici Hukuku]
+ayıplı mal/hizmet
+seçimlik haklar
+cayma hakkı
+mesafeli sözleşmeler
+abonelik sözleşmesi
+tüketici hakem heyeti
+tüketici mahkemesi
+paket tur sözleşmesi
+ön ödemeli konut
+taksitli satış
+garanti ve servis
+haksız şart
+tüketici kredisi sözleşmesi
+kredi kartı sözleşmesi
+temerrüt bildirimi
+idari takip
+tüketici hakem heyeti başvurusu
+bankacılık tahkimi
+alternatif uyuşmazlık çözümü
+arabuluculuk (finansal uyuşmazlık)
+yargı yolu (tüketici mahkemesi)
+delil sözleşmesi
+yüksek faiz ve fahiş masraf
+haksız tahsilat iadesi
+hesap işletim ücreti
+dosya masrafı
+erken ödeme tazminatı
+tüketici tanımı
+tüketici işlemi
+tüketici sözleşmesi
+mal ve hizmet ayrımı
+ticari veya mesleki amaç
+zayıf taraf ilkesi
+bilgilendirme yükümlülüğü
+iyi niyet ve dürüstlük kuralı
+haksız şart
+adil denge ilkesi
+bilgilendirme eksikliği
+tüketici lehine yorum
+zorunlu içtihatlar (Yargıtay 13. HD, HGK)
+kanunlar ihtilafı (tüketici uyuşmazlıkları)
+emredici hükümler
+yetki sözleşmesi yasağı
+yargı yeri seçimi
+teslim yükümlülüğü
+tüketici işleminin ispatı
+delil sözleşmesi geçersizliği
+ayıplı mal
+ayıplı hizmet
+ayıbın gizlenmesi
+ayıbın ağır veya hafif olması
+ayıp bildirimi
+ayıp ihbar süresi
+teslimden itibaren 6 aylık karine
+iki yıllık zamanaşımı
+ayıplı malda seçimlik haklar
+bedel iadesi
+ayıpsız misliyle değiştirme
+ücretsiz onarım
+bedelden indirim
+onarım süresi (20 iş günü)
+yedek ürün verilmesi
+satıcının sorumluluğu
+imalatçı–üretici sorumluluğu
+ithalatçı sorumluluğu
+distribütör sorumluluğu
+tamir süresi aşıldıysa değiştirme
+gizli ayıp
+tüketici kusuru
+ispat yükü ters çevrilmesi
+garanti belgesi
+yetkili servis yükümlülüğü
+servis fişi
+yedek parça temini süresi
+ayıplı hizmette tazminat
+hizmetin yeniden görülmesi
+bedelden indirim hakkı
+garanti belgesi düzenleme zorunluluğu
+asgari garanti süresi (2 yıl)
+garanti süresi uzatma
+yedek parça temin süresi (10 yıl)
+servis istasyonu zorunluluğu
+garanti belgesinin geçersiz sayılması
+garanti dışı kalan haller
+garanti kapsamında tamir süresi
+tamir süresi uzarsa yeni ürün hakkı
+onarım sonrası garanti süresinin yenilenmesi
+üretici–ithalatçı–bayi zinciri sorumluluğu
+garanti etiketi ve marka ibaresi
+servis fişi verilmemesi
+ayıplı onarım sorumluluğu
+yetkisiz servis müdahalesi
+mesafeli satış sözleşmesi
+ön bilgilendirme formu
+sipariş onayı
+cayma hakkı
+14 günlük cayma süresi
+cayma bildirimi şekli
+istisnalar (kişiye özel ürün, hızla bozulan mal vb.)
+iade masrafları
+satıcının iade yükümlülüğü
+tüketicinin iadeye hazır tutma yükümlülüğü
+iade adresi bilgisi
+dijital içerik sözleşmesi
+abonelikli dijital hizmetler
+elektronik ortamda cayma hakkı
+iade kargo ücreti sorunu
+iptal–iade koşulları
+ön bilgilendirmenin yapılmaması halinde sürenin uzaması
+abonelik sözleşmesi tanımı
+belirsiz süreli sözleşmeler
+belirli süreli sözleşmeler
+taahhütlü abonelik
+erken fesih hakkı
+taahhütlü fesih bedeli
+abonelik fesih usulü
+abonelik fesih portalı
+aboneye bilgilendirme yükümlülüğü
+fatura itirazı
+otomatik yenilenen sözleşme
+faturada gizli ücretler
+tarife değişikliği
+paket iptali
+abonelik kaydı onayı
+taahhüt süresi dolmadan fesih
+abonelik feshi için çağrı merkezi engeli
+abonelik iade süresi
+fesih bildirimi elektronik ortamda yapılabilir
+ön ödemeli konut satışı
+ön ödemeli araç satışı
+kampanyalı satış
+taksitli satış sözleşmesi
+ödeme planı
+temerrüt ve gecikme faizi
+sözleşmeden dönme
+satıcının temerrüdü
+ifanın imkansızlaşması
+cayma parası
+satıcının teminat gösterme yükümlülüğü
+ön ödeme sigortası
+ön ödemeli tatil sözleşmesi
+paket tur sözleşmesi
+tur iptali
+zorunlu sigorta (seyahat)
+tüketici kredisi sözleşmesi
+konut kredisi
+taşıt kredisi
+faiz oranı bildirimi
+faiz oranı değişikliği
+erken ödeme indirimi
+faiz ve masrafların toplam maliyet bildirimi
+yıllık maliyet oranı (YMO)
+dosya masrafı
+kredi tahsis ücreti
+sigorta bedeli yansıtma
+zorunlu hayat sigortası yasağı
+yeniden yapılandırma
+temerrüt bildirimi
+temerrüt faizi
+faiz oranı sınırlaması
+erken kapama
+faiz iadesi
+tüketici borçlanma limiti
+idari takip
+icra takibi
+haksız tahsilat iadesi
+ön ödemeli konut satış sözleşmesi
+maketten satış
+teslim tarihi
+gecikme tazminatı
+ayrıntılı bilgilendirme formu
+teslim gecikmesi nedeniyle tazminat
+iskan alınmaması
+proje değişikliği
+mimari proje farklılığı
+eksik iş
+garanti süresi (5 yıl)
+yüklenicinin ayıptan sorumluluğu
+kooperatiften konut alımı
+tapu devrinin gecikmesi
+tapu devri yapılmadan tahsilat
+alıcı lehine tapu şerhi
+müteahhidin sorumluluğu
+Tüketici hakem heyeti
+aldatıcı reklam
+karşılaştırmalı reklam
+etik dışı reklam
+çocuklara yönelik reklam yasağı
+kampanya yanıltması
+indirimli satış
+stok bilgilendirmesi
+tükenmiş ürün kampanyası
+sahte indirim
+reklam kurul kararı
+idari para cezası
+reklam durdurma kararı
+haksız ticari uygulama
+agresif ticari uygulama
+aldatıcı sessizlik
+otomatik üyelik
+reklamın ispat yükü
 
 
+[Rekabet Hukuku]
+hakim durumun kötüye kullanılması
+kartel/uyumlu eylem
+birleşme–devralma bildirimi
+menfi tespit
+muafiyet
+yerinde inceleme
+taahhüt/uzlaşma
+idari para cezası
+etkilenen pazar analizi
+
+[Fikri ve Sinai Haklar Hukuku]
+eser–eser sahibi (FSEK)
+mali/manevi haklar
+eser sözleşmeleri
+marka hakkı (SMK)
+patent/faydalı model
+endüstriyel tasarım
+coğrafi işaret
+lisans ve devir
+tecavüzün önlenmesi
+hükümsüzlük
+tazminat
+el koyma ve imha
+korsanla mücadele
+
+[Bilisim ve internet hukuku]
+5651 içerik/yer/erişim sağlayıcı
+erişimin engellenmesi (URL tabanlı)
+içeriğin çıkarılması
+sosyal ağ sağlayıcı–temsilci
+trafik loglarının saklanması
+e-ticaret yükümlülükleri
+aracı hizmet sağlayıcı
+uzaktan sözleşmelerde ispat
+
+[Kisisel Verilerin Korunmasi (KVKK)]
+açık rıza
+aydınlatma yükümlülüğü
+veri sorumlusu–veri işleyen
+VERBİS kaydı
+özel nitelikli veri
+aktarım (yurtiçi/yurtdışı)
+saklama–imha–anonimleştirme
+veri ihlali bildirimi
+ilgili kişinin başvurusu–şikâyet
+Kurul kararı ve idari para cezası
+temsilci atama (yurtdışı)
+
+[Uluslararasi ozel Hukuk]
+yetki anlaşması
+uygulanacak hukuk
+kanunlar ihtilafı
+kamu düzeni müdahalesi
+tanıma ve tenfiz
+yabancı kararın icrası
+usul ekonomisi
+
+[ihale Hukuku]
+4734–4735 uygulaması
+ihale ilanı–dokümanı
+yeterlik ve değerlendirme
+aşırı düşük teklif
+sözleşmenin ifası
+yasak fiil ve davranışlar
+şikâyet ve itirazen şikâyet (KİK)
+iptal ve fesih
+
+[Bankacilik ve Finans Hukuku]
+kredi sözleşmesi
+tüketici kredisi–kredi kartı
+teminat–rehin–ipotek
+temerrüt ve faiz
+yeniden yapılandırma
+bankacılık sırrı
+BDDK işlemleri
+finansal kiralama–faktoring
+bankacılık faaliyeti
+mevduat toplama yetkisi
+katılım bankacılığı
+yatırım bankacılığı
+merkez bankası düzenlemeleri
+Türkiye Cumhuriyet Merkez Bankası (TCMB)
+BDDK (Bankacılık Düzenleme ve Denetleme Kurumu)
+TMSF (Tasarruf Mevduatı Sigorta Fonu)
+bankaların kuruluş izni
+şube açma izni
+temsilcilik açma
+yabancı banka şubesi
+şube kapatma
+yönetim kurulu uygunluk şartı
+fit and proper test
+bağımsız denetim
+iç kontrol sistemi
+risk yönetimi
+uyum birimi
+iç denetim sistemi
+bankaların birleşmesi
+bankaların devri
+bankaların bölünmesi
+bankaların tasfiyesi
+faaliyet izninin kaldırılması
+zorunlu karşılık oranı
+likidite oranı
+sermaye yeterliliği oranı
+özkaynak hesaplaması
+kredi sınırları
+büyük kredi sınırı
+bağlı krediler
+karşılıklı iştirak
+yönetim hakimiyeti ilişkisi
+kredi sözleşmesi
+nakdi kredi
+gayrinakdi kredi
+teminat mektubu
+avans kredisi
+döviz kredisi
+tüketici kredisi
+konut kredisi
+araç kredisi
+ticari kredi
+kredi kartı borcu
+rotatif kredi
+kredinin temerrüdü
+faiz oranı
+gecikme faizi
+temerrüt faizi
+faiz sınırı (TBK 88–120)
+faiz indirimi
+masrafların iadesi
+erken ödeme indirimi
+yapılandırma
+kredi sicil affı
+kara liste
+banka temerrüdü
+faiz haddi aşımı
+haksız şart (tüketici kredileri)
+sözleşmenin geçersizliği
+müşteri sözleşmesinde açık rıza
+bilgilendirme yükümlülüğü
+ön bilgilendirme formu
+müşteri talimatı
+yetkisiz talimat
+sözleşmenin elektronik ortamda kurulması
+banka hesap sözleşmesi
+vadesiz mevduat hesabı
+vadeli mevduat hesabı
+katılım hesabı
+emanet hesabı
+ortak hesap
+hesap blokesi
+hesap hareketi bildirimi
+hesap ekstresi
+banka sırlarının gizliliği
+müşteri verisi korunması
+bankacılık sırrı
+ticari sır
+bilgi paylaşımı yasağı
+muvazaa ve vekalet ilişkisi
+elektronik bankacılık
+internet bankacılığı
+mobil bankacılık
+şifre güvenliği
+yetkisiz işlem
+siber dolandırıcılık
+hesaptan izinsiz para transferi
+iade yükümlülüğü
+zarar tazmini
+banka çalışanının sorumluluğu
+yetkisiz işlem bildirimi süresi
+blokaj kaldırma
+hesap kapatma
+hesap devri
+havale
+EFT
+SWIFT transferi
+blokeli çek
+karşılıksız çek
+çek hesabı açma
+senet tahsili
+protesto
+bankalar arası mutabakat
+banka kayıtlarının delil niteliği
+tahvil
+bono
+repo
+ters repo
+yatırım fonu
+portföy yönetimi
+aracı kurum
+yatırım danışmanlığı
+ihraç izni
+prospektüs
+kamuyu aydınlatma yükümlülüğü
+SPK izni
+içeriden öğrenenlerin ticareti
+manipülasyon
+piyasa dolandırıcılığı
+açığa satış
+kaldıraçlı işlemler
+forex işlemleri
+kripto varlık hizmet sağlayıcısı
+kripto para borsası
+blockchain finansmanı
+token ihracı
+STO/ICO mevzuatı
+dijital varlık saklama
+cüzdan güvenliği
+vergi yükümlülüğü (kripto işlemler)
+varlık finansmanı fonu
+ipotek finansmanı kuruluşu
+menkul kıymetleştirme
+leasing–faktoring farkı
+sukuk (kira sertifikası)
+katılım finansmanı araçları
+murabaha–icara–müşaraka sözleşmesi
+uluslararası banka garantisi
+akreditif
+dış ticaret finansmanı
+ithalat–ihracat kredisi
+Eximbank kredisi
+swap
+forward
+opsiyon
+futures
+LIBOR–SOFR geçişi
+uluslararası yatırım tahkimi
+ICSID tahkimi
+bankacılık uyuşmazlıklarında tahkim şartı
+ICC–LCIA tahkimi
+İstanbul Tahkim Merkezi (ISTAC)
+yabancı para borçları
+döviz kuru risk yönetimi
+parite farkı
+çapraz teminat
+uluslararası teminat mektubu
+New York Sözleşmesi (Tenfiz)
+
+[Saglik Hukuku]
+malpraktis
+aydınlatılmış onam
+hasta hakları
+hekim sorumluluğu
+tıbbi kayıt ve gizlilik
+zorunlu sigorta
+etik kurul onayı
+sağlık hakkı
+yaşama hakkı
+beden bütünlüğü
+kişinin dokunulmazlığı
+özel hayatın gizliliği (sağlık verisi)
+hastanın kişilik hakları
+hekim–hasta ilişkisi
+sağlık hizmeti tanımı
+tedavi yükümlülüğü
+acil sağlık hizmeti
+tedavi etmeme yasağı
+hastanın bilgilendirilmesi
+rıza olmadan tıbbi müdahale
+bilgilendirilmiş onam (aydınlatılmış rıza)
+rıza formu
+rıza yeteneği
+rıza aranmayan haller
+bilinçsiz hastaya müdahale
+zorunlu tedavi
+hastanın tedaviyi reddi hakkı
+hastanın taburcu olma hakkı
+sağlık hizmetlerinde dikkat ve özen yükümlülüğü
+hekimlikte özen standardı
+tıbbi endikasyon
+tedavi seçme hakkı
+kurum seçme hakkı
+hekim seçme hakkı
+sağlık kurumunun organizasyon sorumluluğu
+hastane idaresinin sorumluluğu
+özel–kamu hastaneleri ayrımı
+sağlık çalışanlarının hukuki statüsü
+kamu görevlisi hekim
+özel hekim
+sözleşmeli hekim
+kadro dışı çalışma
+döner sermaye sistemi
+hasta hakları yönetmeliği
+hastanın bilgilendirilme hakkı
+mahremiyet hakkı
+gizlilik ihlali
+tıbbi kayıtların gizliliği
+dosya inceleme hakkı
+hasta dosyası erişim
+yakın bilgilendirme
+rıza alma zorunluluğu
+rıza belgesi geçerliliği
+rıza formunun eksikliği
+rıza iptali
+bilgilendirme eksikliği
+açık rıza (KVKK)
+kişisel sağlık verilerinin işlenmesi
+veri sorumlusu sağlık kurumu
+veri paylaşımı yasağı
+sağlık verisinin aktarımı (yurtdışı)
+açık rızanın geri alınması
+hasta temsilcisi tayini
+refakat hakkı
+ziyaret hakkı
+manevi destek hakkı
+bilgilendirilmiş rıza alınmadan ameliyat
+gereksiz tıbbi işlem
+hastaya zarar verilmesi
+yanlış teşhis
+yanlış tedavi
+tedavi gecikmesi
+ilaç hatası
+ameliyat hatası
+yabancı cisim unutulması
+malpraktis (tıbbi hata)
+komplikasyon ve malpraktis ayrımı
+komplikasyon bilgilendirmesi
+öngörülebilir risk
+kusur değerlendirmesi
+bilirkişi incelemesi
+adli tıp raporu
+kusur oranı tespiti
+zarar–nedensellik ilişkisi
+tazminat davası (malpraktis)
+maddi zarar
+manevi tazminat
+kayıp gelir hesabı
+destekten yoksun kalma
+kalıcı sakatlık
+psikolojik zarar
+ölüm halinde tazminat
+kurumun rücu hakkı
+sigorta teminatı (zorunlu mesleki sigorta)
+zorunlu mesleki mali sorumluluk sigortası
+sigorta kapsamı dışı haller
+sigortacının rücu hakkı
+sigorta limitleri
+eksik sigorta
+temerrüt süresi
+poliçe süresi aşımı
+hekimlik meslek etiği
+tıbbi deontoloji
+hekim sorumluluğu
+idari sorumluluk
+hukuki sorumluluk
+cezai sorumluluk
+disiplin sorumluluğu
+tıbbi hata sonucu ceza davası
+taksirle yaralama
+taksirle öldürme
+gizliliği ihlal suçu (TCK 136–137)
+belgede sahtecilik (rapor)
+rüşvet veya menfaat temini
+yetkisiz tıbbi işlem
+belgesiz hekimlik
+sertifikasız müdahale
+uzmanlık dışı uygulama
+estetik müdahaleler
+onaysız estetik ameliyat
+sahte diploma suçu
+bilgisiz onam alma
+hasta onayı olmadan deneysel işlem
+deneysel tedavi protokolü
+etik kurul izni
+ilaç denemesi onayı
+tıbbi cihaz kullanımı
+medikal ürün sorumluluğu
+ilaç prospektüs uyarısı
+reçete hatası
+ilaç yazımında dikkat yükümlülüğü
+SGK reçete denetimi
+usulsüz reçete yazımı
+ilaç suistimali
+farmakovijilans yükümlülüğü
+akupunktur
+fitoterapi
+ozon tedavisi
+hipnoz
+homeopati
+sülük tedavisi
+kupa tedavisi
+manuel terapi
+mezoterapi
+estetik tıp uygulamaları
+yetkisiz uygulama
+sertifikasız işlem
+yanlış uygulama
+sağlık turizmi kapsamında GETAT
+GETAT merkez ruhsatı
+denetim ve yaptırımlar
+gebelik sonlandırma (kürtaj)
+isteğe bağlı düşük
+zorunlu tıbbi kürtaj
+gebeliğin sonlandırılmasında rıza
+zorunlu sterilizasyon
+kısırlık tedavisi (tüp bebek)
+yardımcı üreme teknikleri (YÜT)
+etik kurul onayı
+taşıyıcı annelik yasağı
+donasyon yasağı
+cinsiyet seçimi yasağı
+gebelik takibi
+doğumda tıbbi hata
+bebek karışması
+doğum sonrası ihmal
+lohusalık bakımı
+anne sütü teşviki
+bebeğin ölümü (malpraktis)
+
+[Spor Hukuku]
+profesyonel sporcu sözleşmesi
+fesihte haklı neden
+disiplin talimatı
+doping
+TFF Tahkim Kurulu
+Uyuşmazlık Çözüm Kurulu
+profesyonel sporcu sözleşmesi
+amatör sporcu sözleşmesi
+transfer sözleşmesi
+sözleşmenin feshi
+haklı fesih sebepleri
+tek taraflı fesih
+sözleşmeye aykırılık
+tazminat yükümlülüğü
+menajerlik sözleşmesi
+menajerlik ücreti
+yetkisiz menajerlik
+sporcu temsilcisi lisansı
+kulüp tescili
+spor kulübü tüzüğü
+dernek statüsünde spor kulübü
+şirketleşen spor kulübü
+spor anonim şirketi
+TFF tescil işlemleri
+spor federasyonlarının statüsü
+bağımsız spor federasyonu
+bağımlı federasyon
+federasyon disiplin kurulları
+disiplin talimatı
+etik kurulu
+Uyuşmazlık Çözüm Kurulu (UÇK)
+TFF Tahkim Kurulu
+TFF Etik Kurulu
+Türkiye Dopingle Mücadele Komisyonu (TDMK)
+WADA yasaklı madde listesi
+doping suçu
+doping yaptırımı
+örnek alma ve analiz süreci
+numune B analizi
+geçici men
+kesin men cezası
+doping cezasının indirilmesi
+itiraz hakkı
+sporcu lisansı
+transfer dönemi
+bonservis bedeli
+eğitim tazminatı
+altyapı yetiştirme bedeli
+kulüplerin mali yükümlülükleri
+mali fair play
+kulüp borçlanması
+transfer yasağı
+borç yapılandırması
+UEFA lisans sistemi
+Kulüp Lisans Talimatı
+stat güvenliği
+taraftar davranışları
+tribün olayları
+saha olayları
+taraftar yasağı
+hakem hataları
+VAR sistemi
+hakem atamaları
+müsabaka sonucu tescili
+müsabaka iptali
+yeniden oynatma kararı
+ceza kuruluna sevk
+temsilci raporu
+hakem raporu
+sportmenliğe aykırı davranış
+hakaret veya tehdit
+saldırı veya fiili müdahale
+müsabaka sonucuna etki etme
+şike
+teşvik primi
+şike suçunun unsurları
+sporda yolsuzluk
+spor alanında dolandırıcılık
+yasadışı bahis
+bahis oynama yasağı
+kulüp yöneticisinin sorumluluğu
+antrenör sözleşmesi
+antrenör lisansı
+hakem sözleşmesi
+hakem ücretleri
+spor salonu tahsisi
+tesis kiralama sözleşmesi
+sponsorluk sözleşmesi
+forma reklamı
+yayın hakkı sözleşmesi
+yayın gelirlerinin paylaşımı
+lisanslı ürün satışı
+marka hakkı ihlali
+kulüp logosu koruması
+FIFA–CAS ilişkisi
+CAS (Spor Tahkim Mahkemesi) başvurusu
+CAS yargılama usulü
+CAS kararlarının tenfizi
+uluslararası spor tahkimi
+sporcunun kişisel verileri
+sağlık raporu ve gizlilik
+sporcu sigortası
+kaza tazminatı
+sakatlık nedeniyle fesih
+sağlık kontrolleri
+antidoping eğitim yükümlülüğü
+kadın sporcuların hakları
+engelli sporcuların hakları
+sporcu seçiminde ayrımcılık
+sosyal medya paylaşımlarının disiplin etkisi
+siber zorbalık ve sporcunun itibarı
+kulüp–taraftar ilişkisi
+e-bilet uygulaması
+taraftar kimliği
+taraftar dernekleri
+kulüp denetimi
+Gençlik ve Spor Bakanlığı denetimi
+spor genel müdürlüğü işlemleri
+spor alanında kamu görevlilerinin sorumluluğu
+vergi istisnaları (sporcu ücretleri)
+SGK primleri ve kesintiler
+amatör sporlarda vergi muafiyeti
+
+[Enerji Hukuku]
+EPDK lisansı
+üretim–iletim–dağıtım
+YEKDEM
+bağlantı anlaşması
+serbest tüketici
+kaçak kullanım yaptırımları
+tarife uyuşmazlığı
+EPDK lisans başvurusu
+üretim lisansı
+iletim lisansı
+dağıtım lisansı
+perakende satış lisansı
+otoprodüktör lisansı
+lisanssız üretim
+yenilenebilir enerji üretimi
+YEKDEM (Yenilenebilir Enerji Kaynak Destek Mekanizması)
+YEK belgesi
+YEK kanunu (5346 sayılı)
+rüzgar enerjisi santrali (RES)
+güneş enerjisi santrali (GES)
+hidroelektrik santrali (HES)
+jeotermal enerji santrali
+biyokütle enerjisi
+doğalgaz piyasası
+petrol piyasası
+akaryakıt dağıtım lisansı
+akaryakıt istasyonu ruhsatı
+yakıt kalite denetimi
+EPDK cezası
+EPDK denetimi
+piyasa izleme dairesi
+tarife belirleme
+serbest tüketici limiti
+ikili anlaşmalar
+enerji satış sözleşmesi
+dengeden sorumlu grup
+dengeleme uzlaştırma sistemi (DUY)
+piyasa mali uzlaştırma merkezi (PMUM)
+EPİAŞ
+GÖP (Gün Öncesi Piyasası)
+DGP (Dengeleme Güç Piyasası)
+YAL (Yan Hizmetler)
+kapasite mekanizması
+enerji arz güvenliği
+enerji verimliliği
+enerji performans sözleşmesi
+enerji kimlik belgesi (EKB)
+bina enerji performansı yönetmeliği
+dağıtım bedeli
+sistem kullanım bedeli
+kayıp–kaçak bedeli
+tarife uyuşmazlıkları
+faturalama hatası
+serbest tüketici hakkı
+tüketici şikayetleri
+elektrik kesintisi tazminatı
+dağıtım şirketi sorumluluğu
+ağaç budama ve çevre zararı
+altyapı kazısı ve hasar
+tesis güvenliği
+enerji iletim hattı
+kamulaştırma
+enerji yatırımında acele kamulaştırma
+imar planı değişikliği (enerji yatırımı)
+çevresel etki değerlendirmesi (ÇED)
+ÇED gerekli değildir kararı
+ÇED olumlu kararı
+yargı iptal davası (ÇED kararı)
+gürültü–emisyon–toz ölçümü
+yenilenebilir enerji yatırım teşviki
+vergi indirimi
+KDV istisnası
+yatırım teşvik belgesi
+enerji finansmanı
+proje kredisi
+teminat mektubu
+hisse devri (enerji şirketi)
+elektrik piyasası lisans devri
+piyasa ihlali
+manipülasyon
+bilgi suistimali
+enerji karteli
+rekabet ihlali
+toptan satış lisansı
+ithalat–ihracat izinleri
+doğalgaz depolama tesisi
+LNG terminali
+iletim kapasite tahsisi
+kapasite artırımı
+elektrik üretim tesisinin devri
+çevre izinleri
+emisyon izni
+atıktan enerji üretimi
+biyogaz tesisi
+jeotermal ruhsat
+maden sahasıyla çakışma
+jeotermal kaynak işletme hakkı
+yeraltı kablo hattı izinleri
+karayolu geçiş izni
+çapraz hat anlaşması
+siber güvenlik (enerji tesisleri)
+enerji verisi gizliliği
+akıllı sayaç uygulaması
+uzaktan okuma sistemleri (OSOS)
+enerji arabuluculuğu
+tahkim şartı (enerji sözleşmesi)
+ICC–ICSID tahkimi
+Enerji Şartı Anlaşması
+yatırımcı–devlet uyuşmazlığı
+idari yargı denetimi (EPDK kararları)
+Danıştay iptal davası
+EÜAŞ sözleşmeleri
+TEİAŞ bağlantı anlaşması
+TEDAŞ altyapı onayı
+OSB enerji dağıtımı
+belediye yetkisi sınırı
+enerji depolama tesisi
+batarya depolama lisansı
+hidrojen enerjisi üretimi
+karbon ticareti
+emisyon azaltım sertifikası
+iklim değişikliği mevzuatı
+enerji dönüşümü stratejisi
+net sıfır hedefi
+uluslararası enerji anlaşmaları
+AB enerji müktesebatı
+Paris İklim Anlaşması
+sınırda karbon düzenlemesi
+enerji şirketlerinin birleşmesi–devralınması
+piyasa temerküzü
+rekabet kurulu onayı
+enerji danışmanlık hizmeti
+EPDK itiraz süreci
 
 
 

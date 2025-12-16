@@ -43,7 +43,7 @@ class LegalTextGenerator:
     def __init__(self):
         # Gemini API'yi yapılandır
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.gemini_model = genai.GenerativeModel(model_name="gemini-2.5-pro")
+        self.gemini_model = genai.GenerativeModel(model_name="gemini-3-pro-preview")
         
         self.templates = {
             'dilekce': {

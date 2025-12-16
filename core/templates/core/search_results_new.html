@@ -244,6 +244,7 @@
                        class="sort-btn {% if sort_order == 'date' %}active{% endif %}">
                         <i class="fas fa-calendar"></i> Tarih
                     </a>
+<a href="?q={{ query|urlencode }}&sort=length_desc"                       class="sort-btn {% if sort_order == "length_desc" %}active{% endif %}">                        <i class="fas fa-sort-amount-down"></i> En Uzun                    </a>                    <a href="?q={{ query|urlencode }}&sort=length_asc"                       class="sort-btn {% if sort_order == "length_asc" %}active{% endif %}">                        <i class="fas fa-sort-amount-up"></i> En Kısa                    </a>
                 </div>
             </div>
             
@@ -388,4 +389,5 @@
     </div>
     {% endif %}
 </div>
+{% block extra_scripts %}<script>// Save current search query to sessionStorage for back navigation{% if query %}sessionStorage.setItem("lastSearchQuery", "{{ query|escapejs }}");sessionStorage.setItem("lastSearchUrl", window.location.href);{% endif %}</script>{% endblock %}
 {% endblock %}
