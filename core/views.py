@@ -1,18 +1,17 @@
-import logging
 # core/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
 from .models import (
     JudicialDecision, Article, Legislation,
     MevzuatGelismis, MevzuatTuru, MevzuatKategori, 
     MevzuatMadde, MevzuatDegisiklik, MevzuatLog
 )
 from django.db.models import Q
+from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from .guest_limit_utils import check_guest_search_limit, increment_guest_search
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
-logger = logging.getLogger(__name__)
 
 # DRF için
 from rest_framework.decorators import api_view
@@ -55,9 +54,6 @@ from random import sample
 from .models import Article
 from .param_payment_service import ParamPaymentService
 from .param_simple_service import ParamSimpleService
-from .param_simple_service import ParamSimpleService
-from .param_shared_payment_service import ParamSharedPaymentService
-from .param_modal_service import ParamModalService
 
 def voice_assistant(request):
     """Sesli asistan ana sayfası"""
@@ -68,8 +64,6 @@ from .admin_views import admin_pdf_upload, admin_mevzuat_list, admin_delete_mevz
 
 # External mevzuat views import
 from .external_mevzuat_views import external_mevzuat_detail, external_mevzuat_pdf_proxy
-
-# MCP views removed - feature reverted
 
 # Hibrit mevzuat arama
 from .hybrid_mevzuat_service import HybridMevzuatService
@@ -82,12 +76,12 @@ from .models import JudicialDecision, Article
 from django.http import JsonResponse
 from django.db.models import Q
 from .models import JudicialDecision
-# from .nlp_utils import analyze_text  # Commented out due to emoji module dependency
+from .nlp_utils import analyze_text
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import Q
 from .models import JudicialDecision
-# from .nlp_utils import analyze_text  # Commented out due to emoji module dependency
+from .nlp_utils import analyze_text
 from django.db.models import Count
 from core.models import JudicialDecision, Article
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
@@ -118,7 +112,7 @@ def home(request):
     if newest_decisions is None:
         newest_decisions = list(JudicialDecision.objects.select_related().only(
             'id', 'karar_veren_mahkeme', 'karar_numarasi', 'karar_tarihi', 'karar_ozeti'
-        ).order_by('-karar_tarihi')[:10])
+        ).order_by('-karar_tarihi')[:15])
         cache.set(cache_key_newest, newest_decisions, 900)  # 15 dakika
     
     if random_decisions is None:
@@ -163,49 +157,31 @@ def about(request):
     return render(request, 'core/about.html')
 
 def combined_search_results(request):
-    """
-    Kelime bazlı arama sistemi - her kelimeyi ayrı ayrı arar
-    """
     query = request.GET.get('q', '')
-    area = request.GET.get('area', 'both')
+    area = request.GET.get('area', 'both')  # varsayılan "both", yani tüm alanlarda arama
 
     judicial_results = JudicialDecision.objects.none()
     legislation_results = Legislation.objects.none()
     article_results = Article.objects.none()
 
     if query:
-        # Sorguyu kelimelere ayır ve boş kelimeleri filtrele
-        words = [word.strip() for word in query.split() if word.strip()]
-        
-        if words and area in ['judicial', 'both']:
-            # Her kelime için Q objesi oluştur
-            q_objects = Q()
-            for word in words:
-                q_objects &= (
-                    Q(karar_ozeti__icontains=word) |
-                    Q(anahtar_kelimeler__icontains=word) |
-                    Q(karar_tam_metni__icontains=word)
-                )
-            judicial_results = JudicialDecision.objects.filter(q_objects)
-            
-        if words and area in ['legislation', 'both']:
-            q_objects = Q()
-            for word in words:
-                q_objects &= (
-                    Q(baslik__icontains=word) |
-                    Q(konu__icontains=word)
-                )
-            legislation_results = Legislation.objects.filter(q_objects)
-            
-        if words and area in ['articles', 'both']:
-            q_objects = Q()
-            for word in words:
-                q_objects &= (
-                    Q(makale_basligi__icontains=word) |
-                    Q(makale_ozeti__icontains=word) |
-                    Q(makale_metni__icontains=word)
-                )
-            article_results = Article.objects.filter(q_objects)
+        if area in ['judicial', 'both']:
+            judicial_results = JudicialDecision.objects.filter(
+                Q(karar_ozeti__icontains=query) |
+                Q(anahtar_kelimeler__icontains=query) |
+                Q(karar_tam_metni__icontains=query)
+            )
+        if area in ['legislation', 'both']:
+            legislation_results = Legislation.objects.filter(
+                Q(baslik__icontains=query) |
+                Q(konu__icontains=query)
+            )
+        if area in ['articles', 'both']:
+            article_results = Article.objects.filter(
+                Q(makale_basligi__icontains=query) |
+                Q(makale_ozeti__icontains=query) |
+                Q(makale_metni__icontains=query)
+            )
 
     context = {
         'query': query,
@@ -220,347 +196,362 @@ def combined_search_results(request):
 from django.db.models import Count, Q
 from core.models import JudicialDecision
 
-logger = logging.getLogger(__name__)
+# Partial views.py with optimized judicial_decisions function
 
 def judicial_decisions(request):
+    """
+    Complete rewrite - Unified search with bulletproof error handling
+    """
     from django.core.cache import cache
-    from django.core.paginator import Paginator
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    from django.db.models import Q, Count
     from django.http import JsonResponse
+    from django.shortcuts import render
     from django.db import connection
     import time
     
-    # AJAX isteği mi kontrol et
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-    
-    query = request.GET.get('q', '').strip()
-    page_number = request.GET.get('page', 1)
-    
-    # Initialize variables to avoid UnboundLocalError
-    newest_decisions = None
-    court_type_counts = {}
-    total_decisions = 0
+    # Initialize all variables to prevent UnboundLocalError
+    query = ''
+    court_type = ''
+    chamber = ''
+    date_range = ''
+    decision_number = ''
+    case_number = ''
+    page = 1
+    decisions = []
+    total_count = 0
     search_time = 0
+    page_range = []
+    court_type_stats = []
+    limited = False
     
-    # Gelişmiş filtreler
-    court_type = request.GET.get('court_type', '').strip()
-    chamber = request.GET.get('chamber', '').strip()
-    date_range = request.GET.get('date_range', '').strip()
-    decision_number = request.GET.get('decision_number', '').strip()
-    case_number = request.GET.get('case_number', '').strip()
-    sort_order = request.GET.get('sort_order', 'relevance')
-    per_page = int(request.GET.get('per_page', '20'))
-    
-    # Cache anahtarları
-    cache_key_counts = 'court_type_counts'
-    cache_key_total = 'total_decisions_count'
-    cache_key_newest = 'newest_decisions_list'
-    
-    # Herhangi bir filtre veya arama varsa
-    if query or court_type or chamber or date_range or decision_number or case_number:
-        # Çok hızlı PostgreSQL search
+    try:
+        # Get search parameters safely
+        query = request.GET.get('q', '').strip()
+        court_type = request.GET.get('court_type', '').strip()
+        chamber = request.GET.get('chamber', '').strip()
+        date_range = request.GET.get('date_range', '').strip()
+        start_date = request.GET.get('start_date', '').strip()
+        end_date = request.GET.get('end_date', '').strip()
+        decision_number = request.GET.get('decision_number', '').strip()
+        case_number = request.GET.get('case_number', '').strip()
+        
+        try:
+            page = int(request.GET.get('page', 1))
+        except (ValueError, TypeError):
+            page = 1
+        
+        # Performance metrics
         start_time = time.time()
         
-        with connection.cursor() as cursor:
-            # Base SQL
-            select_sql = """
-                SELECT id, karar_turu, karar_veren_mahkeme, esas_numarasi, 
-                       karar_numarasi, karar_tarihi, karar_ozeti"""
-            
-            from_sql = " FROM core_judicialdecision"
-            where_clauses = []
-            params = []
-            
-            # Basit arama
-            if query:
-                select_sql += ", 1 as rank"
-                words = query.split()[:3]  # Max 3 kelime
-                for word in words:
-                    where_clauses.append("karar_ozeti ILIKE %s")
-                    params.append(f"%{word.strip()}%")
-            else:
-                select_sql += ", 0 as rank"
-            
-            # Mahkeme türü filtresi
-            if court_type:
-                where_clauses.append("karar_turu = %s")
-                params.append(court_type)
-            
-            # Daire filtresi
-            if chamber:
-                where_clauses.append("karar_veren_mahkeme ILIKE %s")
-                params.append(f'%{chamber}%')
-            
-            # Tarih aralığı filtresi
-            if date_range:
-                from datetime import datetime, timedelta
-                today = datetime.now().date()
-                
-                if date_range == 'today':
-                    where_clauses.append("karar_tarihi = %s")
-                    params.append(today)
-                elif date_range == 'week':
-                    where_clauses.append("karar_tarihi >= %s")
-                    params.append(today - timedelta(days=7))
-                elif date_range == 'month':
-                    where_clauses.append("karar_tarihi >= %s")
-                    params.append(today - timedelta(days=30))
-                elif date_range == '3months':
-                    where_clauses.append("karar_tarihi >= %s")
-                    params.append(today - timedelta(days=90))
-                elif date_range == '6months':
-                    where_clauses.append("karar_tarihi >= %s")
-                    params.append(today - timedelta(days=180))
-                elif date_range == 'year':
-                    where_clauses.append("karar_tarihi >= %s")
-                    params.append(today - timedelta(days=365))
-            
-            # Karar numarası filtresi
-            if decision_number:
-                where_clauses.append("karar_numarasi ILIKE %s")
-                params.append(f'%{decision_number}%')
-            
-            # Esas numarası filtresi
-            if case_number:
-                where_clauses.append("esas_numarasi ILIKE %s")
-                params.append(f'%{case_number}%')
-            
-            # WHERE clause oluştur
-            if where_clauses:
-                where_sql = " WHERE " + " AND ".join(where_clauses)
-            else:
-                where_sql = ""
-            
-            # ORDER BY
-            if sort_order == 'date_desc':
-                order_sql = " ORDER BY karar_tarihi DESC"
-            elif sort_order == 'date_asc':
-                order_sql = " ORDER BY karar_tarihi ASC"
-            elif sort_order == 'court_alpha':
-                order_sql = " ORDER BY karar_veren_mahkeme ASC"
-            elif sort_order == 'decision_number':
-                order_sql = " ORDER BY karar_numarasi DESC"
-            elif query:  # relevance sıralaması sadece arama varsa
-                order_sql = " ORDER BY rank DESC, karar_tarihi DESC"
-            else:
-                order_sql = " ORDER BY karar_tarihi DESC"
-            
-            # Sayfa hesaplama
-            offset = (int(page_number) - 1) * per_page
-            
-            # SQL'i birleştir
-            full_sql = select_sql + from_sql + where_sql + order_sql + " LIMIT %s OFFSET %s"
-            params.extend([per_page, offset])
-            
-            # Query timeout ayarla (30 saniye)
-            
-            # Performance için LIMIT optimize et
-            max_search_limit = 10000  # Çok büyük sonuçları sınırla
+        # Create cache key
+        cache_params = f"{query}_{court_type}_{chamber}_{date_range}_{start_date}_{end_date}_{decision_number}_{case_number}"
+        cache_key = f"judicial_search_{hash(cache_params)}"
+        
+        # Try cache first
+        cached_ids = cache.get(cache_key)
+        
+        if cached_ids is not None:
+            matching_ids = cached_ids
+        else:
+            # Build search with raw SQL for reliability
+            matching_ids = []
             
             try:
-                cursor.execute(full_sql, params)
-                results = cursor.fetchall()
-                
-                # Toplam sonuç sayısı için optimize edilmiş count
-                # Çok büyük sonuçlar için estimate kullan
-                if where_clauses:  # Filtre varsa tam count
-                    count_sql = "SELECT COUNT(*) FROM core_judicialdecision" + where_sql
-                    count_params = params[:-2] if params else []
-                    # Aynı parametreleri stats için de kullan
-                    stats_count_params = count_params
-                    cursor.execute(count_sql, count_params)
-                    total_results = cursor.fetchone()[0]
+                with connection.cursor() as cursor:
+                    # Build dynamic WHERE conditions
+                    where_conditions = []
+                    params = []
                     
-                    # Çok büyük sonuç setlerini sınırla
-                    if total_results > max_search_limit:
-                        total_results = max_search_limit
-                else:  # Filtre yoksa estimate count kullan (çok hızlı)
-                    cursor.execute('SELECT COUNT(*) FROM core_judicialdecision')
-                    total_results = cursor.fetchone()[0] or 0
-                
+                    # Text search with full-text index
+                    if query:
+                        where_conditions.append("""
+                            to_tsvector('turkish', 
+                                COALESCE(karar_ozeti, '') || ' ' || 
+                                COALESCE(anahtar_kelimeler, '') || ' ' || 
+                                COALESCE(karar_tam_metni, '')
+                            ) @@ plainto_tsquery('turkish', %s)
+                        """)
+                        params.append(query)
+                    
+                    # Court type filter
+                    if court_type:
+                        where_conditions.append("karar_turu = %s")
+                        params.append(court_type)
+                    
+                    # Chamber filter
+                    if chamber:
+                        if court_type:
+                            # EXACT MATCH ONLY when court type is selected
+                            if court_type == 'YARGITAY':
+                                # Only match exact Yargıtay chambers, not BAM or others
+                                where_conditions.append("(karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s)")
+                                params.extend([
+                                    f'YARGITAY {chamber}',
+                                    f'Yargıtay {chamber}',
+                                    f'YARGITAY {chamber}'.upper(),
+                                    f'Yargıtay {chamber}'.title()
+                                ])
+                            elif court_type == 'DANIŞTAY':
+                                where_conditions.append("(karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s)")
+                                params.extend([f'DANIŞTAY {chamber}', f'Danıştay {chamber}'])
+                            elif court_type == 'SAYIŞTAY':
+                                where_conditions.append("(karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s)")
+                                params.extend([f'SAYIŞTAY {chamber}', f'Sayıştay {chamber}'])
+                            elif court_type == 'ANAYASA MAHKEMESİ':
+                                where_conditions.append("(karar_veren_mahkeme = %s OR karar_veren_mahkeme = %s)")
+                                params.extend([f'ANAYASA MAHKEMESİ {chamber}', f'Anayasa Mahkemesi {chamber}'])
+                            else:
+                                where_conditions.append("karar_veren_mahkeme = %s")
+                                params.append(f'{court_type} {chamber}')
+                        else:
+                            # Partial match if no court type selected
+                            where_conditions.append("karar_veren_mahkeme ILIKE %s")
+                            params.append(f'%{chamber}%')
+                    
+                    # Decision number filter
+                    if decision_number:
+                        where_conditions.append("karar_numarasi ILIKE %s")
+                        params.append(f'%{decision_number}%')
+                    
+                    # Case number filter
+                    if case_number:
+                        where_conditions.append("esas_numarasi ILIKE %s")
+                        params.append(f'%{case_number}%')
+                    
+                    # Date range filter
+                    if start_date and end_date:
+                        # Custom date range
+                        where_conditions.append("karar_tarihi BETWEEN %s AND %s")
+                        params.extend([start_date, end_date])
+                    elif start_date:
+                        # Only start date
+                        where_conditions.append("karar_tarihi >= %s")
+                        params.append(start_date)
+                    elif end_date:
+                        # Only end date
+                        where_conditions.append("karar_tarihi <= %s")
+                        params.append(end_date)
+                    elif date_range:
+                        # Predefined date ranges
+                        from datetime import datetime, timedelta
+                        today = datetime.now().date()
+                        
+                        date_map = {
+                            'today': today,
+                            'week': today - timedelta(days=7),
+                            'month': today - timedelta(days=30),
+                            '3months': today - timedelta(days=90),
+                            '6months': today - timedelta(days=180),
+                            'year': today - timedelta(days=365)
+                        }
+                        
+                        if date_range in date_map:
+                            if date_range == 'today':
+                                where_conditions.append("karar_tarihi = %s")
+                                params.append(date_map[date_range])
+                            else:
+                                where_conditions.append("karar_tarihi >= %s")
+                                params.append(date_map[date_range])
+                    
+                    # Build final SQL
+                    if where_conditions:
+                        where_clause = " AND ".join(where_conditions)
+                        sql = f"""
+                            SELECT id FROM core_judicialdecision 
+                            WHERE {where_clause}
+                            ORDER BY karar_tarihi DESC 
+                            LIMIT 3000
+                        """
+                    else:
+                        # No filters - get recent decisions
+                        sql = """
+                            SELECT id FROM core_judicialdecision 
+                            ORDER BY karar_tarihi DESC 
+                            LIMIT 3000
+                        """
+                        params = []
+                    
+                    # Execute with timeout protection
+                    cursor.execute("SET statement_timeout = '60s'")
+                    cursor.execute(sql, params)
+                    matching_ids = [row[0] for row in cursor.fetchall()]
+                    cursor.execute("RESET statement_timeout")
+                    
             except Exception as e:
-                # Query timeout veya hata durumunda boş sonuç döndür
-                logger = logging.getLogger(__name__)
-                logger.error(f"Query: {query}, Total Results: {total_results}, SQL: {full_sql[:200]}")
-                logger = logging.getLogger(__name__)
-                logger.error(f"Database query error: {str(e)}")
-                results = []
-                total_results = 0
-                count_params = []
-            finally:
-                # Timeout'u resetle
-                stats_count_params = []
+                # Database error - return empty results
+                import logging
+                logging.getLogger(__name__).error(f"Database error: {e}")
+                matching_ids = []
+            
+            # Cache results for 3 minutes
+            if matching_ids:
+                cache.set(cache_key, matching_ids, 180)
         
-        # Sonuçları Django objelerine çevir
-        decisions = []
-        for row in results:
-            decision = type('Decision', (), {
-                'id': row[0],
-                'karar_turu': row[1],
-                'karar_veren_mahkeme': row[2],
-                'esas_numarasi': row[3],
-                'karar_numarasi': row[4],
-                'karar_tarihi': row[5],
-                'karar_ozeti': row[6],
-                'relevance_score': row[7] if len(row) > 7 else 0
-            })()
-            decisions.append(decision)
-        print(f"Added decision to list. Total: {len(decisions)}")
+        # Calculate totals
+        total_count = len(matching_ids)
+        limited = total_count >= 3000
         
-        # Sayfalama nesnesi oluştur
-        from django.core.paginator import Page
-        paginator = Paginator(range(total_results), per_page)
-        page_obj = paginator.get_page(page_number)
+        # Pagination using list slicing (fast)
+        per_page = 20
+        # Safe page boundary check
+        if total_count > 0:
+            max_page = (total_count + per_page - 1) // per_page
+            if page > max_page:
+                page = max_page
         
-        # Mahkeme türü istatistikleri (cache'li)
-        filter_key = f"{query}_{court_type}_{chamber}_{date_range}_{decision_number}_{case_number}"
-        cache_key_search_stats = f'search_stats_{hash(filter_key)}'
-        court_type_counts = cache.get(cache_key_search_stats)
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        current_page_ids = matching_ids[start_idx:end_idx]
         
-        if court_type_counts is None:
-            with connection.cursor() as cursor:
-                pass  # Placeholder
-                #                 stats_sql = "SELECT karar_turu, COUNT(*) as total FROM core_judicialdecision" + where_sql + " GROUP BY karar_turu"
-                #                 # count_params tanımını güvenli hale getir
-                #                 safe_count_params = count_params if "count_params" in locals() and len(count_params) > 0 else []
-                #                 cursor.execute(stats_sql, safe_count_params)
-                #                 court_type_counts = {row[0]: row[1] for row in cursor.fetchall()}
-                #             cache.set(cache_key_search_stats, court_type_counts, 300)  # 5 dakika
-        
-        search_time = round((time.time() - start_time) * 1000, 2)
-        court_type_counts = {}
-        
-        if is_ajax:
-            return JsonResponse({
-                'results': [{
-                    'id': d.id,
-                    'karar_turu': d.karar_turu,
-                    'karar_veren_mahkeme': d.karar_veren_mahkeme,
-                    'esas_numarasi': d.esas_numarasi,
-                    'karar_numarasi': d.karar_numarasi,
-                    'karar_tarihi': d.karar_tarihi.strftime('%Y-%m-%d') if d.karar_tarihi else '',
-                    'karar_ozeti': d.karar_ozeti[:200] + '...' if d.karar_ozeti and len(d.karar_ozeti) > 200 else d.karar_ozeti,
-                    'relevance_score': round(d.relevance_score, 3)
-                } for d in decisions],
-                'pagination': {
-                    'current_page': page_obj.number,
-                    'total_pages': page_obj.paginator.num_pages,
-                    'has_previous': page_obj.has_previous(),
-                    'has_next': page_obj.has_next(),
-                    'total_results': total_results
-                },
-                'court_type_counts': court_type_counts,
-                'search_time': search_time,
-                'total_decisions': total_results
-            })
-        
-        # Custom page object
-        class PageObj:
-            def __init__(self, decisions, page_obj):
-                self.object_list = decisions
-                self.number = page_obj.number
-                self.paginator = page_obj.paginator
-                self._page_obj = page_obj
+        # Get actual objects for current page only
+        decisions_list = []
+        if current_page_ids:
+            try:
+                decisions_queryset = JudicialDecision.objects.filter(
+                    id__in=current_page_ids
+                ).select_related()
                 
-            def has_other_pages(self):
-                return self._page_obj.has_other_pages()
+                # Preserve order from ID list
+                decisions_dict = {d.id: d for d in decisions_queryset}
+                decisions_list = [
+                    decisions_dict[id] for id in current_page_ids 
+                    if id in decisions_dict
+                ]
+            except Exception as e:
+                # Query failed - empty results
+                decisions_list = []
+        
+        # Create pagination object
+        total_pages = max(1, (total_count + per_page - 1) // per_page)
+        page = min(page, total_pages)  # Ensure page is valid
+        
+        class SimplePaginator:
+            def __init__(self, items, page_num, total_pages, total_count):
+                self.object_list = items
+                self.number = page_num
+                self.num_pages = total_pages
+                self.count = total_count
                 
             def has_previous(self):
-                return self._page_obj.has_previous()
+                return self.number > 1
                 
             def has_next(self):
-                return self._page_obj.has_next()
+                return self.number < self.num_pages
                 
             def previous_page_number(self):
-                return self._page_obj.previous_page_number() if self._page_obj.has_previous() else None
+                return self.number - 1 if self.has_previous() else None
                 
             def next_page_number(self):
-                return self._page_obj.next_page_number() if self._page_obj.has_next() else None
+                return self.number + 1 if self.has_next() else None
+                
+            def has_other_pages(self):
+                return self.num_pages > 1
                 
             def __iter__(self):
                 return iter(self.object_list)
-                
-            def __len__(self):
-                return len(self.object_list)
         
-        try:
-            newest_decisions = PageObj(decisions, page_obj)
-        except Exception as e:
-            # Fallback if PageObj creation fails
-            logger = logging.getLogger(__name__)
-            logger.error(f"PageObj creation error: {str(e)}")
-            newest_decisions = decisions[:15]  # Simple fallback
+        decisions = SimplePaginator(decisions_list, page, total_pages, total_count)
         
-        total_decisions = total_results
+        # Get court type stats (simple, cached)
+        court_type_stats = cache.get('court_types_simple')
+        if not court_type_stats:
+            try:
+                court_type_stats = list(
+                    JudicialDecision.objects.values('karar_turu')
+                    .exclude(karar_turu='Y')
+                    .exclude(karar_turu='')
+                    .exclude(karar_turu__isnull=True)
+                    .distinct().order_by('karar_turu')
+                )
+                cache.set('court_types_simple', court_type_stats, 1800)
+            except:
+                court_type_stats = []
         
-    else:
-        # Arama yoksa cache kullan
-        court_type_counts = cache.get(cache_key_counts)
-        total_decisions = cache.get(cache_key_total)
-        newest_decisions_list = cache.get(cache_key_newest)
+        # Calculate search time
+        search_time = round((time.time() - start_time) * 1000, 2)
         
-        if court_type_counts is None or total_decisions is None or newest_decisions_list is None:
-            all_queryset = JudicialDecision.objects.all()
-            
-            court_type_counts_qs = all_queryset.values('karar_turu').annotate(total=Count('id'))
-            court_type_counts = {item['karar_turu']: item['total'] for item in court_type_counts_qs}
-            
-            total_decisions = all_queryset.count()
-            
-            newest_decisions_list = list(
-                all_queryset.select_related().only(
-                    'id', 'karar_turu', 'karar_veren_mahkeme', 'esas_numarasi', 
-                    'karar_numarasi', 'karar_tarihi', 'karar_ozeti'
-                ).order_by('-karar_tarihi')[:100]
-            )
-            
-            cache.set(cache_key_counts, court_type_counts, 1800)
-            cache.set(cache_key_total, total_decisions, 1800)
-            cache.set(cache_key_newest, newest_decisions_list, 1800)
+        # Generate page range
+        if total_pages <= 7:
+            page_range = list(range(1, total_pages + 1))
+        elif page <= 4:
+            page_range = [1, 2, 3, 4, 5, '...', total_pages]
+        elif page >= total_pages - 3:
+            page_range = [1, '...'] + list(range(total_pages - 4, total_pages + 1))
+        else:
+            page_range = [1, '...', page - 1, page, page + 1, '...', total_pages]
         
-        paginator = Paginator(newest_decisions_list, 20)
-        newest_decisions = paginator.get_page(page_number)
+    except Exception as e:
+        # Top-level error handling
+        import logging
+        logging.getLogger(__name__).error(f"View error: {e}")
+        
+        # Safe fallback values
+        decisions = SimplePaginator([], 1, 1, 0)
+        court_type_stats = []
+        page_range = []
         search_time = 0
-
-    # Herhangi bir filtre var mı kontrol et
-    has_any_filter = bool(query or court_type or chamber or date_range or decision_number or case_number)
     
-    # Final safety check for newest_decisions
-    if newest_decisions is None:
-        newest_decisions = []
-    
+    # Prepare context (always safe)
     context = {
+        'decisions': decisions,
         'query': query,
-        'newest_decisions': newest_decisions,
-        'page_obj': newest_decisions,
-        'decisions': results,
-        'court_type_counts': court_type_counts,
-        'total_decisions': total_decisions,
-        'is_paginated': getattr(newest_decisions, 'has_other_pages', lambda: False)(),
-        'search_time': locals().get('search_time', 0),
-        'has_filters': has_any_filter,
         'court_type': court_type,
         'chamber': chamber,
         'date_range': date_range,
+        'start_date': start_date,
+        'end_date': end_date,
         'decision_number': decision_number,
         'case_number': case_number,
-        'sort_order': sort_order,
-        'per_page': per_page,
+        'court_type_stats': court_type_stats,
+        'total_count': total_count,
+        'limited': limited,
+        'search_time': search_time,
+        'page_range': page_range
     }
+    
+    # Handle AJAX requests
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            results = []
+            for decision in decisions.object_list:
+                results.append({
+                    'id': getattr(decision, 'id', 0),
+                    'karar_turu': getattr(decision, 'karar_turu', ''),
+                    'karar_veren_mahkeme': getattr(decision, 'karar_veren_mahkeme', ''),
+                    'esas_numarasi': getattr(decision, 'esas_numarasi', ''),
+                    'karar_numarasi': getattr(decision, 'karar_numarasi', ''),
+                    'karar_tarihi': decision.karar_tarihi.strftime('%d.%m.%Y') if getattr(decision, 'karar_tarihi', None) else '',
+                    'karar_ozeti': (decision.karar_ozeti[:200] + '...') if getattr(decision, 'karar_ozeti', None) and len(decision.karar_ozeti) > 200 else (getattr(decision, 'karar_ozeti', '') or '')
+                })
+            
+            return JsonResponse({
+                'results': results,
+                'pagination': {
+                    'current_page': page,
+                    'total_pages': total_pages,
+                    'has_previous': decisions.has_previous(),
+                    'has_next': decisions.has_next(),
+                    'total_results': total_count
+                },
+                'limited': limited,
+                'search_time': search_time
+            })
+        except:
+            return JsonResponse({
+                'results': [],
+                'pagination': {'current_page': 1, 'total_pages': 1, 'has_previous': False, 'has_next': False, 'total_results': 0},
+                'limited': False,
+                'search_time': 0
+            })
+    
     return render(request, 'core/judicial_decisions.html', context)
-
-
 def articles(request):
     """Harici kaynaklardan makale arama ana sayfası"""
     # Veritabanı kullanmıyoruz, sadece arama formu gösteriyoruz
     context = {}
     return render(request, 'core/articles.html', context)
 
-
-def article_detail(request, pk):
-    """Makale detay sayfası"""
-    article = get_object_or_404(Article, pk=pk)
-    context = {'article': article}
-    return render(request, 'core/article_detail.html', context)
 
 def article_search_results(request):
     """
@@ -571,6 +562,8 @@ def article_search_results(request):
     
     query = request.GET.get('q', '').strip()
     page = int(request.GET.get('page', 1))
+    decision_number = request.GET.get("decision_number", "").strip()
+    case_number = request.GET.get("case_number", "").strip()
     articles = []
     search_time = 0
     error_message = ""
@@ -936,12 +929,7 @@ def nlp_search(request):
             return JsonResponse({"error": "Metin girilmedi"}, status=400)
 
         # Türkçe metni Stanza ile analiz ediyoruz.
-        # entities = analyze_text(text)  # Commented out due to dependency issues
-        
-        # Simple keyword extraction as fallback
-        import re
-        words = re.findall(r'\b\w+\b', text.lower())
-        entities = [word for word in words if len(word) > 3]
+        entities = analyze_text(text)
 
         # Örneğin, tespit edilen ilk varlığı kullanarak arama yapıyoruz.
         if entities:
@@ -999,28 +987,13 @@ def profile(request):
     return render(request, 'core/profile.html')
 
 
-def api_search(request):
-    """API arama endpoint"""
-    query = request.GET.get('q', '')
-    if not query:
-        return JsonResponse({'results': []})
-    
-    decisions = JudicialDecision.objects.filter(
-        Q(karar_ozeti__icontains=query) |
-        Q(anahtar_kelimeler__icontains=query)
-    )[:10]
-    
-    results = []
-    for decision in decisions:
-        results.append({
-            'id': decision.id,
-            'title': decision.karar_turu,
-            'summary': decision.karar_ozeti if decision.karar_ozeti else '',
-            'court': decision.karar_veren_mahkeme,
-            'date': str(decision.karar_tarihi) if decision.karar_tarihi else ''
-        })
-    
-    return JsonResponse({'results': results})
+    # Guest user limit kontrolü
+    is_limit_reached, current_count, remaining_searches = check_guest_search_limit(request)
+    if is_limit_reached:
+        return render(request, 'core/guest_limit_reached.html')
+
+    # Misafir kullanıcı arama sayısını artır
+    increment_guest_search(request)
 
 def search_results(request):
     queryset = JudicialDecision.objects.all()
@@ -1041,8 +1014,6 @@ def search_results(request):
         'filter': decision_filter,
         'results': results,
         'newest_decisions': newest_decisions,
-        'page_obj': newest_decisions,
-        'decisions': results,
         'random_decisions': random_decisions,
         'total_decisions': total_decisions,
         'court_counts': court_counts_json,
@@ -1078,25 +1049,19 @@ def subscription_payment(request, package):
             error = "Lütfen tüm alanları doldurun."
             return render(request, 'core/subscription_payment.html', {'error': error, 'package': package})
 
-        # Form verilerinden kart bilgilerini al
-        card_owner = request.POST.get("card_owner")
-        card_number = request.POST.get("card_number").replace(" ", "")  # Boşlukları temizle
-        expire_month = request.POST.get("expire_month")
-        expire_year = request.POST.get("expire_year")
-        cvc = request.POST.get("cvc")
-
-        # Kullanıcı bilgilerini hazırla
+        # Kullanıcı bilgilerini hazırla (kart bilgileri test için)
         user_data = {
-            "name": customer_name,
-            "phone": customer_phone,
-            "address": address,
-            "tc_or_vergi_no": tc_or_vergi_no,
-            "card_owner": card_owner,
-            "card_number": card_number,
-            "expire_month": expire_month,
-            "expire_year": expire_year,
-            "cvc": cvc,
-            "gsm": customer_phone if customer_phone.startswith("5") else f"5{customer_phone[-9:]}"
+            'name': customer_name,
+            'phone': customer_phone,
+            'address': address,
+            'tc_or_vergi_no': tc_or_vergi_no,
+            # Test kart bilgileri (production'da form'dan alınacak)
+            'card_owner': customer_name,
+            'card_number': '4022774022774026',
+            'expire_month': '12',
+            'expire_year': '2026',
+            'cvc': '000',
+            'gsm': customer_phone if customer_phone.startswith('5') else f'5{customer_phone[-9:]}'
         }
 
         # Ödeme kaydı oluştur
@@ -1128,14 +1093,8 @@ def subscription_payment(request, package):
         }
 
         # Ödeme URL'i başarılı mı kontrol et
-        logger.info(f"Payment result: {payment_result}")
         if payment_result['success']:
-            if payment_result.get("is_html_form"):
-                # UCD_HTML formu göster
-                return render(request, "core/payment_3d_form.html", {
-                    "html_content": payment_result.get("html_content", "")
-                })
-            elif payment_result.get("requires_redirect"):
+            if payment_result.get('requires_redirect'):
                 # 3D Secure veya demo sayfasına redirect et
                 return redirect(payment_result['payment_url'])
             else:
@@ -1161,93 +1120,15 @@ def subscription_payment(request, package):
     return render(request, 'core/subscription_payment.html', context)
 
 @csrf_exempt
+@require_POST
 def payment_success(request):
-    logger.info(f"=== PAYMENT SUCCESS CALLBACK ===")
-    logger.info(f"Method: {request.method}")
-    logger.info(f"GET params: {request.GET.dict()}")
-    logger.info(f"POST params: {request.POST.dict()}")
-    logger.info(f"Headers: {dict(request.headers)}")
-    logger.info(f"Session payment_data: {request.session.get("payment_data", {})}")
-    logger.info(f"=== END CALLBACK DATA ===")
-
-    # Test mode bypass
-    if False:  # Temporarily disabled - settings.PARAM_TEST_MODE and request.method == "GET":
-        # Session'dan payment bilgilerini al
-        payment_data = request.session.get("payment_data", {})
-        if payment_data:
-            order_id = payment_data.get("order_id")
-            try:
-                payment = Payment.objects.get(order_id=order_id)
-                payment.status = "success"
-                payment.transaction_id = "TEST_" + str(payment.id)
-                payment.save()
-                
-                # Abonelik oluştur
-                subscription, created = Subscription.objects.get_or_create(user=payment.user)
-                subscription.plan = payment.package
-                subscription.accepted_terms = payment_data.get("accepted_terms", False)
-                subscription.accepted_sale = payment_data.get("accepted_sale", False)
-                subscription.accepted_delivery = payment_data.get("accepted_delivery", False)
-                subscription.start_date = timezone.now()
-                subscription.tc_or_vergi_no = payment_data.get("tc_or_vergi_no", "")
-                subscription.address = payment_data.get("address", "")
-                subscription.end_date = None
-                subscription.save()
-                
-                if "payment_data" in request.session:
-                    del request.session["payment_data"]
-                
-                return redirect("subscription_success")
-            except Payment.DoesNotExist:
-                pass
-
     """
     Param Pos'dan gelen başarılı ödeme callback'i
     """
-    # 3D Secure callback için ParamSimpleService kullan
-    if request.method == "POST" and request.POST.get("md"):
-        param_service = ParamSimpleService()
-        callback_data = request.POST.dict()
-        logger.info(f"Using ParamSimpleService for 3D callback")
-        
-        # 3D ödemeyi tamamla
-        payment_result = param_service.complete_3d_payment(request, callback_data)
-        
-        if payment_result["success"]:
-            try:
-                # orderId ile Payment kaydını bul
-                order_id = callback_data.get("orderId")
-                payment = Payment.objects.get(order_id=order_id)
-                payment.status = "success"
-                payment.transaction_id = payment_result.get("transaction_id", payment_result.get("dekont_id"))
-                payment.param_response = callback_data
-                payment.save()
-                
-                # Kullanıcıyı ve abonelik bilgilerini Payment kaydından al
-                subscription, created = Subscription.objects.get_or_create(user=payment.user)
-                subscription.plan = payment.package
-                subscription.start_date = timezone.now()
-                subscription.end_date = None
-                subscription.save()
-                
-                # Kullanıcıyı login yap (session kaybolduğu için)
-                from django.contrib.auth import login
-                login(request, payment.user, backend="django.contrib.auth.backends.ModelBackend")
-                
-                return redirect("subscription_success")
-                
-            except Payment.DoesNotExist:
-                return render(request, "core/payment_error.html", {"error": "Ödeme kaydı bulunamadı."})
-        else:
-            return render(request, "core/payment_error.html", {"error": payment_result.get("error", "3D doğrulama başarısız.")})
-    else:
-        # Eski kod (ParamPaymentService) için
-        param_service = ParamPaymentService()
+    param_service = ParamPaymentService()
     
     try:
         # POST verilerini al
-        logger.info(f"3D Callback POST data: {response_data}")
-        logger.info(f"3D Callback method: {request.method}")
         response_data = request.POST.dict()
         
         # Ödeme sonucunu doğrula
@@ -1322,45 +1203,7 @@ def demo_payment(request):
     amount = request.GET.get('amount', '0')
     package = request.GET.get('package', 'monthly')
     
-    # 3D Secure callback için ParamSimpleService kullan
-    if request.method == "POST" and request.POST.get("md"):
-        param_service = ParamSimpleService()
-        callback_data = request.POST.dict()
-        logger.info(f"Using ParamSimpleService for 3D callback")
-        
-        # 3D ödemeyi tamamla
-        payment_result = param_service.complete_3d_payment(request, callback_data)
-        
-        if payment_result["success"]:
-            try:
-                # orderId ile Payment kaydını bul
-                order_id = callback_data.get("orderId")
-                payment = Payment.objects.get(order_id=order_id)
-                payment.status = "success"
-                payment.transaction_id = payment_result.get("transaction_id", payment_result.get("dekont_id"))
-                payment.param_response = callback_data
-                payment.save()
-                
-                # Kullanıcıyı ve abonelik bilgilerini Payment kaydından al
-                subscription, created = Subscription.objects.get_or_create(user=payment.user)
-                subscription.plan = payment.package
-                subscription.start_date = timezone.now()
-                subscription.end_date = None
-                subscription.save()
-                
-                # Kullanıcıyı login yap (session kaybolduğu için)
-                from django.contrib.auth import login
-                login(request, payment.user, backend="django.contrib.auth.backends.ModelBackend")
-                
-                return redirect("subscription_success")
-                
-            except Payment.DoesNotExist:
-                return render(request, "core/payment_error.html", {"error": "Ödeme kaydı bulunamadı."})
-        else:
-            return render(request, "core/payment_error.html", {"error": payment_result.get("error", "3D doğrulama başarısız.")})
-    else:
-        # Eski kod (ParamPaymentService) için
-        param_service = ParamPaymentService()
+    param_service = ParamPaymentService()
     package_name = param_service.get_package_description(package)
     
     if request.method == 'POST':
@@ -1400,8 +1243,6 @@ def payment_3d_callback(request):
     
     try:
         # POST verilerini al
-        logger.info(f"3D Callback POST data: {response_data}")
-        logger.info(f"3D Callback method: {request.method}")
         callback_data = request.POST.dict()
         
         # 3D ödemeyi tamamla
@@ -1517,6 +1358,11 @@ def ai_features_home(request):
     """
     return render(request, 'core/ai_features.html')
 
+def legislation_home(request):
+    """
+    Mevzuat ana sayfası
+    """
+    return render(request, 'core/legislation_home.html')
 
 # Footer'da yer alan yasal ve iletişim sayfaları için statik view'lar:
 
@@ -1588,482 +1434,372 @@ import json
 from django.db.models import Q, Count
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
-from .models import MevzuatGelismis, MevzuatMadde, MevzuatTuru, MevzuatKategori
+from .models import Legislation
 
 
 def legislation_home(request):
     """
-    Mevzuat ana sayfası - Tüm mevzuat türlerini gösterir
+    Canlı mevzuat arama ana sayfası - Doğrudan mevzuat.gov.tr'den arama
     """
-    from django.db.models import Count, Q
-    
-    # İstatistikler
-    active_filter = Q(durum='yurutulme')
-    
-    # Mevzuat türlerine göre sayılar
-    total_laws = MevzuatGelismis.objects.filter(
-        active_filter,
-        mevzuat_turu__kategori='kanun'
-    ).count()
-    
-    total_regulations = MevzuatGelismis.objects.filter(
-        active_filter,
-        mevzuat_turu__kategori='yonetmelik'
-    ).count()
-    
-    total_decrees = MevzuatGelismis.objects.filter(
-        active_filter,
-        mevzuat_turu__kategori__in=['cumhurbaskanligi_kararnamesi', 'bakanlar_kurulu_karari', 'cumhurbaskani_karari']
-    ).count()
-    
-    total_others = MevzuatGelismis.objects.filter(
-        active_filter
-    ).exclude(
-        mevzuat_turu__kategori__in=['kanun', 'yonetmelik', 'cumhurbaskanligi_kararnamesi', 'bakanlar_kurulu_karari', 'cumhurbaskani_karari']
-    ).count()
-    
-    total_articles = MevzuatMadde.objects.count()
-    
-    # Mevzuat türleri ve sayıları
-    mevzuat_types = []
-    for mtype in MevzuatTuru.objects.filter(aktif=True).order_by('sira'):
-        count = MevzuatGelismis.objects.filter(
-            active_filter,
-            mevzuat_turu=mtype
-        ).count()
-        if count > 0:
-            mevzuat_types.append({
-                'id': mtype.id,
-                'kod': mtype.kod,
-                'ad': mtype.ad,
-                'kategori': mtype.kategori,
-                'count': count
-            })
-    
-    # Son eklenen mevzuat (tüm türler)
-    recent_mevzuat = MevzuatGelismis.objects.filter(
-        active_filter
-    ).select_related(
-        'mevzuat_turu', 'kategori'
-    ).prefetch_related(
-        'maddeler'
-    ).order_by('-kayit_tarihi')[:10]
-    
-    # Popüler kategoriler
-    popular_categories = MevzuatKategori.objects.filter(
-        aktif=True
-    ).annotate(
-        mevzuat_count=Count('mevzuatgelismis', filter=Q(mevzuatgelismis__durum='yurutulme'))
-    ).filter(
-        mevzuat_count__gt=0
-    ).order_by('-mevzuat_count')[:6]
-    
+    # Sadece basit ana sayfa, tüm arama canlı olacak
     context = {
-        'total_laws': total_laws,
-        'total_regulations': total_regulations,
-        'total_decrees': total_decrees,
-        'total_others': total_others,
-        'total_articles': total_articles,
-        'mevzuat_types': mevzuat_types,
-        'recent_mevzuat': recent_mevzuat,
-        'popular_categories': popular_categories,
+        'live_search_system': True,
+        'system_info': {
+            'name': 'Canlı Mevzuat Arama Sistemi',
+            'description': 'Doğrudan mevzuat.gov.tr\'den en güncel mevzuat bilgileri',
+            'features': [
+                'Gerçek zamanlı arama',
+                'En güncel mevzuat',
+                'Resmi kaynak',
+                'Hızlı sonuçlar'
+            ]
+        }
     }
-    
     return render(request, 'core/legislation_home.html', context)
-
-def mevzuat_pdf_view(request):
-    """Mevzuat PDF görüntüleyici"""
-    url = request.GET.get('url', '')
-    if not url:
-        return JsonResponse({'error': 'URL parametresi eksik'}, status=400)
-    
-    context = {'pdf_url': url}
-    return render(request, 'core/pdf_viewer.html', context)
-
-def legislation_detail(request, mevzuat_id):
-    """
-    Mevzuat detay sayfası
-    """
-    from django.shortcuts import get_object_or_404
-    from django.db.models import Count
-    
-    mevzuat = get_object_or_404(
-        MevzuatGelismis.objects.select_related('mevzuat_turu', 'kategori'),
-        id=mevzuat_id
-    )
-    
-    # Maddeleri al (hiyerarşik yapı varsa üst maddeleri, yoksa tümünü)
-    maddeler = mevzuat.maddeler.order_by('sira', 'madde_no')
-    
-    # Eğer hiç üst madde yoksa (düz liste), tümünü al
-    if not mevzuat.maddeler.filter(ust_madde__isnull=False).exists():
-        maddeler = mevzuat.maddeler.order_by('sira', 'madde_no')
-    else:
-        # Hiyerarşik yapı varsa sadece üst maddeleri al
-        maddeler = mevzuat.maddeler.filter(ust_madde__isnull=True).order_by('sira', 'madde_no')
-    
-    # İlgili mevzuat
-    ilgili_mevzuat = mevzuat.ilgili_mevzuatlar.filter(durum='yurutulme')[:5]
-    
-    # Aynı kategorideki diğer mevzuat
-    ayni_kategori = []
-    if mevzuat.kategori:
-        ayni_kategori = MevzuatGelismis.objects.filter(
-            kategori=mevzuat.kategori,
-            durum='yurutulme'
-        ).exclude(id=mevzuat.id)[:5]
-    
-    # Görüntülenme sayısını artır (eğer alan varsa)
-    if hasattr(mevzuat, 'goruntulenme'):
-        mevzuat.goruntulenme += 1
-        mevzuat.save(update_fields=['goruntulenme'])
-    
-    context = {
-        'mevzuat': mevzuat,
-        'maddeler': maddeler,
-        'ilgili_mevzuat': ilgili_mevzuat,
-        'ayni_kategori': ayni_kategori,
-    }
-    
-    return render(request, 'core/legislation_detail.html', context)
 
 def legislation_results(request):
     """
-    Scrape edilmiş kanunlarda arama sonuçları
+    Doğrudan mevzuat.gov.tr'den canlı mevzuat arama sonuçları
     """
-    from django.db.models import Q
-    from django.core.paginator import Paginator
-    
-    query = request.GET.get('q', '').strip()
-    mevzuat_type = request.GET.get('type', '').strip()
-    category_code = request.GET.get('category', '').strip()
-    
-    # Ana filtre
-    filters = Q(durum='yurutulme')
-    
-    # Arama sorgusu
-    if query:
-        filters &= (
-            Q(baslik__icontains=query) |
-            Q(mevzuat_numarasi__icontains=query) |
-            Q(konu__icontains=query) |
-            Q(anahtar_kelimeler__icontains=query) |
-            Q(tam_metin__icontains=query) |
-            Q(maddeler__metin__icontains=query)
-        )
-    
-    # Mevzuat türü filtresi
-    if mevzuat_type:
-        filters &= Q(mevzuat_turu__kategori=mevzuat_type)
-    
-    # Kategori filtresi
-    if category_code:
-        filters &= Q(kategori__kod=category_code)
-    
-    # Veritabanında arama yap
-    search_results = MevzuatGelismis.objects.filter(
-        filters
-    ).select_related(
-        'mevzuat_turu', 'kategori'
-    ).prefetch_related(
-        'maddeler'
-    ).distinct().order_by('-resmi_gazete_tarihi', '-kayit_tarihi')
-    
-    # Sayfalama
-    paginator = Paginator(search_results, 20)
-    page = request.GET.get('page')
-    
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        results = paginator.page(1)
-    except EmptyPage:
-        results = paginator.page(paginator.num_pages)
-    
-    # Filtreler için veriler
-    available_types = MevzuatTuru.objects.filter(
-        aktif=True,
-        mevzuatgelismis__durum='yurutulme'
-    ).distinct().order_by('sira')
-    
-    available_categories = MevzuatKategori.objects.filter(
-        aktif=True,
-        mevzuatgelismis__durum='yurutulme'
-    ).distinct().order_by('ad')
-    
-    context = {
-        'query': query,
-        'mevzuat_type': mevzuat_type,
-        'category_code': category_code,
-        'results': results,
-        'total_count': paginator.count,
-        'available_types': available_types,
-        'available_categories': available_categories,
-        'page_range': paginator.get_elided_page_range(results.number, on_each_side=2, on_ends=1),
-    }
-    
-    return render(request, 'core/legislation_results.html', context)
-
-
-# ========================
-# YENİ MEVZUAT ARAMA SİSTEMİ (MEVZUAT.GOV.TR ENTEGRASYONİ)
-# ========================
-
-def legislation_home_new(request):
-    """
-    Yeni mevzuat ana sayfası - mevzuat.gov.tr entegrasyonu ile
-    """
-    context = {
-        'page_title': 'Türk Hukuk Mevzuatı - Lexatech',
-        'search_placeholder': 'Örn: Türk Medeni Kanunu, 4721 sayılı kanun, miras hukuku...'
-    }
-    return render(request, 'core/legislation_home.html', context)
-
-def legislation_search_new(request):
-    """
-    Mevzuat.gov.tr'de arama - Direkt yönlendirme çözümü
-    """
-    from urllib.parse import quote_plus
-    
-    query = request.GET.get('q', '').strip()
-    
-    if not query:
-        return redirect('legislation_home')
-    
-    # URL-safe query oluştur
-    encoded_query = quote_plus(query)
-    
-    # Mevzuat.gov.tr'ye POST ile arama yapmak için form oluştur
-    mevzuat_search_url = f"https://www.mevzuat.gov.tr/aramasonuc"
-    
-    # Kullanıcıya seçenek sun: iframe veya direkt redirect
-    redirect_mode = request.GET.get('redirect', 'false') == 'true'
-    
-    if redirect_mode:
-        # Direkt yönlendirme - GET parametresi ile
-        redirect_url = f"https://www.mevzuat.gov.tr/aramasonuc?AranacakMetin={encoded_query}"
-        return redirect(redirect_url)
-    
-    # Alternatif: POST formu ile yönlendirme sayfası göster
-    context = {
-        'query': query,
-        'encoded_query': encoded_query,
-        'mevzuat_search_url': mevzuat_search_url,
-        'post_mode': True,
-        'results': [],
-        'total_count': 0,
-        'error': None
-    }
-    
-    return render(request, 'core/legislation_search_results.html', context)
-
-def mevzuat_pdf_viewer(request):
-    """
-    Mevzuat PDF görüntüleyici
-    """
-    from .mevzuat_service import mevzuat_service
-    
-    # URL parametrelerini al
-    mevzuat_no = request.GET.get('no')
-    mevzuat_tur = request.GET.get('tur')
-    mevzuat_tertip = request.GET.get('tertip')
-    title = request.GET.get('title', 'Mevzuat')
-    
-    if not all([mevzuat_no, mevzuat_tur, mevzuat_tertip]):
-        return render(request, 'core/error.html', {
-            'error': 'Geçersiz mevzuat parametreleri'
-        })
-    
-    try:
-        # Mevzuat detaylarını al
-        detail_info = mevzuat_service.get_mevzuat_detail(
-            mevzuat_no, mevzuat_tur, mevzuat_tertip
-        )
-        
-        if not detail_info or not detail_info.get('pdf_url'):
-            # PDF URL'sini manuel oluştur
-            pdf_url = f"https://www.mevzuat.gov.tr/MevzuatMetin/{mevzuat_tur}.{mevzuat_tertip}.{mevzuat_no}.pdf"
-        else:
-            pdf_url = detail_info['pdf_url']
-        
-        context = {
-            'pdf_url': pdf_url,
-            'title': title,
-            'mevzuat_no': mevzuat_no,
-            'word_url': detail_info.get('word_url') if detail_info else None,
-            'resmi_gazete_info': detail_info.get('resmi_gazete_info') if detail_info else None,
-            'back_url': request.META.get('HTTP_REFERER', reverse('legislation_home'))
-        }
-        
-        return render(request, 'core/mevzuat_pdf_viewer.html', context)
-        
-    except Exception as e:
-        logger.error(f"PDF görüntüleme hatası: {e}")
-        return render(request, 'core/error.html', {
-            'error': 'PDF görüntülenirken bir hata oluştu'
-        })
-
-def mevzuat_search_page(request):
-    """Public Mevzuat Search Page with Beautiful UI"""
-    return render(request, 'core/mevzuat_search.html', {
-        'page_title': 'Mevzuat Arama'
-    })
-
-
-from .callback_view import payment_callback
-
-
-def judicial_decisions_home(request):
-    """Ana yargı kararları sayfası - sadece arama formu"""
-    context = {
-        'query': '',
-        'decisions': [],
-        'newest_decisions': [],
-        'total_decisions': 0
-    }
-    return render(request, 'core/judicial_decisions.html', context)
-def search_results_view(request):
-    """Local cache ile optimize edilmiş arama sonuçları"""
-    from django.core.paginator import Paginator
-    from django.db.models import Q
-    from django.core.cache import cache
-    from core.models import JudicialDecision
-    import hashlib
-    import time
+    # Import direct live searcher
+    from .live_direct_search import DirectLiveMevzuatSearcher
     
     # Arama parametreleri
     query = request.GET.get('q', '').strip()
-    page_number = request.GET.get('page', 1)
-    sort_order = request.GET.get('sort', 'relevance')
+    mevzuat_turu_id = request.GET.get('mevzuat_turu', '')
+    page_num = request.GET.get('page', 1)
     
-    # Boş liste ile başla
-    decisions = []
-    total_count = 0
-    page_obj = None
+    # Eğer arama terimi yoksa ana sayfaya yönlendir
+    if not query:
+        return render(request, 'core/legislation_results.html', {
+            'query': '',
+            'no_search_term': True,
+            'message': 'Arama yapmak için bir kelime veya ifade girin.'
+        })
     
-    if query:
-        # Cache key oluştur (query + sort için unique)
-        cache_key_base = hashlib.md5(f"search_{query}_{sort_order}".encode()).hexdigest()[:16]
+    try:
+        # Simple live search kullan (daha basit ve etkili)
+        from .simple_mevzuat_search import SimpleMevzuatSearcher
+        searcher = SimpleMevzuatSearcher()
+        search_results = searcher.search_legislation(
+            query=query,
+            mevzuat_type=mevzuat_turu_id,
+            page=int(page_num),
+            per_page=10
+        )
         
-        # Ana sonuçlar için cache key
-        results_cache_key = f"results_{cache_key_base}"
-        count_cache_key = f"count_{cache_key_base}"
+        # Sayfalama objesi oluştur
+        class LivePaginator:
+            def __init__(self, results):
+                self.results = results
+                self.count = results['total_count']
+                self.num_pages = max(1, (self.count + 9) // 10)  # 10'ar sayfa
+                
+            def page_range(self):
+                current_page = self.results['page']
+                total_pages = self.num_pages
+                
+                # Sayfa aralığını hesapla (gösterilecek sayfa numaraları)
+                start = max(1, current_page - 5)
+                end = min(total_pages + 1, current_page + 6)
+                
+                # Eğer başlangıç çok küçükse, sonunu artır
+                if end - start < 10 and total_pages > 10:
+                    if start == 1:
+                        end = min(total_pages + 1, 11)
+                    else:
+                        start = max(1, end - 10)
+                
+                return range(start, end)
         
-        # Cache'den kontrol et
-        cached_results = cache.get(results_cache_key)
-        cached_count = cache.get(count_cache_key)
-        
-        if cached_results is not None and cached_count is not None:
-            # Cache'den al
-            print(f"Cache HIT: {query[:20]}")
-            all_results = cached_results
-            total_count = cached_count
-        else:
-            # Cache MISS - veritabanından al
-            print(f"Cache MISS: {query[:20]} - DB Query")
-            start_time = time.time()
+        class LivePage:
+            def __init__(self, results):
+                self.object_list = results['results']
+                self.number = results['page']
+                self.paginator = LivePaginator(results)
+                self._has_next = results['has_next']
+                self._has_previous = results['has_previous']
             
-            # Kelime bazlı arama (3 kelimeye kadar)
-            words = query.split()[:3]
+            def __iter__(self):
+                return iter(self.object_list)
             
-            # Q objects oluştur
-            q_objects = Q()
-            for word in words:
-                if word:
-                    q_objects &= Q(karar_ozeti__icontains=word)
+            def has_next(self):
+                return self._has_next
             
-            # Veritabanı sorgusu
-            if q_objects:
-                results_query = JudicialDecision.objects.filter(q_objects).select_related()
-                
-                # Sıralama
-                if sort_order == 'date':
-                    results_query = results_query.order_by('-karar_tarihi')
-                elif sort_order == "length_desc":
-                    results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("-text_length")
-                elif sort_order == "length_asc":
-                    results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("text_length")
-                else:
-                    results_query = results_query.order_by('-id')
-                
-                # Toplam sayı
-                total_count = results_query.count()
-                
-                # İlk 100 sonucu cache'le (5 sayfa)
-                all_results = list(results_query[:500])
-                
-                # Cache'e kaydet (15 dakika) - memory tasarrufu için kısa süre
-                cache.set(results_cache_key, all_results, 900)  # 15 dakika
-                cache.set(count_cache_key, total_count, 900)
-                
-                db_time = time.time() - start_time
-                print(f"DB Query: {db_time:.2f}s, {total_count} total, cached {len(all_results)}")
-            else:
-                all_results = []
-                total_count = 0
+            def has_previous(self):
+                return self._has_previous
+            
+            def next_page_number(self):
+                return self.number + 1 if self.has_next() else None
+            
+            def previous_page_number(self):
+                return self.number - 1 if self.has_previous() else None
+            
+            def has_other_pages(self):
+                return self.paginator.num_pages > 1
         
-        # Sayfalama
-        if all_results:
-            paginator = Paginator(all_results, 20)
-            try:
-                page_obj = paginator.get_page(page_number)
-                decisions = list(page_obj)
-                
-                # Cache dışı sayfa istendiyse (5+ sayfa)
-                if int(page_number) > 225:
-                    print(f"Page {page_number} beyond cache - DB query")
-                    # DB'den direkt al
-                    words = query.split()[:3]
-                    q_objects = Q()
-                    for word in words:
-                        if word:
-                            q_objects &= Q(karar_ozeti__icontains=word)
-                    
-                    if q_objects:
-                        results_query = JudicialDecision.objects.filter(q_objects).select_related()
-                        if sort_order == 'date':
-                            results_query = results_query.order_by('-karar_tarihi')
-                        elif sort_order == "length_desc":
-                            results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("-text_length")
-                        elif sort_order == "length_asc":
-                            results_query = results_query.extra(select={"text_length": "LENGTH(karar_tam_metni)"}).order_by("text_length")
-                        else:
-                            results_query = results_query.order_by('-id')
-                        
-                        paginator = Paginator(results_query, 20)
-                        page_obj = paginator.get_page(page_number)
-                        decisions = list(page_obj)
-                    
-            except Exception as e:
-                print(f"Pagination error: {e}")
-                paginator = Paginator([], 20)
-                page_obj = paginator.get_page(1)
-                decisions = []
-        else:
-            paginator = Paginator([], 20)
-            page_obj = paginator.get_page(1)
-    else:
-        # Sorgu yok
-        paginator = Paginator([], 20)
-        page_obj = paginator.get_page(1)
+        legislations_page = LivePage(search_results)
+        
+        # İstatistikler
+        search_stats = {
+            'total_results': search_results['total_count'],
+            'live_results': search_results['total_count'],
+            'db_results': 0,
+            'is_live': True,
+            'search_time': time.time(),
+            'source': 'mevzuat.gov.tr'
+        }
+        
+        # Hata varsa kullanıcıya bildir
+        error_message = search_results.get('error', '')
+        
+    except Exception as e:
+        # Hata durumu
+        search_results = {
+            'results': [],
+            'total_count': 0,
+            'page': 1,
+            'has_next': False,
+            'has_previous': False
+        }
+        legislations_page = LivePage(search_results)
+        search_stats = {
+            'total_results': 0,
+            'live_results': 0,
+            'db_results': 0,
+            'is_live': True,
+            'error': True
+        }
+        error_message = f"Arama sırasında bir hata oluştu: {str(e)}"
     
-    # Word count filter - exclude decisions with less than 1500 words
-# #     if decisions:
-# #         filtered_decisions = []
-# #         for decision in decisions:
-# #             if decision.karar_tam_metni:
-# #                 word_count = len(decision.karar_tam_metni.split())
-# #                 if word_count >= 1500:
-# #                     filtered_decisions.append(decision)
-# #         decisions = filtered_decisions
-    # Context oluştur
+    # Mevzuat türleri (sabit liste - veritabanı yerine)
+    mevzuat_turleri = [
+        {'id': '1', 'ad': 'Kanunlar'},
+        {'id': '2', 'ad': 'Cumhurbaşkanlığı Kararnameleri'},
+        {'id': '5', 'ad': 'Yönetmelikler'},
+        {'id': '6', 'ad': 'Tüzükler'},
+        {'id': '7', 'ad': 'Tebliğler'},
+        {'id': '8', 'ad': 'Genelgeler'},
+        {'id': '9', 'ad': 'Uluslararası Anlaşmalar'},
+    ]
+    
     context = {
         'query': query,
-        'decisions': decisions,
-        'page_obj': page_obj,
-        'total_count': total_count,
-        'sort_order': sort_order,
-        'words_searched': query.split()[:3] if query else []
+        'mevzuat_turu_id': mevzuat_turu_id,
+        'legislations': legislations_page,
+        'mevzuat_turleri': mevzuat_turleri,
+        'total_results': search_stats.get('total_results', 0),
+        'search_stats': search_stats,
+        'is_live_search': True,
+        'error_message': error_message if 'error_message' in locals() else None,
+        'system_source': 'mevzuat.gov.tr'
     }
+    return render(request, 'core/legislation_results.html', context)
+
+def legislation_detail(request, pk):
+    """
+    Gelişmiş mevzuat detay sayfası: Madde bazlı görüntüleme ve değişiklik geçmişi.
+    """
+    legislation = get_object_or_404(
+        MevzuatGelismis.objects.select_related('mevzuat_turu', 'kategori'), 
+        pk=pk
+    )
     
-    return render(request, 'core/search_results_new.html', context)
+    # Maddeler (sıralı)
+    maddeler = legislation.maddeler.filter(aktif=True).order_by('sira', 'madde_no')
+    
+    # Değişiklik geçmişi
+    degisiklikler = legislation.degisiklikler.select_related(
+        'degistiren_mevzuat'
+    ).order_by('-degisiklik_tarihi')[:10]
+    
+    # İlgili mevzuatlar
+    ilgili_mevzuatlar = legislation.ilgili_mevzuatlar.filter(
+        durum='yurutulme'
+    )[:5]
+    
+    # Benzer mevzuatlar (aynı kategori)
+    benzer_mevzuatlar = []
+    if legislation.kategori:
+        benzer_mevzuatlar = MevzuatGelismis.objects.filter(
+            kategori=legislation.kategori,
+            durum='yurutulme'
+        ).exclude(pk=legislation.pk)[:5]
+    
+    # Madde sayısı ve istatistikler
+    madde_sayisi = maddeler.count()
+    degisiklik_sayisi = degisiklikler.count()
+    
+    # Log kaydı (görüntüleme)
+    MevzuatLog.objects.create(
+        islem_turu='guncelleme',
+        aciklama=f'Mevzuat detayı görüntülendi: {legislation.baslik}',
+        mevzuat=legislation,
+        kullanici=request.user if request.user.is_authenticated else None,
+        ip_adresi=request.META.get('REMOTE_ADDR'),
+        detaylar={'action': 'view_detail'}
+    )
+    
+    context = {
+        'legislation': legislation,
+        'maddeler': maddeler,
+        'degisiklikler': degisiklikler,
+        'ilgili_mevzuatlar': ilgili_mevzuatlar,
+        'benzer_mevzuatlar': benzer_mevzuatlar,
+        'madde_sayisi': madde_sayisi,
+        'degisiklik_sayisi': degisiklik_sayisi,
+    }
+    return render(request, 'core/legislation_detail.html', context)
+
+def mevzuat_madde_detail(request, mevzuat_pk, madde_pk):
+    """
+    Mevzuat maddesi detay sayfası: Tek madde odaklı görüntüleme.
+    """
+    madde = get_object_or_404(
+        MevzuatMadde.objects.select_related('mevzuat'), 
+        pk=madde_pk, mevzuat_id=mevzuat_pk
+    )
+    
+    # Önceki ve sonraki maddeler
+    onceki_madde = MevzuatMadde.objects.filter(
+        mevzuat=madde.mevzuat, 
+        sira__lt=madde.sira,
+        aktif=True
+    ).order_by('-sira').first()
+    
+    sonraki_madde = MevzuatMadde.objects.filter(
+        mevzuat=madde.mevzuat, 
+        sira__gt=madde.sira,
+        aktif=True
+    ).order_by('sira').first()
+    
+    # Bu maddeyi etkileyen değişiklikler
+    degisiklikler = MevzuatDegisiklik.objects.filter(
+        etkilenen_maddeler=madde
+    ).select_related('degistiren_mevzuat').order_by('-degisiklik_tarihi')[:5]
+    
+    # Diğer maddeler (template için)
+    diger_maddeler = MevzuatMadde.objects.filter(
+        mevzuat=madde.mevzuat,
+        aktif=True
+    ).order_by('sira')[:20]
+    
+    context = {
+        'madde': madde,
+        'mevzuat': madde.mevzuat,
+        'onceki_madde': onceki_madde,
+        'sonraki_madde': sonraki_madde,
+        'degisiklikler': degisiklikler,
+        'diger_maddeler': diger_maddeler,
+    }
+    return render(request, 'core/mevzuat_madde_detail.html', context)
+
+def legislation_list(request):
+    query = request.GET.get('q', '')
+    mevzuat_turu = request.GET.get('mevzuat_turu', '')
+
+    # Tüm mevzuat kayıtlarını alıyoruz.
+    legislations = Legislation.objects.all()
+
+    # Eğer arama sorgusu varsa, başlık veya konu alanlarında __icontains ile arama yapıyoruz.
+    if query:
+        legislations = legislations.filter(
+            Q(baslik__icontains=query) | Q(konu__icontains=query)
+        )
+
+    # Mevzuat türü filtresi (querystring'de seçilmişse)
+    if mevzuat_turu:
+        legislations = legislations.filter(mevzuat_turu=mevzuat_turu)
+
+    # Pagination: Örneğin, 12 kayıt/sayfa
+    paginator = Paginator(legislations, 12)
+    page = request.GET.get('page')
+    try:
+        legislations_page = paginator.page(page)
+    except PageNotAnInteger:
+        legislations_page = paginator.page(1)
+    except EmptyPage:
+        legislations_page = paginator.page(paginator.num_pages)
+
+    # Eğer kullanıcı henüz arama yapmamışsa, hero bölümünde en yeni 10 kaydı gösterelim.
+    newest_legislations = []
+    if not query:
+        newest_legislations = legislations.order_by('-yayin_tarihi')[:10]
+
+    # Trend grafiği için: Mevzuat türlerine göre toplam kayıt sayısı
+    court_counts_qs = Legislation.objects.values('mevzuat_turu').annotate(total=Count('id'))
+    court_counts = {item['mevzuat_turu']: item['total'] for item in court_counts_qs}
+    court_counts_json = json.dumps(court_counts)
+
+    context = {
+        'query': query,
+        'mevzuat_turu': mevzuat_turu,
+        'legislations': legislations_page,
+        'newest_legislations': newest_legislations,
+        'court_counts': court_counts_json,
+    }
+    return render(request, 'core/legislation_home.html', context)
+
+
+def article_detail(request, pk):
+    """
+    Tek bir makalenin detaylarını gösterir.
+    """
+    article = get_object_or_404(Article, pk=pk)
+    context = {'article': article}
+    return render(request, 'core/article_detail.html', context)
+
+
+# API örneği: Arama sonuçlarını JSON olarak dönen uç nokta
+@api_view(['GET'])
+def api_search(request):
+    query = request.GET.get('q', '')
+    search_area = request.GET.get('area', 'both')
+    judicial_results = JudicialDecision.objects.none()
+    article_results = Article.objects.none()
+
+    if query:
+        if search_area in ['judicial', 'both']:
+            judicial_results = JudicialDecision.objects.filter(
+                Q(karar_ozeti__icontains=query) |
+                Q(anahtar_kelimeler__icontains=query) |
+                Q(karar_tam_metni__icontains=query) |
+                Q(karar_veren_mahkeme__icontains=query)
+            )
+        if search_area in ['articles', 'both']:
+            article_results = Article.objects.filter(
+                Q(makale_basligi__icontains=query) |
+                Q(makale_ozeti__icontains=query) |
+                Q(makale_metni__icontains=query)
+            )
+    decisions_serializer = JudicialDecisionSerializer(judicial_results, many=True)
+    articles_serializer = ArticleSerializer(article_results, many=True)
+    data = {
+        'judicial_decisions': decisions_serializer.data,
+        'articles': articles_serializer.data,
+    }
+    return Response(data)
+
+
+# Google Custom Search API entegrasyonu için yardımcı fonksiyon (İsteğe bağlı)
+def google_search(query):
+    """
+    Google Custom Search API kullanarak sorguya ait sonuçları getirir.
+    """
+    api_key = settings.GOOGLE_API_KEY
+    cse_id = settings.GOOGLE_CSE_ID
+    service = build("customsearch", "v1", developerKey=api_key)
+    res = service.cse().list(q=query, cx=cse_id).execute()
+    return res.get('items', [])
+
+def predictive_legal_analysis(request):
+    """
+    Öngörülü hukuki analiz ana sayfası.
+    """
+    return render(request, 'core/predictive_legal_analysis.html')
+
+
+
+def guest_limit_reached_view(request):
+    """Guest limit reached page"""
+    return render(request, "core/guest_limit_reached.html")

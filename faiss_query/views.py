@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from sentence_transformers import SentenceTransformer
 import markdown
 import re
+from core.guest_limit_utils import check_guest_search_limit, increment_guest_search
 
 # FAISS dizinlerini lazy loading ile yükleyelim
 FAISS_DIR = os.path.join(settings.BASE_DIR, 'faiss_dizinleri')
@@ -46,7 +47,7 @@ for file in available_indexes:
 embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel(model_name="gemini-3-pro-preview")
+gemini_model = genai.GenerativeModel(model_name="gemini-2.5-pro")
 
 # ---------------------------
 # Olay giriş view
@@ -259,14 +260,52 @@ def calculate_legal_relevance(olay, karar_data, keywords):
     
     return min(total_score, 100)
 
+    # Guest user limit kontrolü
+    is_limit_reached, current_count, remaining_searches = check_guest_search_limit(request)
+    if is_limit_reached:
+        return render(request, 'core/guest_limit_reached.html')
+
+    # Misafir kullanıcı arama sayısını artır
+    increment_guest_search(request)
+
 def karar_listesi(request):
     import gc
+    from django.core.cache import cache
+    import hashlib
     
     olay = request.session.get('olay')
     hukuki_aciklama = request.session.get('hukuki_aciklama')
     if not olay:
         return redirect('faiss_query:olay_gir')
+    
+    # Create cache key based on olay content
+    cache_key = f"faiss_results_{hashlib.md5(olay.encode()).hexdigest()[:16]}"
+    
+    # Check if we should force refresh
+    force_refresh = request.GET.get('refresh', '').lower() == 'true'
+    
+    # Try to get cached results first (but with shorter cache time)
+    if not force_refresh:
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            # Reconstruct paginator from cached results
+            sorted_results = cached_data['results']
+            paginator = Paginator(sorted_results, 10)  # 10 per page instead of 15
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+            
+            context = {
+                'page_obj': page_obj,
+                'paginator': paginator,
+                'olay': olay,
+                'legal_keywords': cached_data['legal_keywords'],
+                'hukuki_aciklama': hukuki_aciklama,
+                'cached': True,
+                'cache_time': cached_data.get('cache_time', ''),
+            }
+            return render(request, 'faiss_query/karar_listesi.html', context)
 
+    # If not cached or refresh requested, continue with normal processing
     # Hukuki anahtar kelimeleri çıkar
     legal_keywords = extract_legal_keywords(olay)
     
@@ -274,13 +313,12 @@ def karar_listesi(request):
     enhanced_query = f"{olay} {' '.join(legal_keywords)}"
     embedding = embedding_model.encode([enhanced_query])
 
-    # Ultra memory-efficient: Process only 1 category at a time
+    # More efficient processing: Get more results from each category
     top_results = []
     alan_listesi = list(index_mapping.keys())
-    processed_categories = 0
     
-    # Process maximum 8 categories to prevent OOM
-    for alan_adi in alan_listesi[:8]:
+    # Process ALL categories but get more results from each
+    for alan_adi in alan_listesi:
         data = load_faiss_index(alan_adi)
         if data is None:
             continue
@@ -288,8 +326,9 @@ def karar_listesi(request):
         index = data["index"]
         mapping = data["mapping"]
 
-        # Very limited search to save memory
-        D, I = index.search(np.array(embedding).astype('float32'), 8)
+        # Get more results per category (20 instead of 8)
+        search_k = min(20, len(mapping))
+        D, I = index.search(np.array(embedding).astype('float32'), search_k)
         
         for dist, idx in zip(D[0], I[0]):
             if idx != -1 and idx < len(mapping):
@@ -297,46 +336,43 @@ def karar_listesi(request):
                 
                 relevance_score = calculate_legal_relevance(olay, karar_data, legal_keywords)
                 
-                if relevance_score >= 20:  # Lower threshold
+                # Lower threshold to get more results
+                if relevance_score >= 15:  
                     combined_score = (1.0 - dist) * 0.3 + (relevance_score / 100) * 0.7
                     top_results.append((combined_score, idx, karar_data, alan_adi, relevance_score))
         
-        # Immediately clear from memory
+        # Clear from memory after processing
         if alan_adi in _loaded_indexes:
             del _loaded_indexes[alan_adi]
         
-        processed_categories += 1
         gc.collect()
-        
-        # Stop early if we have results
-        if len(top_results) > 30:
-            break
 
-    # Sort by relevance score (index 4) from high to low
-    sorted_results = sorted(top_results, key=lambda x: x[4], reverse=True)[:80]
+    # Sort by relevance score and get more results (200 instead of 80)
+    sorted_results = sorted(top_results, key=lambda x: x[4], reverse=True)[:200]
     
-    paginator = Paginator(sorted_results, 15)  # Fewer per page to reduce memory
+    # Cache the results for only 10 minutes (shorter cache time)
+    from datetime import datetime
+    cache_data = {
+        'results': sorted_results,
+        'legal_keywords': legal_keywords,
+        'cache_time': datetime.now().strftime('%H:%M:%S'),
+    }
+    cache.set(cache_key, cache_data, 3600)  # 10 minutes instead of 30
+    
+    # Use 10 results per page for better performance
+    paginator = Paginator(sorted_results, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    # Debug bilgisi
-    debug_info = {
-        'total_results': len(sorted_results),
-        'processed_categories': processed_categories,
-        'keywords': legal_keywords,
-        'min_score': min([r[4] for r in sorted_results]) if sorted_results else 0,
-        'max_score': max([r[4] for r in sorted_results]) if sorted_results else 0,
-    }
-
-    return render(request, 'faiss_query/karar_listesi.html', {
-        'olay': olay,
-        'hukuki_aciklama': hukuki_aciklama,
+    
+    context = {
         'page_obj': page_obj,
+        'paginator': paginator,
+        'olay': olay,
         'legal_keywords': legal_keywords,
-        'debug_info': debug_info,
-    })
-
-
+        'hukuki_aciklama': hukuki_aciklama,
+        'cached': False,
+    }
+    return render(request, 'faiss_query/karar_listesi.html', context)
 def highlight_keywords(text, keywords):
     """
     Metindeki önemli kelimeleri <mark> etiketi ile sarı renkle vurgular.

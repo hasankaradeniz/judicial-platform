@@ -26,47 +26,6 @@ class UserProfile(models.Model):
         ],
         help_text="Telefon numaranızı giriniz"
     )
-    
-    # Adres bilgileri - fatura için gerekli
-    address_line_1 = models.CharField(
-        "Adres Satırı 1", 
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text="Mahalle, cadde, sokak ve kapı numarası"
-    )
-    address_line_2 = models.CharField(
-        "Adres Satırı 2", 
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text="Apartman, daire numarası gibi ek adres bilgileri (opsiyonel)"
-    )
-    city = models.CharField(
-        "Şehir", 
-        max_length=100,
-        blank=True,
-        null=True
-    )
-    district = models.CharField(
-        "İlçe", 
-        max_length=100,
-        blank=True,
-        null=True
-    )
-    postal_code = models.CharField(
-        "Posta Kodu", 
-        max_length=10,
-        blank=True,
-        null=True,
-        validators=[
-            RegexValidator(
-                r'^\d{5}$', 
-                "Geçerli bir posta kodu giriniz. (Örn: 34000)"
-            )
-        ]
-    )
-    
     is_free_trial = models.BooleanField("Ücretsiz Deneme", default=True)
     free_trial_start = models.DateTimeField("Ücretsiz Deneme Başlangıç", auto_now_add=True)
     free_trial_end = models.DateTimeField("Ücretsiz Deneme Bitiş", null=True, blank=True)
@@ -78,7 +37,7 @@ class UserProfile(models.Model):
         verbose_name_plural = "Kullanıcı Profilleri"
     
     def save(self, *args, **kwargs):
-        # Ücretsiz deneme bitiş tarihini otomatik hesapla (2 ay = 60 gün)
+        # Ücretsiz deneme bitiş tarihini otomatik hesapla
         if not self.free_trial_end and self.is_free_trial:
             if not self.free_trial_start:
                 self.free_trial_start = timezone.now()
@@ -103,17 +62,6 @@ class UserProfile(models.Model):
         """Platform erişimi var mı kontrol et"""
         return (self.is_free_trial and not self.is_free_trial_expired()) or self.has_active_subscription()
     
-    def get_remaining_trial_days(self):
-        """Kalan deneme gün sayısını döndür"""
-        if not self.is_free_trial or not self.free_trial_end:
-            return 0
-        remaining = (self.free_trial_end - timezone.now()).days
-        return max(0, remaining)
-    
-    def is_trial_ending_soon(self):
-        """Deneme süresi 7 gün içinde bitiyor mu"""
-        return self.is_free_trial and self.get_remaining_trial_days() <= 7
-    
     def __str__(self):
         return f"{self.user.username} - {self.phone_number}"
 
@@ -123,7 +71,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         try:
             profile = UserProfile.objects.create(user=instance)
-            # Ensure free trial dates are set (2 ay = 60 gün)
+            # Ensure free trial dates are set
             if not profile.free_trial_start:
                 profile.free_trial_start = timezone.now()
             if not profile.free_trial_end:
@@ -132,22 +80,14 @@ def create_user_profile(sender, instance, created, **kwargs):
         except Exception as e:
             print(f"Error creating user profile: {e}")
 
-# Bu signal probleme neden oluyor - geçici olarak devre dışı
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     """Kullanıcı kaydedildiğinde profili de kaydet"""
-#     with open('/tmp/signup_debug.log', 'a') as f:
-#         f.write(f"=== POST_SAVE SIGNAL ÇALIŞTI === User: {instance.username}\n")
-#     try:
-#         if hasattr(instance, 'profile'):
-#             with open('/tmp/signup_debug.log', 'a') as f:
-#                 f.write(f"Profile mevcut, kaydediliyor...\n")
-#             instance.profile.save()
-#             with open('/tmp/signup_debug.log', 'a') as f:
-#                 f.write(f"Profile kaydedildi.\n")
-#     except Exception as e:
-#         with open('/tmp/signup_debug.log', 'a') as f:
-#             f.write(f"Error saving user profile: {e}\n")
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Kullanıcı kaydedildiğinde profili de kaydet"""
+    try:
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
+    except Exception as e:
+        print(f"Error saving user profile: {e}")
 
 class JudicialDecision(models.Model):
     karar_turu = models.CharField("Karar Türü", max_length=255)
@@ -156,8 +96,6 @@ class JudicialDecision(models.Model):
     karar_numarasi = models.CharField("Karar Numarası", max_length=100, blank=True, null=True)
     karar_tarihi = models.DateField("Karar Tarihi", blank=True, null=True)
     anahtar_kelimeler = models.TextField("Anahtar Kelimeler", blank=True, null=True)
-    detected_legal_area = models.CharField("Tespit Edilen Hukuk Alanı", max_length=50, blank=True, null=True, 
-                                         help_text="Otomatik tespit edilen hukuk alanı")
     
     def save(self, *args, **kwargs):
         # Anahtar kelime otomatik üretimi
@@ -230,33 +168,8 @@ class JudicialDecision(models.Model):
         return ', '.join(unique_keywords[:10])
     karar_ozeti = models.TextField("Kararın Özeti", blank=True, null=True)
     karar_tam_metni = models.TextField("Kararın Tam Metni", blank=True, null=True)
+    detected_legal_area = models.CharField(max_length=100, blank=True, null=True, help_text="Otomatik tespit edilen hukuk alani")
     dosya = models.FileField("Dosya", upload_to='decisions/', blank=True, null=True)
-
-    # Property methods for compatibility with new system
-    @property
-    def title(self):
-        """Compatibility property for title"""
-        return f"{self.karar_turu} - {self.karar_numarasi or ''}"
-    
-    @property
-    def summary(self):
-        """Compatibility property for summary"""
-        return self.karar_ozeti
-    
-    @property
-    def full_text(self):
-        """Compatibility property for full text"""
-        return self.karar_tam_metni
-    
-    @property
-    def decision_date(self):
-        """Compatibility property for decision date"""
-        return self.karar_tarihi
-    
-    @property
-    def court_name(self):
-        """Compatibility property for court name"""
-        return self.karar_veren_mahkeme
 
     def __str__(self):
         return f"{self.karar_veren_mahkeme} - {self.karar_numarasi}"
@@ -785,3 +698,23 @@ class Notification(models.Model):
     def __str__(self):
         user_info = f"{self.user.username}" if self.user else "Admin"
         return f"{user_info} - {self.title}"
+
+class GuestSearchLimit(models.Model):
+    """Misafir kullanıcı arama limiti takibi"""
+    ip_address = models.GenericIPAddressField(verbose_name="IP Adresi")
+    user_agent_hash = models.CharField(max_length=64, verbose_name="User Agent Hash")
+    search_count = models.PositiveIntegerField(default=0, verbose_name="Arama Sayısı")
+    date_created = models.DateField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
+    last_search = models.DateTimeField(auto_now=True, verbose_name="Son Arama")
+    
+    class Meta:
+        verbose_name = "Misafir Arama Limiti"
+        verbose_name_plural = "Misafir Arama Limitleri"
+        unique_together = [("ip_address", "user_agent_hash", "date_created")]
+        indexes = [
+            models.Index(fields=["ip_address", "date_created"]),
+            models.Index(fields=["date_created"]),
+        ]
+    
+    def __str__(self):
+        return f"{self.ip_address} - {self.date_created} ({self.search_count} arama)"
