@@ -82,7 +82,7 @@ class UserProfile(models.Model):
         if not self.free_trial_end and self.is_free_trial:
             if not self.free_trial_start:
                 self.free_trial_start = timezone.now()
-            self.free_trial_end = self.free_trial_start + timedelta(days=60)
+            self.free_trial_end = self.free_trial_start + timedelta(days=30)
         super().save(*args, **kwargs)
     
     def is_free_trial_expired(self):
@@ -127,7 +127,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             if not profile.free_trial_start:
                 profile.free_trial_start = timezone.now()
             if not profile.free_trial_end:
-                profile.free_trial_end = profile.free_trial_start + timedelta(days=60)
+                profile.free_trial_end = profile.free_trial_start + timedelta(days=30)
             profile.save()
         except Exception as e:
             print(f"Error creating user profile: {e}")

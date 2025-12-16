@@ -398,7 +398,7 @@ class UserProfileAdmin(admin.ModelAdmin):
             from django.utils import timezone
             
             remaining_days = obj.get_remaining_trial_days()
-            total_days = 60  # 2 aylık deneme
+            total_days = 30  # 1 aylık deneme
             used_days = total_days - remaining_days if remaining_days >= 0 else total_days
             
             # Durum emoji

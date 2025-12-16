@@ -254,34 +254,8 @@ class Command(BaseCommand):
                 if not user.email:
                     continue
                 
-                # Admin kullanıcılar her zaman dahil
-                if user.is_staff or user.is_superuser:
-                    active_emails.append(user.email)
-                    continue
-                
-                try:
-                    profile = user.userprofile
-                    now = datetime.now().date()
-                    
-                    # Ücretsiz deneme kontrolü
-                    if profile.free_trial_start_date:
-                        trial_end = profile.free_trial_start_date + timedelta(days=60)
-                        if now <= trial_end:
-                            active_emails.append(user.email)
-                            continue
-                    
-                    # Ücretli abonelik kontrolü
-                    if hasattr(profile, 'subscription') and profile.subscription:
-                        if profile.subscription.end_date and now <= profile.subscription.end_date:
-                            active_emails.append(user.email)
-                            continue
-                
-                except UserProfile.DoesNotExist:
-                    # Profile yoksa skip et
-                    continue
-                except Exception as e:
-                    logger.warning(f"Kullanıcı {user.username} kontrolü hatası: {e}")
-                    continue
+                # Tüm kayıtlı kullanıcılara resmi gazete gönder
+                active_emails.append(user.email)
             
             # Duplicate email'leri temizle
             active_emails = list(set(active_emails))
