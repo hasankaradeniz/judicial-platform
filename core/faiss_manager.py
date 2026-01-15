@@ -25,7 +25,8 @@ class FAISSManager:
         self.embedding_model = None
         self.index = None
         self.last_update_file = os.path.join(self.base_path, 'last_update.txt')
-        
+        self.last_id_file = os.path.join(self.base_path, 'last_processed_id.txt')
+
         # Ensure directory exists
         os.makedirs(self.base_path, exist_ok=True)
     
@@ -59,30 +60,44 @@ class FAISSManager:
             logger.error(f"Index rebuild check error: {e}")
             return True
     
-    def get_new_decisions(self, last_update_time=None):
+    def get_new_decisions(self, last_id=None):
         """Son güncelleme sonrası eklenen yeni kararları getir"""
-        if last_update_time:
+        if last_id:
             return JudicialDecision.objects.filter(
-                created_at__gt=last_update_time
-            ).values('id', 'karar_ozeti', 'karar_veren_mahkeme')
+                id__gt=last_id
+            ).order_by('id').values('id', 'karar_ozeti', 'karar_veren_mahkeme')
         else:
-            return JudicialDecision.objects.all().values('id', 'karar_ozeti', 'karar_veren_mahkeme')
+            return JudicialDecision.objects.all().order_by('id').values('id', 'karar_ozeti', 'karar_veren_mahkeme')
     
-    def create_embeddings(self, texts):
+    def create_embeddings(self, texts, use_existing_vectorizer=True):
         """Metinler için embeddings oluştur"""
+        vectorizer_path = os.path.join(self.base_path, 'vectorizer.pkl')
+
+        # Eğer mevcut bir vectorizer varsa ve incremental update yapıyorsak
+        # aynı vectorizer'ı kullan (boyut tutarlılığı için)
+        if use_existing_vectorizer and os.path.exists(vectorizer_path):
+            try:
+                with open(vectorizer_path, 'rb') as f:
+                    vectorizer = pickle.load(f)
+                logger.info("Using existing TF-IDF vectorizer for consistency")
+                embeddings = vectorizer.transform(texts).toarray()
+                return embeddings.astype('float32')
+            except Exception as e:
+                logger.error(f"Existing vectorizer error: {e}")
+
+        # Yeni index için sentence-transformers dene
         try:
-            # Sentence-transformers kullan
             from sentence_transformers import SentenceTransformer
-            
+
             if self.embedding_model is None:
                 model_name = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
                 self.embedding_model = SentenceTransformer(model_name)
-            
+
             embeddings = self.embedding_model.encode(texts, show_progress_bar=True)
             return embeddings.astype('float32')
-            
+
         except Exception as e:
-            logger.error(f"Embedding creation error: {e}")
+            logger.error(f"Sentence-transformers error: {e}")
             # Fallback: TF-IDF
             return self.create_tfidf_embeddings(texts)
     
@@ -117,7 +132,7 @@ class FAISSManager:
             
             for decision in decisions:
                 text = f"{decision['karar_ozeti']} {decision['karar_veren_mahkeme']}"
-                texts.append(text)  # İlk 1000 karakter
+                texts.append(text[:1000])  # İlk 1000 karakter
                 metadata.append({
                     'id': decision['id'],
                     'mahkeme': decision['karar_veren_mahkeme']
@@ -164,62 +179,73 @@ class FAISSManager:
     def update_index_incremental(self):
         """Incremental dizin güncelleme"""
         try:
-            # Son güncelleme zamanını al
-            if not os.path.exists(self.last_update_file):
+            # Son işlenen ID'yi al
+            last_id = 0
+            if os.path.exists(self.last_id_file):
+                with open(self.last_id_file, 'r') as f:
+                    try:
+                        last_id = int(f.read().strip())
+                    except ValueError:
+                        last_id = 0
+
+            # Mevcut index yoksa full build yap
+            if not os.path.exists(self.index_file):
                 return self.build_index_full()
-            
-            with open(self.last_update_file, 'r') as f:
-                last_update_str = f.read().strip()
-                last_update = datetime.fromisoformat(last_update_str)
-            
+
             # Yeni kararları al
-            new_decisions = list(self.get_new_decisions(last_update))
-            
+            new_decisions = list(self.get_new_decisions(last_id))
+
             if not new_decisions:
                 logger.info("No new decisions to add to index")
                 return True
-            
+
+            logger.info(f"Found {len(new_decisions)} new decisions to add (after ID {last_id})")
+
             # Mevcut index'i yükle
-            if not os.path.exists(self.index_file):
-                return self.build_index_full()
-            
             index = faiss.read_index(self.index_file)
-            
+
             with open(self.metadata_file, 'rb') as f:
                 metadata = pickle.load(f)
-            
+
             # Yeni embeddings oluştur
             new_texts = []
             new_metadata = []
-            
+            max_id = last_id
+
             for decision in new_decisions:
-                text = f"{decision['karar_ozeti']} {decision['karar_veren_mahkeme']}"
-                new_texts.append(text)
+                text = f"{decision['karar_ozeti'] or ''} {decision['karar_veren_mahkeme'] or ''}"
+                new_texts.append(text[:1000])
                 new_metadata.append({
                     'id': decision['id'],
                     'mahkeme': decision['karar_veren_mahkeme']
                 })
-            
+                if decision['id'] > max_id:
+                    max_id = decision['id']
+
             new_embeddings = self.create_embeddings(new_texts)
             faiss.normalize_L2(new_embeddings)
-            
+
             # Index'e ekle
             index.add(new_embeddings)
             metadata.extend(new_metadata)
-            
+
             # Kaydet
             faiss.write_index(index, self.index_file)
-            
+
             with open(self.metadata_file, 'wb') as f:
                 pickle.dump(metadata, f)
-            
+
+            # Son işlenen ID'yi kaydet
+            with open(self.last_id_file, 'w') as f:
+                f.write(str(max_id))
+
             # Son güncelleme zamanını güncelle
             with open(self.last_update_file, 'w') as f:
                 f.write(datetime.now().isoformat())
-            
-            logger.info(f"FAISS index updated with {len(new_embeddings)} new decisions")
+
+            logger.info(f"FAISS index updated with {len(new_embeddings)} new decisions. Last ID: {max_id}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Incremental index update error: {e}")
             return False

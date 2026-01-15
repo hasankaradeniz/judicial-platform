@@ -13,7 +13,7 @@ class JudicialDecisionAdmin(admin.ModelAdmin):
     list_display = ['id', 'karar_numarasi', 'kategori_sayisi', 'karar_tarihi', 'karar_veren_mahkeme']
     list_filter = ['detected_legal_area', 'karar_tarihi', 'karar_veren_mahkeme']
     search_fields = ['id', 'karar_numarasi', 'esas_numarasi', 'karar_veren_mahkeme', 'karar_tam_metni']
-    readonly_fields = ['detected_legal_area', 'kategori_sayisi']
+    readonly_fields = ['detected_legal_area']
     date_hierarchy = 'karar_tarihi'
     ordering = ['-id']  # ID numarasına göre azalan sırada (en yeni üstte)
     list_per_page = 50  # Sayfa başı kayıt sayısı
@@ -96,7 +96,7 @@ class JudicialDecisionAdmin(admin.ModelAdmin):
             'fields': ('karar_turu', 'karar_veren_mahkeme')
         }),
         ('Numara ve Tarihler', {
-            'fields': ('esas_numarasi', 'karar_numarasi', 'karar_no', 'karar_tarihi')
+            'fields': ('esas_numarasi', 'karar_numarasi', 'karar_tarihi')
         }),
         ('AI Kategorilendirme', {
             'fields': ('detected_legal_area',),
@@ -104,10 +104,6 @@ class JudicialDecisionAdmin(admin.ModelAdmin):
         }),
         ('İçerik', {
             'fields': ('karar_ozeti', 'karar_tam_metni', 'anahtar_kelimeler')
-        }),
-        ('Taraflar', {
-            'fields': ('davaci', 'davali', 'mudahiller'),
-            'classes': ('collapse',)
         }),
     )
 
@@ -398,7 +394,7 @@ class UserProfileAdmin(admin.ModelAdmin):
             from django.utils import timezone
             
             remaining_days = obj.get_remaining_trial_days()
-            total_days = 30  # 1 aylık deneme
+            total_days = 7  # 7 günlük deneme
             used_days = total_days - remaining_days if remaining_days >= 0 else total_days
             
             # Durum emoji
@@ -415,7 +411,7 @@ class UserProfileAdmin(admin.ModelAdmin):
             details = [
                 f"📅 Başlangıç: {obj.free_trial_start.strftime('%d.%m.%Y %H:%M') if obj.free_trial_start else 'Bilinmiyor'}",
                 f"📅 Bitiş: {obj.free_trial_end.strftime('%d.%m.%Y %H:%M') if obj.free_trial_end else 'Bilinmiyor'}",
-                f"⏰ Toplam Süre: {total_days} gün (2 ay)",
+                f"⏰ Toplam Süre: {total_days} gün",
                 f"📊 Kullanılan: {used_days} gün",
                 f"⏱️ Kalan: {remaining_days} gün",
                 f"{status_emoji} Durum: {status_text}",
